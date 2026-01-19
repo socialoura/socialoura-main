@@ -62,28 +62,28 @@ export default function Header({ lang }: HeaderProps) {
           </div>
           
           {/* Desktop Navigation - Centered */}
-          <nav className="hidden md:flex items-center gap-6 flex-1 justify-center">
+          <nav className="hidden md:flex items-center gap-8 flex-1 justify-center">
             <Link
               href={`/${lang}/i`}
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               {lang === 'en' ? 'Instagram' : 'Instagram'}
             </Link>
             <Link
               href={`/${lang}/t`}
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               {lang === 'en' ? 'TikTok' : 'TikTok'}
             </Link>
             <Link
               href={`/${lang}/pricing`}
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               {lang === 'en' ? 'Pricing' : 'Tarifs'}
             </Link>
             <Link
               href={`/${lang}/contact`}
-              className="text-sm font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               {lang === 'en' ? 'Contact' : 'Contact'}
             </Link>

@@ -134,7 +134,7 @@ export default function GoalSelectionModal({
               price,
               originalPrice: parseFloat(originalPrice.toFixed(2)),
               discount: discountPercentage,
-              popular: index === 1, // Make second option popular
+              popular: index === 3, // Make 1000 followers option popular
             };
           });
           
@@ -251,9 +251,9 @@ export default function GoalSelectionModal({
       role="dialog"
       aria-modal="true"
     >
-      {/* Backdrop */}
+      {/* Backdrop with blur */}
       <div
-        className={`fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-75 transition-opacity duration-300 ease-out ${
+        className={`fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ease-out ${
           isAnimating ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={handleOverlayClick}
@@ -262,96 +262,120 @@ export default function GoalSelectionModal({
       {/* Modal Container */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className={`relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left shadow-xl transition-all duration-300 ease-out w-full max-w-2xl max-h-[90vh] overflow-y-auto ${
+          className={`relative transform overflow-hidden rounded-3xl bg-gradient-to-b from-gray-900 to-gray-950 text-left shadow-2xl shadow-purple-500/10 transition-all duration-300 ease-out w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-gray-800 ${
             isAnimating
               ? 'opacity-100 translate-y-0 scale-100'
               : 'opacity-0 translate-y-4 scale-95'
           }`}
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Decorative gradient orbs */}
+          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+          
           {/* Close Button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors z-10"
+            className="absolute top-5 right-5 w-10 h-10 rounded-full bg-gray-800/50 hover:bg-gray-700/50 flex items-center justify-center text-gray-400 hover:text-white transition-all z-10 backdrop-blur-sm"
             aria-label="Close"
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </button>
 
-          <div className="p-6">
-            {/* Header */}
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          <div className="relative p-8">
+            {/* Header with username badge */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl mb-6 backdrop-blur-sm">
+                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center shadow-lg shadow-purple-500/30">
+                  <span className="text-white text-xl font-bold">{username.charAt(0).toUpperCase()}</span>
+                </div>
+                <div className="text-left">
+                  <div className="text-xs text-gray-400 uppercase tracking-wider">Account</div>
+                  <div className="text-lg font-bold text-white">@{username}</div>
+                </div>
+              </div>
+              <h2 className="text-3xl font-black text-white mb-2">
                 {t.title}
               </h2>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20 border border-indigo-200 dark:border-indigo-700 rounded-full">
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
-                  <span className="text-white text-sm font-bold">{username.charAt(0).toUpperCase()}</span>
-                </div>
-                <span className="text-lg font-semibold text-indigo-600 dark:text-indigo-400">
-                  @{username}
-                </span>
-              </div>
+              <p className="text-gray-400 text-sm">
+                {language === 'fr' ? 'Sélectionnez le forfait qui vous convient' : 'Select the package that suits you'}
+              </p>
             </div>
 
             {/* Goals Grid */}
             {isLoading ? (
               <div className="flex justify-center items-center py-12">
-                <div className="text-gray-600 dark:text-gray-400">Loading pricing options...</div>
+                <div className="flex items-center gap-3">
+                  <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                  <span className="text-gray-400">Loading...</span>
+                </div>
               </div>
             ) : goals.length === 0 ? (
               <div className="flex justify-center items-center py-12">
-                <div className="text-gray-600 dark:text-gray-400">No pricing options available</div>
+                <div className="text-gray-400">No pricing options available</div>
               </div>
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                {goals.map((goal) => (
+                {goals.map((goal, index) => (
                 <button
                   key={goal.followers}
                   onClick={() => handleGoalSelect(goal)}
-                  className={`relative p-4 rounded-lg border-2 transition-all ${
+                  className={`relative p-4 rounded-2xl border transition-all duration-300 group ${
                     selectedGoal?.followers === goal.followers
-                      ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
-                      : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                      ? 'border-purple-500 bg-purple-500/10 shadow-lg shadow-purple-500/20 scale-[1.02]'
+                      : 'border-gray-700/50 bg-gray-800/30 hover:border-gray-600 hover:bg-gray-800/50'
                   }`}
                 >
                   {goal.popular && (
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2">
-                      <span className="bg-indigo-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full whitespace-nowrap">
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap uppercase tracking-wider shadow-lg shadow-purple-500/30">
                         {t.mostPopular}
                       </span>
                     </div>
                   )}
                   <div className="text-center">
-                    <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">
-                      -{goal.discount}%
+                    <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-[10px] font-bold mb-2">
+                      <span>-{goal.discount}%</span>
                     </div>
-                    <div className="text-lg font-bold text-gray-900 dark:text-white mb-1">
+                    <div className="text-2xl font-black text-white mb-1 group-hover:text-purple-300 transition-colors">
                       +{goal.followers.toLocaleString()}
                     </div>
-                    <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">
+                    <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                       {language === 'fr' ? `${goal.price.toFixed(2)}€` : `$${goal.price.toFixed(2)}`}
                     </div>
-                    <div className="text-xs text-gray-500 dark:text-gray-400 line-through">
+                    <div className="text-xs text-gray-500 line-through">
                       {language === 'fr' ? `${goal.originalPrice.toFixed(1)}€` : `$${goal.originalPrice.toFixed(1)}`}
                     </div>
                   </div>
+                  {/* Selection indicator */}
+                  {selectedGoal?.followers === goal.followers && (
+                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
                 </button>
               ))}
               
               {/* Custom option - Full width */}
               <button
                 onClick={() => handleGoalSelect({ followers: 0, price: 0, originalPrice: 0, discount: 50 })}
-                className={`relative p-4 rounded-lg border-2 transition-all col-span-2 sm:col-span-4 ${
+                className={`relative p-4 rounded-2xl border transition-all duration-300 col-span-2 sm:col-span-4 group ${
                   showCustomSlider
-                    ? 'border-indigo-600 bg-indigo-50 dark:bg-indigo-900/20'
-                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600'
+                    ? 'border-purple-500 bg-purple-500/10'
+                    : 'border-gray-700/50 bg-gray-800/30 hover:border-gray-600 hover:bg-gray-800/50'
                 }`}
               >
-                <div className="text-center">
-                  <div className="text-lg font-bold text-gray-900 dark:text-white">
-                    {t.custom}
+                <div className="flex items-center justify-center gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                    </svg>
                   </div>
+                  <span className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
+                    {t.custom}
+                  </span>
                 </div>
               </button>
             </div>
@@ -359,58 +383,47 @@ export default function GoalSelectionModal({
 
             {/* Custom Slider */}
             {showCustomSlider && (
-              <div className="mb-6 p-6 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl border-2 border-indigo-200 dark:border-indigo-800">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-                  {t.customFollowers}
-                </h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                  {t.selectCustomAmount}
-                </p>
+              <div className="mb-6 p-6 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/30 backdrop-blur-sm">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <h3 className="text-xl font-bold text-white">
+                      {customFollowers.toLocaleString()}
+                    </h3>
+                    <p className="text-sm text-gray-400">followers</p>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                      {language === 'fr' ? `${calculateCustomPrice(customFollowers)}€` : `$${calculateCustomPrice(customFollowers)}`}
+                    </div>
+                  </div>
+                </div>
                 
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                      {customFollowers.toLocaleString()} followers
-                    </span>
-                    <span className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">
-                      {language === 'fr' ? `€${calculateCustomPrice(customFollowers)}` : `$${calculateCustomPrice(customFollowers)}`}
-                    </span>
-                  </div>
-                  
-                  <input
-                    type="range"
-                    min="100"
-                    max="50000"
-                    step="50"
-                    value={customFollowers}
-                    onChange={(e) => handleCustomFollowersChange(parseInt(e.target.value))}
-                    className="w-full h-3 rounded-lg appearance-none cursor-pointer slider"
-                    style={{
-                      background: `linear-gradient(to right, rgb(99 102 241) 0%, rgb(99 102 241) ${((customFollowers - 100) / (50000 - 100)) * 100}%, ${
-                        typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
-                          ? 'rgb(55 65 81)'
-                          : 'rgb(229 231 235)'
-                      } ${((customFollowers - 100) / (50000 - 100)) * 100}%, ${
-                        typeof window !== 'undefined' && document.documentElement.classList.contains('dark')
-                          ? 'rgb(55 65 81)'
-                          : 'rgb(229 231 235)'
-                      } 100%)`
-                    }}
-                  />
-                  
-                  <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-                    <span>100</span>
-                    <span>5,000</span>
-                    <span>25,000</span>
-                    <span>50,000</span>
-                  </div>
+                <input
+                  type="range"
+                  min="100"
+                  max="50000"
+                  step="50"
+                  value={customFollowers}
+                  onChange={(e) => handleCustomFollowersChange(parseInt(e.target.value))}
+                  className="w-full h-2 rounded-full appearance-none cursor-pointer slider bg-gray-700"
+                  style={{
+                    background: `linear-gradient(to right, rgb(168 85 247) 0%, rgb(236 72 153) ${((customFollowers - 100) / (50000 - 100)) * 100}%, rgb(55 65 81) ${((customFollowers - 100) / (50000 - 100)) * 100}%, rgb(55 65 81) 100%)`
+                  }}
+                />
+                
+                <div className="flex justify-between text-xs text-gray-500 mt-3">
+                  <span>100</span>
+                  <span>12.5K</span>
+                  <span>25K</span>
+                  <span>37.5K</span>
+                  <span>50K</span>
                 </div>
               </div>
             )}
 
             {/* Email Input */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
                 {t.emailLabel}
               </label>
               <input
@@ -418,25 +431,38 @@ export default function GoalSelectionModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t.emailPlaceholder}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
               />
-            </div>
-
-            {/* Disclaimer */}
-            <div className="mb-6 text-xs text-gray-600 dark:text-gray-400 space-y-2">
-              <p dangerouslySetInnerHTML={{ __html: t.disclaimer.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-              <p dangerouslySetInnerHTML={{ __html: t.disclaimerPart2.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
-              <p dangerouslySetInnerHTML={{ __html: t.disclaimerPart3.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') }} />
             </div>
 
             {/* Continue Button */}
             <button
               onClick={handleContinue}
               disabled={!selectedGoal || !email}
-              className="w-full bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              className="w-full relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-500 hover:via-pink-500 hover:to-purple-500 disabled:from-gray-600 disabled:via-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02] disabled:shadow-none disabled:hover:scale-100 group"
             >
-              {t.continue}
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                {t.continue}
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
             </button>
+
+            {/* Disclaimer - Collapsible */}
+            <details className="mt-6 group">
+              <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-400 transition-colors flex items-center gap-2">
+                <svg className="w-4 h-4 group-open:rotate-90 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+                {language === 'fr' ? 'Informations légales' : 'Legal information'}
+              </summary>
+              <div className="mt-3 text-xs text-gray-500 space-y-2 pl-6">
+                <p dangerouslySetInnerHTML={{ __html: t.disclaimer.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-400">$1</strong>') }} />
+                <p dangerouslySetInnerHTML={{ __html: t.disclaimerPart2.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-400">$1</strong>') }} />
+                <p dangerouslySetInnerHTML={{ __html: t.disclaimerPart3.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-400">$1</strong>') }} />
+              </div>
+            </details>
           </div>
         </div>
       </div>

@@ -290,26 +290,42 @@ export default function TikTokPage({ params }: PageProps) {
   const t = content[lang];
 
   return (
-    <div className="bg-white dark:bg-gray-950">
+    <div className="bg-gray-950">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-purple-50 via-pink-50 to-white dark:from-gray-950 dark:via-gray-950 dark:to-gray-950">
-        <div className="mx-auto max-w-5xl px-6 py-16 sm:py-20 lg:px-8 w-full">
+      <section className="relative overflow-hidden min-h-[70vh] flex items-center">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/20 via-gray-950 to-pink-900/20" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-cyan-600/5 to-pink-600/5 rounded-full blur-3xl" />
+        
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+        
+        <div className="relative mx-auto max-w-5xl px-6 py-20 lg:px-8 w-full">
           <div className="text-center">
-            <h1 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl md:text-5xl mb-2 leading-tight uppercase">
+            {/* Platform Badge */}
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-black mb-8 shadow-lg shadow-cyan-500/30">
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+              </svg>
+            </div>
+            
+            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl mb-4 leading-tight">
               {t.hero.title}
             </h1>
-            <h1 className="text-3xl font-black tracking-tight sm:text-4xl md:text-5xl mb-8 leading-tight uppercase bg-gradient-to-r from-purple-600 via-pink-600 to-red-600 dark:from-purple-400 dark:via-pink-400 dark:to-red-400 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-black tracking-tight sm:text-5xl md:text-6xl mb-8 leading-tight bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
               {t.hero.platform}
             </h1>
-            <p className="mt-6 text-base sm:text-lg leading-relaxed text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+            <p className="text-lg leading-relaxed text-gray-400 max-w-2xl mx-auto mb-10">
               {t.hero.subtitle}
             </p>
             
             {/* Badges */}
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-4">
+            <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
               {t.hero.badges.map((badge, index) => (
-                <div key={index} className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                  <svg className="w-4 h-4 mr-2 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <div key={index} className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300">
+                  <svg className="w-4 h-4 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   {badge.text}
@@ -318,10 +334,10 @@ export default function TikTokPage({ params }: PageProps) {
             </div>
 
             {/* Username Input & CTA Button */}
-            <div className="mt-10 max-w-2xl mx-auto">
-              <div className="flex flex-col sm:flex-row gap-4">
+            <div className="max-w-xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50">
                 <div className="flex-1 relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 text-base font-medium">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg font-medium">
                     @
                   </span>
                   <input
@@ -329,18 +345,38 @@ export default function TikTokPage({ params }: PageProps) {
                     value={username}
                     onChange={handleUsernameChange}
                     placeholder={lang === 'en' ? 'username' : 'nomutilisateur'}
-                    minLength={3}
-                    className="w-full pl-10 pr-4 py-3 text-base border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 dark:focus:border-purple-400 bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                    className="w-full pl-10 pr-4 py-4 text-base bg-transparent border-0 focus:ring-0 text-white placeholder-gray-500"
                     onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
                   />
                 </div>
                 <button
                   onClick={handleContinue}
-                  className="relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 px-10 py-4 text-base font-bold text-white shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-105 transition-all duration-300 uppercase tracking-wide group"
+                  className="relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 px-8 py-4 text-base font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] transition-all duration-300 uppercase tracking-wide group"
                 >
-                  <span className="relative z-10">{t.hero.cta}</span>
+                  <span className="relative z-10 flex items-center gap-2">
+                    {t.hero.cta}
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
                   <div className="absolute inset-0 bg-gradient-to-r from-pink-500 via-purple-600 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </button>
+              </div>
+              
+              {/* Trust indicators */}
+              <div className="flex items-center justify-center gap-6 mt-6 text-xs text-gray-500">
+                <div className="flex items-center gap-1">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                  </svg>
+                  <span>{lang === 'fr' ? 'Paiement sécurisé' : 'Secure payment'}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                  <span>{lang === 'fr' ? 'Résultats garantis' : 'Guaranteed results'}</span>
+                </div>
               </div>
             </div>
           </div>
@@ -348,145 +384,153 @@ export default function TikTokPage({ params }: PageProps) {
       </section>
 
       {/* What Makes Different Section */}
-      <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900">
-        <div className="mx-auto max-w-4xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-16">
-            <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+      <section className="py-20 sm:py-28 bg-gray-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-950 to-gray-900" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl" />
+        
+        <div className="relative mx-auto max-w-5xl px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl mb-4">
               {t.difference.title}
             </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-pink-500 mx-auto rounded-full" />
           </div>
-          <div className="mx-auto max-w-3xl">
-            <dl className="space-y-4">
-              {t.difference.cards.map((card, index) => {
-                const IconComponent = card.icon === 'Bot' ? Bot : card.icon === 'Clock' ? Clock : Shield;
-                return (
-                  <div
-                    key={index}
-                    className="rounded-lg bg-white dark:bg-gray-800 ring-1 ring-gray-200 dark:ring-gray-700 overflow-hidden"
-                  >
-                    <dt>
-                      <button
-                        onClick={() => toggleDifference(index)}
-                        className="w-full flex items-center justify-between text-left p-6 hover:bg-gray-50 dark:hover:bg-gray-750 transition-colors"
-                      >
-                        <div className="flex items-center gap-4">
-                          <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center flex-shrink-0">
-                            <IconComponent className="w-6 h-6 text-white" />
-                          </div>
-                          <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                            {card.title}
-                          </span>
-                        </div>
-                        {openDifferenceIndex === index ? (
-                          <Minus className="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                        ) : (
-                          <Plus className="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
-                        )}
-                      </button>
-                    </dt>
-                    {openDifferenceIndex === index && (
-                      <dd className="px-6 pb-6 pl-[88px] text-base leading-7 text-gray-600 dark:text-gray-400">
-                        {card.description}
-                      </dd>
-                    )}
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {t.difference.cards.map((card, index) => {
+              const IconComponent = card.icon === 'Bot' ? Bot : card.icon === 'Clock' ? Clock : Shield;
+              return (
+                <div
+                  key={index}
+                  className="group relative p-8 rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 hover:border-cyan-500/50 transition-all duration-300 hover:bg-gray-800/80"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-pink-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className="w-14 h-14 bg-gradient-to-br from-cyan-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-cyan-500/20 group-hover:scale-110 transition-transform">
+                      <IconComponent className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-3">
+                      {card.title}
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed">
+                      {card.description}
+                    </p>
                   </div>
-                );
-              })}
-            </dl>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* How It Works Section */}
-      <section className="py-16 sm:py-24 bg-white dark:bg-gray-950">
-        <div className="mx-auto max-w-6xl px-6 lg:px-8">
-          <div className="mx-auto max-w-3xl text-center mb-16">
-            <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+      <section className="py-20 sm:py-28 bg-gray-950 relative overflow-hidden">
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl" />
+        
+        <div className="relative mx-auto max-w-6xl px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl mb-4">
               {t.howItWorks.title}
             </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-pink-500 mx-auto rounded-full" />
           </div>
-          <div className="mx-auto max-w-6xl">
-            <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-              {t.howItWorks.cards.map((card, index) => {
-                const IconComponent = card.icon === 'Package' ? Package : card.icon === 'Megaphone' ? Megaphone : BarChart3;
-                return (
-                  <div key={index} className="relative bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow">
-                    <div className="mb-6">
-                      <div className="w-16 h-16 bg-black dark:bg-white rounded-2xl flex items-center justify-center">
-                        <IconComponent className="w-8 h-8 text-white dark:text-black" />
-                      </div>
+          
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {t.howItWorks.cards.map((card, index) => {
+              const IconComponent = card.icon === 'Package' ? Package : card.icon === 'Megaphone' ? Megaphone : BarChart3;
+              return (
+                <div key={index} className="relative group">
+                  {index < 2 && (
+                    <div className="hidden lg:block absolute top-12 left-full w-full h-0.5 bg-gradient-to-r from-cyan-500/50 to-transparent z-0" />
+                  )}
+                  
+                  <div className="relative p-8 rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 hover:border-cyan-500/50 transition-all duration-300 h-full">
+                    <div className="absolute -top-4 -left-4 w-10 h-10 bg-gradient-to-br from-cyan-500 to-pink-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg shadow-cyan-500/30">
+                      {index + 1}
                     </div>
-                    <h3 className="text-base font-bold text-gray-900 dark:text-white mb-4 tracking-widest uppercase">
-                      {card.title}
-                    </h3>
-                    <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                      {card.description}
-                    </p>
+                    
+                    <div className="mt-4">
+                      <div className="w-14 h-14 bg-gray-700/50 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-cyan-500/20 transition-colors">
+                        <IconComponent className="w-7 h-7 text-cyan-400" />
+                      </div>
+                      <h3 className="text-lg font-bold text-white mb-3 uppercase tracking-wide">
+                        {card.title}
+                      </h3>
+                      <p className="text-gray-400 leading-relaxed">
+                        {card.description}
+                      </p>
+                    </div>
                   </div>
-                );
-              })}
-            </div>
+                </div>
+              );
+            })}
           </div>
           
           <div className="mt-16 text-center">
             <button
               onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-              className="relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-red-500 px-10 py-4 text-base font-bold text-white shadow-lg shadow-pink-500/30 hover:shadow-xl hover:shadow-pink-500/40 hover:scale-105 transition-all duration-300 uppercase tracking-wide group"
+              className="relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 px-10 py-4 text-base font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] transition-all duration-300 uppercase tracking-wide group"
             >
-              <span className="relative z-10">{t.howItWorks.cta}</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <span className="relative z-10 flex items-center gap-2">
+                {t.howItWorks.cta}
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
+                </svg>
+              </span>
             </button>
           </div>
         </div>
       </section>
 
-      {/* Benefits Section - (Re)prenez le contrôle maintenant */}
-      <section className="py-16 sm:py-24 bg-gray-50 dark:bg-gray-900">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-black tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-8">
+      {/* Benefits Section */}
+      <section className="py-20 sm:py-28 bg-gray-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-950 to-gray-900" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-600/10 rounded-full blur-3xl" />
+        
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl mb-4">
               {t.benefits.title}
             </h2>
+            <div className="w-20 h-1 bg-gradient-to-r from-cyan-500 to-pink-500 mx-auto rounded-full" />
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
             {/* Left side: Bento Grid Layout */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Row 1: 2 columns */}
-              <div className="bg-orange-500 rounded-2xl p-8 flex items-center justify-center min-h-[200px]">
-                <p className="text-white text-xl font-semibold text-center leading-relaxed tracking-wide">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl p-6 flex items-center justify-center min-h-[160px] shadow-lg shadow-cyan-500/20 hover:scale-[1.02] transition-transform">
+                <p className="text-white text-lg font-bold text-center leading-relaxed">
                   {t.benefits.items[0]}
                 </p>
               </div>
-              <div className="bg-black rounded-2xl p-8 flex items-center justify-center min-h-[200px]">
-                <p className="text-white text-xl font-semibold text-center leading-relaxed tracking-wide">
+              <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 flex items-center justify-center min-h-[160px] border border-gray-700 hover:border-cyan-500/50 transition-colors">
+                <p className="text-white text-lg font-bold text-center leading-relaxed">
                   {t.benefits.items[1]}
                 </p>
               </div>
               
-              {/* Row 2: 1 column spanning 2 */}
-              <div className="md:col-span-2 bg-blue-500 rounded-2xl p-8 flex items-center justify-center min-h-[200px]">
-                <p className="text-white text-xl font-semibold text-center leading-relaxed tracking-wide">
+              <div className="col-span-2 bg-gradient-to-r from-cyan-500 via-purple-600 to-pink-500 rounded-2xl p-6 flex items-center justify-center min-h-[140px] shadow-lg shadow-purple-500/20 hover:scale-[1.01] transition-transform">
+                <p className="text-white text-lg font-bold text-center leading-relaxed">
                   {t.benefits.items[2]}
                 </p>
               </div>
               
-              {/* Row 3: 2 columns */}
-              <div className="bg-pink-500 rounded-2xl p-8 flex items-center justify-center min-h-[200px]">
-                <p className="text-white text-xl font-semibold text-center leading-relaxed tracking-wide">
+              <div className="bg-gradient-to-br from-pink-500 to-rose-600 rounded-2xl p-6 flex items-center justify-center min-h-[160px] shadow-lg shadow-pink-500/20 hover:scale-[1.02] transition-transform">
+                <p className="text-white text-lg font-bold text-center leading-relaxed">
                   {t.benefits.items[3]}
                 </p>
               </div>
-              <div className="bg-yellow-500 rounded-2xl p-8 flex items-center justify-center min-h-[200px]">
-                <p className="text-white text-xl font-semibold text-center leading-relaxed tracking-wide">
+              <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-6 flex items-center justify-center min-h-[160px] shadow-lg shadow-emerald-500/20 hover:scale-[1.02] transition-transform">
+                <p className="text-white text-lg font-bold text-center leading-relaxed">
                   {t.benefits.items[4]}
                 </p>
               </div>
             </div>
             
-            {/* Right side: Image */}
-            <div className="relative lg:sticky lg:top-8">
-              <div className="aspect-square rounded-2xl overflow-hidden shadow-xl">
+            {/* Right side: Image with overlay */}
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-3xl blur-2xl opacity-20" />
+              <div className="relative aspect-square rounded-3xl overflow-hidden border-2 border-gray-700">
                 <Image
                   src="/img/smiling-woman-using-her-phone-surrounded-by-social.webp"
                   alt="Woman using phone"
@@ -494,6 +538,7 @@ export default function TikTokPage({ params }: PageProps) {
                   height={600}
                   className="w-full h-full object-cover"
                 />
+                <div className="absolute inset-0 bg-gradient-to-t from-gray-900/80 via-transparent to-transparent" />
               </div>
             </div>
           </div>
@@ -501,9 +546,9 @@ export default function TikTokPage({ params }: PageProps) {
       </section>
 
       {/* Compliance Disclaimer */}
-      <section className="py-12 bg-gray-50 dark:bg-gray-900">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <p className="text-sm text-center text-gray-600 dark:text-gray-400 leading-relaxed">
+      <section className="py-12 bg-gray-950 border-t border-gray-800">
+        <div className="mx-auto max-w-4xl px-6 lg:px-8">
+          <p className="text-xs text-center text-gray-500 leading-relaxed">
             {t.compliance.text}
           </p>
         </div>

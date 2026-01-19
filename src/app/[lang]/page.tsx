@@ -171,66 +171,88 @@ export default function HomePage({ params }: PageProps) {
   const t = content[lang];
 
   return (
-    <div className="bg-white dark:bg-gray-950">
+    <div className="bg-gray-950">
       {/* Hero Section */}
-      <section className="relative isolate overflow-hidden">
-        <div className="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
-          <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-indigo-600 to-purple-600 opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]" />
-        </div>
+      <section className="relative overflow-hidden min-h-[90vh] flex items-center">
+        {/* Background Effects */}
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-gray-950 to-pink-900/20" />
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-600/5 to-pink-600/5 rounded-full blur-3xl" />
         
-        <div className="mx-auto max-w-7xl px-6 pb-24 pt-10 sm:pb-32 lg:flex lg:px-8 lg:py-40">
-          <div className="mx-auto max-w-2xl flex-shrink-0 lg:mx-0 lg:max-w-xl lg:pt-8">
-            <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+        {/* Grid Pattern Overlay */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+        
+        <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-8 lg:flex lg:items-center lg:gap-16">
+          {/* Left Content */}
+          <div className="flex-1 text-center lg:text-left">
+            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl mb-6 leading-tight">
               {t.hero.headline}
             </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+            <p className="text-lg leading-relaxed text-gray-400 max-w-xl mx-auto lg:mx-0 mb-10">
               {t.hero.subheadline}
             </p>
-            <div className="mt-10 flex items-center gap-x-4">
+            
+            {/* CTA Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4">
               <Link
                 href={`/${lang}/i`}
-                className="rounded-md bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 transition-colors"
+                className="group relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 px-8 py-4 text-base font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] transition-all duration-300 flex items-center gap-3"
               >
-                {t.hero.instagramCta}
+                <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                  <Instagram className="w-5 h-5 text-white" />
+                </div>
+                <span>{t.hero.instagramCta}</span>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </Link>
               <Link
                 href={`/${lang}/t`}
-                className="rounded-md bg-purple-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-purple-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-purple-600 transition-colors"
+                className="group relative overflow-hidden rounded-xl bg-gray-800 border border-gray-700 hover:border-cyan-500/50 px-8 py-4 text-base font-bold text-white shadow-lg hover:shadow-xl hover:shadow-cyan-500/20 hover:scale-[1.02] transition-all duration-300 flex items-center gap-3"
               >
-                {t.hero.tiktokCta}
+                <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
+                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+                  </svg>
+                </div>
+                <span>{t.hero.tiktokCta}</span>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
               </Link>
             </div>
-          </div>
-          <div className="flex-1 flex items-center justify-center mt-16 sm:mt-24 lg:mt-0 lg:ml-10">
-            <div className="relative w-full max-w-xl">
-              {/* Animated Background Orbs */}
-              <div className="absolute -top-20 -right-20 w-72 h-72 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-3xl animate-pulse-glow" />
-              <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-gradient-to-br from-indigo-500/30 to-purple-500/30 rounded-full blur-3xl animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
-              
-              {/* Rotating Ring */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="w-80 h-80 border-2 border-dashed border-purple-500/20 rounded-full animate-rotate-slow" />
-              </div>
-              
-              {/* Large Instagram Logo - Top Left */}
-              <div className="absolute -top-8 left-0 w-20 h-20 bg-gradient-to-br from-purple-600 via-pink-500 to-orange-400 rounded-2xl shadow-2xl shadow-pink-500/40 flex items-center justify-center animate-float transform -rotate-12 hover:rotate-0 transition-transform duration-300">
-                <Instagram className="w-10 h-10 text-white" />
-              </div>
-              
-              {/* Large TikTok Logo - Top Right */}
-              <div className="absolute -top-4 right-4 w-20 h-20 bg-black rounded-2xl shadow-2xl shadow-cyan-500/30 flex items-center justify-center animate-float-delayed transform rotate-12 hover:rotate-0 transition-transform duration-300 overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-transparent to-pink-500 opacity-60" />
-                <svg viewBox="0 0 24 24" className="w-10 h-10 text-white relative z-10" fill="currentColor">
-                  <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
+            
+            {/* Trust indicators */}
+            <div className="flex items-center justify-center lg:justify-start gap-6 mt-10 text-xs text-gray-500">
+              <div className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
+                <span>{lang === 'fr' ? 'Paiement sécurisé' : 'Secure payment'}</span>
               </div>
+              <div className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>{lang === 'fr' ? 'Résultats garantis' : 'Guaranteed results'}</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Right Content - Phone Mockup */}
+          <div className="flex-1 flex items-center justify-center mt-16 lg:mt-0">
+            <div className="relative w-full max-w-md">
+              {/* Animated Background Orbs */}
+              <div className="absolute -top-20 -right-20 w-72 h-72 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-gradient-to-br from-cyan-500/20 to-purple-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1.5s' }} />
               
               {/* Central Phone Mockup */}
               <div className="relative z-10 flex items-center justify-center">
                 <div className="relative">
                   {/* Phone Frame */}
-                  <div className="w-56 h-[420px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-[3rem] p-2 shadow-2xl shadow-purple-500/20 animate-bounce-gentle">
-                    <div className="w-full h-full bg-gradient-to-br from-gray-900 via-purple-900/50 to-gray-900 rounded-[2.5rem] overflow-hidden relative">
+                  <div className="w-64 h-[480px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-[3rem] p-2 shadow-2xl shadow-purple-500/20">
+                    <div className="w-full h-full bg-gradient-to-br from-gray-900 via-purple-900/30 to-gray-900 rounded-[2.5rem] overflow-hidden relative border border-gray-700">
                       {/* Phone Notch */}
                       <div className="absolute top-2 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-full" />
                       
@@ -238,95 +260,88 @@ export default function HomePage({ params }: PageProps) {
                       <div className="pt-12 px-4 pb-4 h-full flex flex-col">
                         {/* Profile Section */}
                         <div className="flex items-center gap-3 mb-4">
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/30">
                             <span className="text-white text-lg font-bold">S</span>
                           </div>
                           <div>
                             <div className="text-white font-semibold text-sm">@socialoura</div>
-                            <div className="text-purple-300 text-xs">Pro Account</div>
+                            <div className="text-purple-400 text-xs">Pro Account</div>
                           </div>
                         </div>
                         
                         {/* Stats Grid */}
                         <div className="grid grid-cols-3 gap-2 mb-4">
-                          <div className="bg-white/10 backdrop-blur rounded-xl p-2 text-center">
+                          <div className="bg-gray-800/50 backdrop-blur rounded-xl p-2 text-center border border-gray-700/50">
                             <div className="text-white font-bold text-lg">12.5K</div>
-                            <div className="text-purple-300 text-[10px]">Followers</div>
+                            <div className="text-purple-400 text-[10px]">Followers</div>
                           </div>
-                          <div className="bg-white/10 backdrop-blur rounded-xl p-2 text-center">
+                          <div className="bg-gray-800/50 backdrop-blur rounded-xl p-2 text-center border border-gray-700/50">
                             <div className="text-white font-bold text-lg">847</div>
-                            <div className="text-purple-300 text-[10px]">Posts</div>
+                            <div className="text-purple-400 text-[10px]">Posts</div>
                           </div>
-                          <div className="bg-white/10 backdrop-blur rounded-xl p-2 text-center">
+                          <div className="bg-gray-800/50 backdrop-blur rounded-xl p-2 text-center border border-gray-700/50">
                             <div className="text-white font-bold text-lg">98%</div>
-                            <div className="text-purple-300 text-[10px]">Growth</div>
+                            <div className="text-purple-400 text-[10px]">Growth</div>
                           </div>
                         </div>
                         
                         {/* Growth Chart */}
-                        <div className="flex-1 bg-white/5 backdrop-blur rounded-2xl p-3 relative overflow-hidden">
-                          <div className="text-purple-300 text-xs mb-2">Growth Analytics</div>
-                          <div className="flex items-end gap-1 h-24">
+                        <div className="flex-1 bg-gray-800/30 backdrop-blur rounded-2xl p-3 relative overflow-hidden border border-gray-700/50">
+                          <div className="text-purple-400 text-xs mb-2">Growth Analytics</div>
+                          <div className="flex items-end gap-1 h-28">
                             {[40, 55, 45, 70, 60, 85, 75, 95, 88, 100].map((height, i) => (
                               <div 
                                 key={i} 
-                                className="flex-1 bg-gradient-to-t from-purple-600 to-pink-500 rounded-t-sm opacity-80"
-                                style={{ height: `${height}%`, animationDelay: `${i * 0.1}s` }}
+                                className="flex-1 bg-gradient-to-t from-purple-600 to-pink-500 rounded-t-sm"
+                                style={{ height: `${height}%` }}
                               />
                             ))}
                           </div>
-                          {/* Shimmer Effect */}
-                          <div className="absolute inset-0 animate-shimmer opacity-30" />
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Floating Notification Cards */}
-                  {/* Instagram Notification - Top Left */}
-                  <div className="absolute -top-4 -left-20 bg-white dark:bg-gray-800 rounded-2xl p-3 shadow-2xl shadow-purple-500/20 animate-float border border-purple-100 dark:border-purple-900/50">
+                  <div className="absolute -top-4 -left-16 bg-gray-800 rounded-2xl p-3 shadow-2xl shadow-purple-500/20 border border-gray-700">
                     <div className="flex items-center gap-2">
                       <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center">
                         <Instagram className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-gray-900 dark:text-white">+2,847</div>
-                        <div className="text-[10px] text-gray-500 dark:text-gray-400">New followers</div>
+                        <div className="text-xs font-bold text-white">+2,847</div>
+                        <div className="text-[10px] text-gray-400">New followers</div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* TikTok Notification - Top Right */}
-                  <div className="absolute top-16 -right-24 bg-white dark:bg-gray-800 rounded-2xl p-3 shadow-2xl shadow-pink-500/20 animate-float-delayed border border-pink-100 dark:border-pink-900/50">
+                  <div className="absolute top-20 -right-20 bg-gray-800 rounded-2xl p-3 shadow-2xl shadow-cyan-500/20 border border-gray-700">
                     <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-transparent to-pink-500 opacity-60" />
-                        <svg viewBox="0 0 24 24" className="w-5 h-5 text-white relative z-10" fill="currentColor">
+                      <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center">
+                        <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
                           <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                         </svg>
                       </div>
                       <div>
-                        <div className="text-xs font-bold text-gray-900 dark:text-white">+15.2K</div>
-                        <div className="text-[10px] text-gray-500 dark:text-gray-400">Views today</div>
+                        <div className="text-xs font-bold text-white">+15.2K</div>
+                        <div className="text-[10px] text-gray-400">Views today</div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Engagement Card - Bottom Left */}
-                  <div className="absolute bottom-20 -left-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl p-3 shadow-2xl shadow-indigo-500/30 animate-float" style={{ animationDelay: '0.5s' }}>
+                  <div className="absolute bottom-24 -left-12 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl p-3 shadow-2xl shadow-purple-500/30">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
                         <BarChart3 className="w-4 h-4 text-white" />
                       </div>
                       <div>
                         <div className="text-white font-bold text-sm">+340%</div>
-                        <div className="text-indigo-200 text-[10px]">Engagement</div>
+                        <div className="text-purple-200 text-[10px]">Engagement</div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Live Badge - Bottom Right */}
-                  <div className="absolute bottom-8 -right-12 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full px-4 py-2 shadow-lg shadow-green-500/30 animate-pulse">
+                  <div className="absolute bottom-12 -right-8 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full px-4 py-2 shadow-lg shadow-green-500/30">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-white rounded-full animate-ping" />
                       <span className="text-white text-xs font-bold">LIVE</span>
@@ -340,84 +355,94 @@ export default function HomePage({ params }: PageProps) {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-24 sm:py-32 bg-gray-50 dark:bg-gray-900">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+      <section id="services" className="py-20 sm:py-28 bg-gray-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-950 to-gray-900" />
+        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
+        
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl mb-4">
               {t.services.title}
             </h2>
-            <p className="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-400">
+            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
               {t.services.subtitle}
             </p>
+            <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full mt-6" />
           </div>
-          <div className="mx-auto mt-16 max-w-7xl">
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {t.services.items.map((service, index) => {
-                const IconComponent = service.icon;
-                return (
-                  <article
-                    key={index}
-                    className="relative flex flex-col gap-4 rounded-2xl bg-white dark:bg-gray-800 p-8 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 hover:shadow-lg transition-shadow"
-                  >
-                    <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 dark:from-indigo-500 dark:to-purple-500 flex items-center justify-center">
-                      <IconComponent className="w-6 h-6 text-white" />
+          
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {t.services.items.map((service, index) => {
+              const IconComponent = service.icon;
+              return (
+                <article
+                  key={index}
+                  className="group relative p-8 rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 hover:border-purple-500/50 transition-all duration-300 hover:bg-gray-800/80"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <div className="relative">
+                    <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-500/20 group-hover:scale-110 transition-transform">
+                      <IconComponent className="w-7 h-7 text-white" />
                     </div>
-                    <h3 className="text-xl font-semibold leading-7 text-gray-900 dark:text-white">
+                    <h3 className="text-xl font-bold text-white mb-3">
                       {service.title}
                     </h3>
-                    <p className="text-base leading-7 text-gray-600 dark:text-gray-400">
+                    <p className="text-gray-400 leading-relaxed">
                       {service.description}
                     </p>
-                  </article>
-                );
-              })}
-            </div>
+                  </div>
+                </article>
+              );
+            })}
           </div>
         </div>
       </section>
 
       {/* FAQ Section */}
-      <section id="faq" className="py-24 sm:py-32">
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+      <section id="faq" className="py-20 sm:py-28 bg-gray-950 relative overflow-hidden">
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl" />
+        
+        <div className="relative mx-auto max-w-4xl px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-black tracking-tight text-white sm:text-4xl mb-4">
               {t.faq.title}
             </h2>
-            <p className="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-400">
+            <p className="text-lg text-gray-400">
               {t.faq.subtitle}
             </p>
+            <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full mt-6" />
           </div>
-          <div className="mx-auto mt-16 max-w-3xl">
-            <dl className="space-y-4">
-              {t.faq.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="rounded-lg bg-gray-50 dark:bg-gray-900 ring-1 ring-gray-200 dark:ring-gray-800 overflow-hidden"
-                >
-                  <dt>
-                    <button
-                      onClick={() => toggleFaq(index)}
-                      className="w-full flex items-center justify-between text-left p-6 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                    >
-                      <span className="text-lg font-semibold text-gray-900 dark:text-white">
-                        {item.question}
-                      </span>
+          
+          <dl className="space-y-4">
+            {t.faq.items.map((item, index) => (
+              <div
+                key={index}
+                className="rounded-2xl bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 overflow-hidden hover:border-purple-500/30 transition-colors"
+              >
+                <dt>
+                  <button
+                    onClick={() => toggleFaq(index)}
+                    className="w-full flex items-center justify-between text-left p-6 hover:bg-gray-800/50 transition-colors"
+                  >
+                    <span className="text-lg font-semibold text-white">
+                      {item.question}
+                    </span>
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all ${openFaqIndex === index ? 'bg-purple-500 rotate-180' : 'bg-gray-700'}`}>
                       {openFaqIndex === index ? (
-                        <Minus className="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
+                        <Minus className="h-4 w-4 text-white" />
                       ) : (
-                        <Plus className="h-5 w-5 text-gray-600 dark:text-gray-400 flex-shrink-0" />
+                        <Plus className="h-4 w-4 text-gray-300" />
                       )}
-                    </button>
-                  </dt>
-                  {openFaqIndex === index && (
-                    <dd className="px-6 pb-6 text-base leading-7 text-gray-600 dark:text-gray-400">
-                      {item.answer}
-                    </dd>
-                  )}
-                </div>
-              ))}
-            </dl>
-          </div>
+                    </div>
+                  </button>
+                </dt>
+                {openFaqIndex === index && (
+                  <dd className="px-6 pb-6 text-base leading-7 text-gray-400">
+                    {item.answer}
+                  </dd>
+                )}
+              </div>
+            ))}
+          </dl>
         </div>
       </section>
     </div>
