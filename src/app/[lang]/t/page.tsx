@@ -32,7 +32,6 @@ export default function TikTokPage({ params }: PageProps) {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [showToast, setShowToast] = useState(false);
-  const [openDifferenceIndex, setOpenDifferenceIndex] = useState<number | null>(null);
 
   const getCurrency = () => (lang === 'fr' ? 'eur' : 'usd');
 
