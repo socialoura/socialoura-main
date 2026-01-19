@@ -204,7 +204,7 @@ function PaymentForm({
           {/* Express Checkout - Apple Pay / Google Pay */}
           <div className="mb-4">
             <ExpressCheckoutElement
-              onConfirm={async (event) => {
+              onConfirm={async () => {
                 if (!stripe || !elements) return;
                 
                 const { error } = await stripe.confirmPayment({
