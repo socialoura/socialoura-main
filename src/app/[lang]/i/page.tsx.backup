@@ -1,0 +1,427 @@
+'use client';
+
+import { useState } from 'react';
+import { Language } from '@/i18n/config';
+import { Check } from 'lucide-react';
+import PaymentModal from '@/components/PaymentModal';
+
+interface PageProps {
+  params: { lang: string };
+}
+
+export default function InstagramPage({ params }: PageProps) {
+  const lang = params.lang as Language;
+  
+  // Payment Modal State
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{
+    name: string;
+    amount: number;
+    currency: string;
+  } | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  // Single pricing tier - matching Rehype's approach (€39.90 / $39.90)
+  const planAmount = 3990; // in cents
+
+  const getCurrency = () => (lang === 'fr' ? 'eur' : 'usd');
+
+  const handleSelectPlan = () => {
+    setSelectedPlan({
+      name: lang === 'en' ? 'Instagram Premium' : 'Instagram Premium',
+      amount: planAmount,
+      currency: getCurrency(),
+    });
+    setIsModalOpen(true);
+    setPaymentSuccess(false);
+  };
+
+  const handlePaymentSuccess = (paymentIntentId: string) => {
+    const message = lang === 'en' 
+      ? `Payment successful! Your subscription is now active. Payment ID: ${paymentIntentId}`
+      : `Paiement réussi ! Votre abonnement est maintenant actif. ID de paiement : ${paymentIntentId}`;
+    
+    setSuccessMessage(message);
+    setPaymentSuccess(true);
+    
+    // Auto-hide success message after 10 seconds
+    setTimeout(() => {
+      setPaymentSuccess(false);
+    }, 10000);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPlan(null);
+  };
+  
+  const content = {
+    en: {
+      hero: {
+        title: 'BOOST YOUR VISIBILITY ON',
+        platform: 'INSTAGRAM',
+        subtitle: 'No bots. No fake accounts. Only real visibility through our private partner network — fully compliant with platform policies.',
+        badges: [
+          'No bots, no automation',
+          'Safe & Private',
+          'Customer-approved',
+        ],
+        cta: 'CONTINUE',
+      },
+      difference: {
+        title: 'What makes Socialoura different?',
+        items: [
+          {
+            title: 'No bots. No automation.',
+            description: 'We promote your content through real people in our partner network. Every interaction is genuine and compliant with platform guidelines.',
+          },
+          {
+            title: 'Time-saving visibility',
+            description: 'Focus on creating great content while we handle the promotion. Our manual outreach saves you hours of networking time.',
+          },
+          {
+            title: 'Build credibility the right way',
+            description: 'Authentic promotion through trusted channels builds real authority and engagement with your target audience.',
+          },
+        ],
+      },
+      howItWorks: {
+        title: 'How it works',
+        steps: [
+          {
+            number: '1',
+            title: 'CHOOSE YOUR PACKAGE',
+            description: 'Select the level of visibility support that aligns with your goals. Each plan offers manual promotion through our private partner network.',
+          },
+          {
+            number: '2',
+            title: 'WE PROMOTE YOUR CONTENT',
+            description: 'We share your content through selected platforms, creators, and communities to reach people genuinely interested in your niche.',
+          },
+          {
+            number: '3',
+            title: 'TRACK THE IMPACT',
+            description: 'Monitor your results through your dashboard as your content reaches new audiences and builds stronger visibility — all while staying compliant.',
+          },
+        ],
+        cta: 'START NOW',
+      },
+      benefits: {
+        title: '(Re)take the control now',
+        items: [
+          'Greater visibility for your content',
+          'Stronger presence across platforms',
+          'Earn audience trust through consistent exposure',
+          'Reach more people interested in your niche',
+          'Compliant and safe process',
+        ],
+      },
+      pricing: {
+        title: 'Test our subscription with our trial offer',
+        plan: {
+          name: 'PREMIUM',
+          price: '$39.90',
+          period: 'per month',
+          features: [
+            '24h trial to explore all features',
+            'Audience research and targeting',
+            'Content placement guidance',
+            'Human-led promotional outreach',
+            'Strategic recommendations to improve reach',
+          ],
+          cta: 'SUBSCRIBE NOW',
+        },
+      },
+      finalCta: {
+        title: 'Much more than just a solution. A true partner in your growth.',
+        cta: 'START IT NOW',
+      },
+      compliance: {
+        text: 'Compliance Disclaimer: we do not engage in or support the sale of followers, likes, or paid engagement. All services are based on organic outreach and visibility strategies in accordance with platform policies and terms.',
+      },
+    },
+    fr: {
+      hero: {
+        title: 'BOOSTEZ VOTRE VISIBILITÉ SUR',
+        platform: 'INSTAGRAM',
+        subtitle: 'Pas de bots. Pas de faux comptes. Seulement une vraie visibilité via notre réseau de partenaires privés — entièrement conforme aux politiques de la plateforme.',
+        badges: [
+          'Pas de bots, pas d\'automation',
+          'Sûr et Privé',
+          'Approuvé par les clients',
+        ],
+        cta: 'CONTINUER',
+      },
+      difference: {
+        title: 'Qu\'est-ce qui différencie Socialoura ?',
+        items: [
+          {
+            title: 'Pas de bots. Pas d\'automation.',
+            description: 'Nous promouvons votre contenu via de vraies personnes dans notre réseau partenaire. Chaque interaction est authentique et conforme aux directives de la plateforme.',
+          },
+          {
+            title: 'Visibilité qui fait gagner du temps',
+            description: 'Concentrez-vous sur la création de contenu de qualité pendant que nous gérons la promotion. Notre approche manuelle vous fait gagner des heures de réseautage.',
+          },
+          {
+            title: 'Construisez votre crédibilité correctement',
+            description: 'Une promotion authentique via des canaux de confiance construit une vraie autorité et un engagement avec votre audience cible.',
+          },
+        ],
+      },
+      howItWorks: {
+        title: 'Comment ça marche',
+        steps: [
+          {
+            number: '1',
+            title: 'CHOISISSEZ VOTRE FORFAIT',
+            description: 'Sélectionnez le niveau de support de visibilité qui correspond à vos objectifs. Chaque plan offre une promotion manuelle via notre réseau partenaire privé.',
+          },
+          {
+            number: '2',
+            title: 'NOUS PROMOUVONS VOTRE CONTENU',
+            description: 'Nous partageons votre contenu via des plateformes, créateurs et communautés sélectionnés pour atteindre les personnes vraiment intéressées par votre niche.',
+          },
+          {
+            number: '3',
+            title: 'SUIVEZ L\'IMPACT',
+            description: 'Surveillez vos résultats via votre tableau de bord pendant que votre contenu atteint de nouvelles audiences et construit une visibilité plus forte — tout en restant conforme.',
+          },
+        ],
+        cta: 'COMMENCER MAINTENANT',
+      },
+      benefits: {
+        title: '(Re)prenez le contrôle maintenant',
+        items: [
+          'Plus grande visibilité pour votre contenu',
+          'Présence plus forte sur les plateformes',
+          'Gagnez la confiance de votre audience par une exposition cohérente',
+          'Atteignez plus de personnes intéressées par votre niche',
+          'Processus conforme et sécurisé',
+        ],
+      },
+      pricing: {
+        title: 'Testez notre abonnement avec notre offre d\'essai',
+        plan: {
+          name: 'PREMIUM',
+          price: '39,90€',
+          period: 'par mois',
+          features: [
+            'Essai de 24h pour explorer toutes les fonctionnalités',
+            'Recherche et ciblage d\'audience',
+            'Conseils pour le placement de contenu',
+            'Promotion manuelle dirigée par des humains',
+            'Recommandations stratégiques pour améliorer la portée',
+          ],
+          cta: 'S\'ABONNER MAINTENANT',
+        },
+      },
+      finalCta: {
+        title: 'Bien plus qu\'une simple solution. Un véritable partenaire dans votre croissance.',
+        cta: 'COMMENCEZ DÈS MAINTENANT',
+      },
+      compliance: {
+        text: 'Avertissement de conformité : nous ne nous engageons pas et ne soutenons pas la vente d\'abonnés, de j\'aime ou d\'engagement payé. Tous les services sont basés sur des stratégies de sensibilisation organique et de visibilité conformes aux politiques et conditions de la plateforme.',
+      },
+    },
+  };
+
+  const t = content[lang];
+
+  return (
+    <div className="bg-white dark:bg-gray-950">
+      {/* Hero Section */}
+      <section className="relative isolate overflow-hidden bg-gradient-to-b from-indigo-50 to-white dark:from-indigo-950/20 dark:to-gray-950">
+        <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mb-8 flex justify-center">
+              <div className="relative rounded-full px-4 py-2 text-sm leading-6 text-gray-600 dark:text-gray-400 ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">
+                <span className="font-semibold text-indigo-600 dark:text-indigo-400">📸 Instagram</span>
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+              {t.title}
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+              {t.subtitle}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Product Description */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-8">
+              {t.description.headline}
+            </h2>
+            <div className="space-y-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+              {t.description.paragraphs.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="py-24 sm:py-32 bg-gray-50 dark:bg-gray-900">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              {t.features.title}
+            </h2>
+          </div>
+          <div className="mx-auto max-w-4xl">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {t.features.items.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 rounded-lg bg-white dark:bg-gray-800 px-6 py-4 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700"
+                >
+                  <Check className="h-5 w-5 flex-shrink-0 text-indigo-600 dark:text-indigo-400" />
+                  <span className="text-base text-gray-700 dark:text-gray-300">{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              {t.pricing.title}
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+              {t.pricing.subtitle}
+            </p>
+          </div>
+          <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+            {t.pricing.tiers.map((tier, index) => (
+              <div
+                key={index}
+                className={`rounded-3xl p-8 ring-1 ${
+                  tier.popular
+                    ? 'bg-indigo-600 ring-indigo-600'
+                    : 'bg-white dark:bg-gray-900 ring-gray-200 dark:ring-gray-800'
+                }`}
+              >
+                <h3
+                  className={`text-lg font-semibold leading-8 ${
+                    tier.popular ? 'text-white' : 'text-gray-900 dark:text-white'
+                  }`}
+                >
+                  {tier.name}
+                </h3>
+                {tier.popular && (
+                  <p className="mt-2 inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">
+                    {lang === 'en' ? 'Most Popular' : 'Plus Populaire'}
+                  </p>
+                )}
+                <p
+                  className={`mt-4 text-sm leading-6 ${
+                    tier.popular ? 'text-indigo-100' : 'text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {tier.description}
+                </p>
+                <p className="mt-6 flex items-baseline gap-x-1">
+                  <span
+                    className={`text-4xl font-bold tracking-tight ${
+                      tier.popular ? 'text-white' : 'text-gray-900 dark:text-white'
+                    }`}
+                  >
+                    {tier.price}
+                  </span>
+                  <span
+                    className={`text-sm font-semibold leading-6 ${
+                      tier.popular ? 'text-indigo-100' : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    {tier.period}
+                  </span>
+                </p>
+                <button
+                  onClick={() => handleSelectPlan(tier.name, tier.name)}
+                  className={`mt-6 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-colors ${
+                    tier.popular
+                      ? 'bg-white text-indigo-600 hover:bg-indigo-50 focus-visible:outline-white'
+                      : 'bg-indigo-600 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline-indigo-600 dark:bg-indigo-500 dark:hover:bg-indigo-400'
+                  }`}
+                >
+                  {tier.cta}
+                </button>
+                <ul
+                  role="list"
+                  className={`mt-8 space-y-3 text-sm leading-6 ${
+                    tier.popular ? 'text-indigo-100' : 'text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {tier.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex gap-x-3">
+                      <Check
+                        className={`h-6 w-5 flex-none ${
+                          tier.popular ? 'text-white' : 'text-indigo-600 dark:text-indigo-400'
+                        }`}
+                      />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Guarantee Section */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mb-4 text-4xl">🛡️</div>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              {t.guarantee.title}
+            </h2>
+            <p className="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-400">
+              {t.guarantee.description}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Success Message */}
+      {paymentSuccess && (
+        <div className="fixed top-4 right-4 z-50 max-w-md">
+          <div className="rounded-lg bg-green-50 dark:bg-green-900/20 p-4 shadow-lg ring-1 ring-green-200 dark:ring-green-800">
+            <div className="flex items-start">
+              <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+              <div className="ml-3">
+                <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                  {successMessage}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Modal */}
+      {selectedPlan && (
+        <PaymentModal
+          isOpen={isModalOpen}
+          amount={selectedPlan.amount}
+          currency={selectedPlan.currency}
+          onClose={handleCloseModal}
+          onSuccess={handlePaymentSuccess}
+          productName={selectedPlan.name}
+          language={lang}
+        />
+      )}
+    </div>
+  );
+}

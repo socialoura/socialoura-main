@@ -1,0 +1,436 @@
+'use client';
+
+import { useState } from 'react';
+import { Language } from '@/i18n/config';
+import { Check } from 'lucide-react';
+import PaymentModal from '@/components/PaymentModal';
+
+interface PageProps {
+  params: { lang: string };
+}
+
+export default function TikTokPage({ params }: PageProps) {
+  const lang = params.lang as Language;
+  
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<{ name: string; amount: number; currency: 'usd' | 'eur' } | null>(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  const getCurrency = (): 'usd' | 'eur' => {
+    return lang === 'fr' ? 'eur' : 'usd';
+  };
+
+  const pricingAmounts = {
+    creator: 3900, // $39 or €39
+    influencer: 9900, // $99 or €99
+    brand: 24900, // $249 or €249
+  };
+
+  const handleSelectPlan = (planName: string, displayName: string) => {
+    const amount = pricingAmounts[planName.toLowerCase() as keyof typeof pricingAmounts];
+    setSelectedPlan({
+      name: displayName,
+      amount,
+      currency: getCurrency(),
+    });
+    setIsModalOpen(true);
+  };
+
+  const handlePaymentSuccess = (paymentId: string) => {
+    setPaymentSuccess(true);
+    setSuccessMessage(
+      lang === 'fr'
+        ? `Paiement réussi ! ID de transaction : ${paymentId}`
+        : `Payment successful! Transaction ID: ${paymentId}`
+    );
+    setIsModalOpen(false);
+    setTimeout(() => setPaymentSuccess(false), 10000);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedPlan(null);
+  };
+  
+  const content = {
+    en: {
+      title: 'TikTok Growth Service',
+      subtitle: 'Skyrocket your TikTok presence with our cutting-edge automation platform',
+      description: {
+        headline: 'Dominate TikTok Like Never Before',
+        paragraphs: [
+          'Our TikTok growth service leverages the latest algorithmic insights and engagement strategies to boost your visibility on the world\'s fastest-growing social platform. We help you gain real, engaged followers who are genuinely interested in your content.',
+          'With TikTok\'s unique algorithm favoring engagement and watch time, our service optimizes your account\'s performance by automating strategic interactions, analyzing trending content, and helping you maintain consistent posting schedules.',
+          'Whether you\'re a content creator, brand, or business, our TikTok growth tools provide you with everything you need to go viral and build a sustainable presence on the platform.',
+        ],
+      },
+      features: {
+        title: 'Platform Features',
+        items: [
+          'Smart follower targeting based on trends',
+          'Automated engagement (likes, follows, views)',
+          'Trending hashtag recommendations',
+          'Optimal posting time analysis',
+          'Viral content insights',
+          'Competitor tracking & analysis',
+          'Comment management automation',
+          'Real-time performance metrics',
+          'Video analytics & insights',
+          'Dedicated growth specialist',
+        ],
+      },
+      pricing: {
+        title: 'Select Your Growth Plan',
+        subtitle: 'Choose the perfect plan to amplify your TikTok success',
+        tiers: [
+          {
+            name: 'Creator',
+            price: '$39',
+            period: '/month',
+            description: 'Great for new creators looking to establish their presence',
+            features: [
+              'Up to 1,000 actions/day',
+              '1 TikTok account',
+              'Basic analytics',
+              'Trending hashtags',
+              'Email support',
+            ],
+            cta: 'Get Started',
+            popular: false,
+          },
+          {
+            name: 'Influencer',
+            price: '$99',
+            period: '/month',
+            description: 'Perfect for growing influencers ready to scale their reach',
+            features: [
+              'Up to 3,000 actions/day',
+              '3 TikTok accounts',
+              'Advanced analytics',
+              'Trending hashtags',
+              'Optimal posting times',
+              'Viral content insights',
+              'Competitor analysis',
+              'Priority support',
+            ],
+            cta: 'Get Started',
+            popular: true,
+          },
+          {
+            name: 'Brand',
+            price: '$249',
+            period: '/month',
+            description: 'For brands and agencies managing multiple high-volume accounts',
+            features: [
+              'Unlimited actions/day',
+              '10 TikTok accounts',
+              'Enterprise analytics',
+              'Trending hashtags',
+              'Optimal posting times',
+              'Viral content insights',
+              'Competitor analysis',
+              'Comment automation',
+              'Dedicated growth specialist',
+              'Custom strategy sessions',
+            ],
+            cta: 'Get Started',
+            popular: false,
+          },
+        ],
+      },
+      guarantee: {
+        title: 'Risk-Free 30-Day Guarantee',
+        description: 'We\'re confident you\'ll see results. If not, we\'ll give you a full refund within the first 30 days—no hassle, no questions.',
+      },
+    },
+    fr: {
+      title: 'Service de Croissance TikTok',
+      subtitle: 'Propulsez votre présence TikTok avec notre plateforme d\'automatisation de pointe',
+      description: {
+        headline: 'Dominez TikTok Comme Jamais Auparavant',
+        paragraphs: [
+          'Notre service de croissance TikTok exploite les dernières informations algorithmiques et stratégies d\'engagement pour augmenter votre visibilité sur la plateforme sociale à la croissance la plus rapide au monde. Nous vous aidons à gagner de vrais abonnés engagés véritablement intéressés par votre contenu.',
+          'Avec l\'algorithme unique de TikTok favorisant l\'engagement et le temps de visionnage, notre service optimise les performances de votre compte en automatisant les interactions stratégiques, en analysant le contenu tendance et en vous aidant à maintenir des horaires de publication cohérents.',
+          'Que vous soyez créateur de contenu, marque ou entreprise, nos outils de croissance TikTok vous fournissent tout ce dont vous avez besoin pour devenir viral et construire une présence durable sur la plateforme.',
+        ],
+      },
+      features: {
+        title: 'Fonctionnalités de la Plateforme',
+        items: [
+          'Ciblage intelligent des abonnés basé sur les tendances',
+          'Engagement automatisé (j\'aime, abonnements, vues)',
+          'Recommandations de hashtags tendance',
+          'Analyse des heures de publication optimales',
+          'Informations sur le contenu viral',
+          'Suivi et analyse des concurrents',
+          'Automatisation de la gestion des commentaires',
+          'Métriques de performance en temps réel',
+          'Analyses et informations vidéo',
+          'Spécialiste de croissance dédié',
+        ],
+      },
+      pricing: {
+        title: 'Sélectionnez Votre Plan de Croissance',
+        subtitle: 'Choisissez le plan parfait pour amplifier votre succès TikTok',
+        tiers: [
+          {
+            name: 'Créateur',
+            price: '39€',
+            period: '/mois',
+            description: 'Idéal pour les nouveaux créateurs cherchant à établir leur présence',
+            features: [
+              'Jusqu\'à 1 000 actions/jour',
+              '1 compte TikTok',
+              'Analyses de base',
+              'Hashtags tendance',
+              'Support par email',
+            ],
+            cta: 'Commencer',
+            popular: false,
+          },
+          {
+            name: 'Influenceur',
+            price: '99€',
+            period: '/mois',
+            description: 'Parfait pour les influenceurs en croissance prêts à étendre leur portée',
+            features: [
+              'Jusqu\'à 3 000 actions/jour',
+              '3 comptes TikTok',
+              'Analyses avancées',
+              'Hashtags tendance',
+              'Heures de publication optimales',
+              'Informations sur le contenu viral',
+              'Analyse des concurrents',
+              'Support prioritaire',
+            ],
+            cta: 'Commencer',
+            popular: true,
+          },
+          {
+            name: 'Marque',
+            price: '249€',
+            period: '/mois',
+            description: 'Pour les marques et agences gérant plusieurs comptes à fort volume',
+            features: [
+              'Actions illimitées/jour',
+              '10 comptes TikTok',
+              'Analyses entreprise',
+              'Hashtags tendance',
+              'Heures de publication optimales',
+              'Informations sur le contenu viral',
+              'Analyse des concurrents',
+              'Automatisation des commentaires',
+              'Spécialiste de croissance dédié',
+              'Sessions de stratégie personnalisées',
+            ],
+            cta: 'Commencer',
+            popular: false,
+          },
+        ],
+      },
+      guarantee: {
+        title: 'Garantie Sans Risque de 30 Jours',
+        description: 'Nous sommes convaincus que vous verrez des résultats. Sinon, nous vous rembourserons intégralement dans les 30 premiers jours—sans tracas, sans questions.',
+      },
+    },
+  };
+
+  const t = content[lang];
+
+  return (
+    <div className="bg-white dark:bg-gray-950">
+      {/* Hero Section */}
+      <section className="relative isolate overflow-hidden bg-gradient-to-b from-purple-50 to-white dark:from-purple-950/20 dark:to-gray-950">
+        <div className="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mb-8 flex justify-center">
+              <div className="relative rounded-full px-4 py-2 text-sm leading-6 text-gray-600 dark:text-gray-400 ring-1 ring-gray-900/10 dark:ring-gray-100/10 hover:ring-gray-900/20 dark:hover:ring-gray-100/20">
+                <span className="font-semibold text-purple-600 dark:text-purple-400">🎵 TikTok</span>
+              </div>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-6xl">
+              {t.title}
+            </h1>
+            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+              {t.subtitle}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Product Description */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl mb-8">
+              {t.description.headline}
+            </h2>
+            <div className="space-y-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+              {t.description.paragraphs.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="py-24 sm:py-32 bg-gray-50 dark:bg-gray-900">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center mb-16">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              {t.features.title}
+            </h2>
+          </div>
+          <div className="mx-auto max-w-4xl">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {t.features.items.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-3 rounded-lg bg-white dark:bg-gray-800 px-6 py-4 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700"
+                >
+                  <Check className="h-5 w-5 flex-shrink-0 text-purple-600 dark:text-purple-400" />
+                  <span className="text-base text-gray-700 dark:text-gray-300">{feature}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Pricing Section */}
+      <section id="pricing" className="py-24 sm:py-32">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-4xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              {t.pricing.title}
+            </h2>
+            <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+              {t.pricing.subtitle}
+            </p>
+          </div>
+          <div className="isolate mx-auto mt-16 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+            {t.pricing.tiers.map((tier, index) => (
+              <div
+                key={index}
+                className={`rounded-3xl p-8 ring-1 ${
+                  tier.popular
+                    ? 'bg-purple-600 ring-purple-600'
+                    : 'bg-white dark:bg-gray-900 ring-gray-200 dark:ring-gray-800'
+                }`}
+              >
+                <h3
+                  className={`text-lg font-semibold leading-8 ${
+                    tier.popular ? 'text-white' : 'text-gray-900 dark:text-white'
+                  }`}
+                >
+                  {tier.name}
+                </h3>
+                {tier.popular && (
+                  <p className="mt-2 inline-block rounded-full bg-white/20 px-3 py-1 text-xs font-semibold text-white">
+                    {lang === 'en' ? 'Most Popular' : 'Plus Populaire'}
+                  </p>
+                )}
+                <p
+                  className={`mt-4 text-sm leading-6 ${
+                    tier.popular ? 'text-purple-100' : 'text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {tier.description}
+                </p>
+                <p className="mt-6 flex items-baseline gap-x-1">
+                  <span
+                    className={`text-4xl font-bold tracking-tight ${
+                      tier.popular ? 'text-white' : 'text-gray-900 dark:text-white'
+                    }`}
+                  >
+                    {tier.price}
+                  </span>
+                  <span
+                    className={`text-sm font-semibold leading-6 ${
+                      tier.popular ? 'text-purple-100' : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    {tier.period}
+                  </span>
+                </p>
+                <button
+                  onClick={() => handleSelectPlan(tier.name.toLowerCase(), tier.name)}
+                  className={`mt-6 block w-full rounded-md px-3 py-2 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 transition-colors ${
+                    tier.popular
+                      ? 'bg-white text-purple-600 hover:bg-purple-50 focus-visible:outline-white'
+                      : 'bg-purple-600 text-white shadow-sm hover:bg-purple-500 focus-visible:outline-purple-600 dark:bg-purple-500 dark:hover:bg-purple-400'
+                  }`}
+                >
+                  {tier.cta}
+                </button>
+                <ul
+                  role="list"
+                  className={`mt-8 space-y-3 text-sm leading-6 ${
+                    tier.popular ? 'text-purple-100' : 'text-gray-600 dark:text-gray-400'
+                  }`}
+                >
+                  {tier.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex gap-x-3">
+                      <Check
+                        className={`h-6 w-5 flex-none ${
+                          tier.popular ? 'text-white' : 'text-purple-600 dark:text-purple-400'
+                        }`}
+                      />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Guarantee Section */}
+      <section className="py-16 bg-gray-50 dark:bg-gray-900">
+        <div className="mx-auto max-w-7xl px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mb-4 text-4xl">🛡️</div>
+            <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+              {t.guarantee.title}
+            </h2>
+            <p className="mt-4 text-lg leading-8 text-gray-600 dark:text-gray-400">
+              {t.guarantee.description}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Success Message */}
+      {paymentSuccess && (
+        <div className="fixed top-4 right-4 z-50 max-w-md">
+          <div className="rounded-lg bg-green-50 dark:bg-green-900/20 p-4 shadow-lg ring-1 ring-green-200 dark:ring-green-800">
+            <div className="flex items-start">
+              <Check className="h-5 w-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+              <div className="ml-3">
+                <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                  {successMessage}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Payment Modal */}
+      {selectedPlan && (
+        <PaymentModal
+          isOpen={isModalOpen}
+          amount={selectedPlan.amount}
+          currency={selectedPlan.currency}
+          onClose={handleCloseModal}
+          onSuccess={handlePaymentSuccess}
+          productName={selectedPlan.name}
+          language={lang}
+        />
+      )}
+    </div>
+  );
+}
