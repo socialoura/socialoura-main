@@ -16,10 +16,6 @@ interface PaymentModalProps {
   email?: string;
 }
 
-interface PaymentFormProps extends Omit<PaymentModalProps, 'isOpen'> {
-  clientSecret: string;
-}
-
 // Inner component that uses Stripe hooks
 function PaymentForm({ 
   amount, 
@@ -29,8 +25,7 @@ function PaymentForm({
   productName,
   language = 'en',
   email,
-  clientSecret,
-}: PaymentFormProps) {
+}: Omit<PaymentModalProps, 'isOpen'>) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -39,8 +34,6 @@ function PaymentForm({
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [elementsReady, setElementsReady] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
-  const [applePayAvailable, setApplePayAvailable] = useState(false);
-  const [applePayButtonContainer, setApplePayButtonContainer] = useState<HTMLDivElement | null>(null);
 
   // Language strings
   const text = {
@@ -97,102 +90,6 @@ function PaymentForm({
     }
     return `$${value.toFixed(2)}`;
   };
-
-  // Initialize Apple Pay button
-  useEffect(() => {
-    if (!stripe || !applePayButtonContainer || !clientSecret) return;
-
-    const initApplePay = async () => {
-      try {
-        const paymentRequest = stripe.paymentRequest({
-          country: 'US',
-          currency: currency.toLowerCase(),
-          total: {
-            label: productName || 'Payment',
-            amount: amount,
-          },
-          requestPayerName: true,
-          requestPayerEmail: true,
-        });
-
-        // Check if Apple Pay is available
-        const canMakePayment = await paymentRequest.canMakePayment();
-        
-        if (canMakePayment) {
-          setApplePayAvailable(true);
-          
-          // Create and mount the Apple Pay button
-          const elements = stripe.elements();
-          const prButton = elements.create('paymentRequestButton', {
-            paymentRequest: paymentRequest,
-            style: {
-              paymentRequestButton: {
-                type: 'buy',
-                theme: 'dark',
-                height: '48px',
-              },
-            },
-          });
-
-          prButton.mount(applePayButtonContainer);
-
-          // Handle payment method
-          paymentRequest.on('paymentmethod', async (event) => {
-            setIsProcessing(true);
-            setPaymentStatus('processing');
-
-            try {
-              const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
-                clientSecret,
-                { payment_method: event.paymentMethod.id },
-                { handleActions: false }
-              );
-
-              if (confirmError) {
-                event.complete('fail');
-                setErrorMessage(confirmError.message || 'Payment failed');
-                setPaymentStatus('error');
-                setIsProcessing(false);
-              } else {
-                event.complete('success');
-                
-                if (paymentIntent?.status === 'requires_action') {
-                  const { error: confirmError2 } = await stripe.confirmCardPayment(clientSecret);
-                  if (confirmError2) {
-                    setErrorMessage(confirmError2.message || 'Payment failed');
-                    setPaymentStatus('error');
-                    setIsProcessing(false);
-                  } else if (paymentIntent) {
-                    setPaymentIntentId(paymentIntent.id);
-                    setPaymentStatus('success');
-                    if (onSuccess) {
-                      onSuccess(paymentIntent.id, email);
-                    }
-                  }
-                } else if (paymentIntent) {
-                  setPaymentIntentId(paymentIntent.id);
-                  setPaymentStatus('success');
-                  if (onSuccess) {
-                    onSuccess(paymentIntent.id, email);
-                  }
-                }
-              }
-            } catch (err) {
-              event.complete('fail');
-              const errorMsg = err instanceof Error ? err.message : 'Payment failed';
-              setErrorMessage(errorMsg);
-              setPaymentStatus('error');
-              setIsProcessing(false);
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Error initializing Apple Pay:', error);
-      }
-    };
-
-    initApplePay();
-  }, [stripe, applePayButtonContainer, clientSecret, amount, currency, productName, email, onSuccess]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -304,23 +201,6 @@ function PaymentForm({
       {/* Payment Form */}
       {paymentStatus !== 'success' && (
         <form onSubmit={handleSubmit}>
-          {/* Apple Pay Button Container */}
-          <div ref={setApplePayButtonContainer} className="mb-4" />
-          
-          {/* OR Divider - Only show if Apple Pay button exists */}
-          {applePayAvailable && (
-            <div className="relative mb-6">
-              <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-700"></div>
-              </div>
-              <div className="relative flex justify-center text-sm">
-                <span className="px-3 bg-gray-900 text-gray-400">
-                  {language === 'en' ? 'or pay with card' : 'ou payer par carte'}
-                </span>
-              </div>
-            </div>
-          )}
-
           <div className="mb-6 relative min-h-[200px]">
             {!elementsReady && (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -637,7 +517,6 @@ export default function PaymentModal({
                 productName={productName}
                 language={language}
                 email={email}
-                clientSecret={clientSecret}
               />
             </StripeProvider>
           )}
