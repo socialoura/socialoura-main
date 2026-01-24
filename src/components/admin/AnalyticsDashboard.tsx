@@ -78,7 +78,7 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
       
       if (diffDays <= daysBack) {
         const key = dateFormat(orderDate);
-        const amount = order.price || order.amount || 0;
+        const amount = Number(order.price) || Number(order.amount) || 0;
         data[key] = (data[key] || 0) + amount;
       }
     });
@@ -102,14 +102,15 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
 
   // Average cart value
   const averageCart = useMemo(() => {
-    if (orders.length === 0) return 0;
-    const total = orders.reduce((sum, order) => sum + (order.price || order.amount || 0), 0);
-    return (total / orders.length).toFixed(2);
+    if (orders.length === 0) return '0.00';
+    const total = orders.reduce((sum, order) => sum + (Number(order.price) || Number(order.amount) || 0), 0);
+    return total.toFixed(2);
   }, [orders]);
 
   // Total revenue
   const totalRevenue = useMemo(() => {
-    return orders.reduce((sum, order) => sum + (order.price || order.amount || 0), 0).toFixed(2);
+    const total = orders.reduce((sum, order) => sum + (Number(order.price) || Number(order.amount) || 0), 0);
+    return total.toFixed(2);
   }, [orders]);
 
   // Conversion rate
@@ -128,7 +129,7 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
         packageCount[key] = { count: 0, platform: order.platform, revenue: 0 };
       }
       packageCount[key].count++;
-      packageCount[key].revenue += order.price || order.amount || 0;
+      packageCount[key].revenue += Number(order.price) || Number(order.amount) || 0;
     });
     
     return Object.entries(packageCount)
