@@ -20,13 +20,32 @@ interface PaymentModalProps {
 // Inner component that uses Stripe hooks
 function PaymentForm({ 
   amount, 
+  originalAmount,
   currency, 
   onClose, 
   onSuccess,
   productName,
   language = 'en',
   email,
-}: Omit<PaymentModalProps, 'isOpen'>) {
+  promoFieldEnabled = true,
+  onApplyPromo,
+  promoCode,
+  setPromoCode,
+  promoLoading,
+  promoError,
+  promoSuccess,
+  discount,
+}: Omit<PaymentModalProps, 'isOpen'> & {
+  originalAmount: number;
+  promoFieldEnabled?: boolean;
+  onApplyPromo?: () => void;
+  promoCode?: string;
+  setPromoCode?: (code: string) => void;
+  promoLoading?: boolean;
+  promoError?: string | null;
+  promoSuccess?: string | null;
+  discount?: number;
+}) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -58,6 +77,9 @@ function PaymentForm({
       safeTransaction: 'Safe Transaction',
       secureEncryption: 'Secure SSL Encryption',
       serviceGuaranteed: 'Service Guaranteed',
+      promoPlaceholder: 'Enter promo code',
+      promoApply: 'Apply',
+      promoApplied: 'applied!',
     },
     fr: {
       title: 'Finalisez Votre Paiement',
@@ -79,6 +101,9 @@ function PaymentForm({
       safeTransaction: 'Transaction Sécurisée',
       secureEncryption: 'Chiffrement SSL Sécurisé',
       serviceGuaranteed: 'Service Garanti',
+      promoPlaceholder: 'Entrez un code promo',
+      promoApply: 'Appliquer',
+      promoApplied: 'appliqué !',
     },
   };
 
@@ -234,6 +259,54 @@ function PaymentForm({
             </div>
           </div>
 
+          {/* Promo Code Section */}
+          {promoFieldEnabled && !promoSuccess && setPromoCode && onApplyPromo && (
+            <div className="mb-4">
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    value={promoCode || ''}
+                    onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
+                    placeholder={t.promoPlaceholder}
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
+                    disabled={promoLoading}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={onApplyPromo}
+                  disabled={promoLoading || !promoCode?.trim()}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
+                >
+                  {promoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.promoApply}
+                </button>
+              </div>
+              {promoError && (
+                <p className="mt-2 text-sm text-red-600 dark:text-red-400">{promoError}</p>
+              )}
+            </div>
+          )}
+
+          {/* Promo Applied Banner */}
+          {promoSuccess && discount && discount > 0 && (
+            <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-green-700 dark:text-green-400 font-medium">
+                  <Tag className="w-4 h-4 inline mr-1" />
+                  {promoCode} {t.promoApplied}
+                </span>
+                <div className="text-right">
+                  <span className="text-gray-500 line-through mr-2">{(originalAmount / 100).toFixed(2)}€</span>
+                  <span className="text-green-700 dark:text-green-400 font-bold">
+                    {(amount / 100).toFixed(2)}€
+                  </span>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Terms Checkbox */}
           <div className="mb-6 flex items-start">
             <input
@@ -327,23 +400,11 @@ export default function PaymentModal({
       initializingPayment: 'Initializing secure payment...',
       paymentSetupFailed: 'Payment Setup Failed',
       close: 'Close',
-      promoPlaceholder: 'Enter promo code',
-      promoApply: 'Apply',
-      promoApplied: 'applied!',
-      promoDiscount: 'Discount',
-      originalPrice: 'Original price',
-      youSave: 'You save',
     },
     fr: {
       initializingPayment: 'Initialisation du paiement sécurisé...',
       paymentSetupFailed: 'Échec de la Configuration',
       close: 'Fermer',
-      promoPlaceholder: 'Entrez un code promo',
-      promoApply: 'Appliquer',
-      promoApplied: 'appliqué !',
-      promoDiscount: 'Réduction',
-      originalPrice: 'Prix original',
-      youSave: 'Vous économisez',
     },
   };
 
@@ -574,64 +635,24 @@ export default function PaymentModal({
           {/* Payment Form with Stripe Elements */}
           {!isLoading && !error && clientSecret && (
             <StripeProvider clientSecret={clientSecret}>
-              <div className="relative">
-                {/* Promo Code Section */}
-                {promoFieldEnabled && !promoSuccess && (
-                  <div className="px-6 pt-6 pb-4 border-b border-gray-200 dark:border-gray-700">
-                    <div className="flex gap-2">
-                      <div className="relative flex-1">
-                        <Tag className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                        <input
-                          type="text"
-                          value={promoCode}
-                          onChange={(e) => setPromoCode(e.target.value.toUpperCase())}
-                          placeholder={t.promoPlaceholder}
-                          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
-                          disabled={promoLoading}
-                        />
-                      </div>
-                      <button
-                        onClick={handleApplyPromo}
-                        disabled={promoLoading || !promoCode.trim()}
-                        className="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:bg-gray-400 text-white text-sm font-medium rounded-lg transition-colors"
-                      >
-                        {promoLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : t.promoApply}
-                      </button>
-                    </div>
-                    {promoError && (
-                      <p className="mt-2 text-sm text-red-600 dark:text-red-400">{promoError}</p>
-                    )}
-                  </div>
-                )}
-                
-                {/* Promo Applied Banner */}
-                {promoSuccess && discount > 0 && (
-                  <div className="px-6 py-3 bg-green-50 dark:bg-green-900/20 border-b border-green-200 dark:border-green-800">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-green-700 dark:text-green-400 font-medium">
-                        <Tag className="w-4 h-4 inline mr-1" />
-                        {promoCode} {t.promoApplied}
-                      </span>
-                      <div className="text-right">
-                        <span className="text-gray-500 line-through mr-2">{(amount / 100).toFixed(2)}€</span>
-                        <span className="text-green-700 dark:text-green-400 font-bold">
-                          {(finalAmount / 100).toFixed(2)}€
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-                
-                <PaymentForm
-                  amount={finalAmount}
-                  currency={currency}
-                  onClose={onClose}
-                  onSuccess={onSuccess}
-                  productName={productName}
-                  language={language}
-                  email={email}
-                />
-              </div>
+              <PaymentForm
+                amount={finalAmount}
+                originalAmount={amount}
+                currency={currency}
+                onClose={onClose}
+                onSuccess={onSuccess}
+                productName={productName}
+                language={language}
+                email={email}
+                promoFieldEnabled={promoFieldEnabled}
+                onApplyPromo={handleApplyPromo}
+                promoCode={promoCode}
+                setPromoCode={setPromoCode}
+                promoLoading={promoLoading}
+                promoError={promoError}
+                promoSuccess={promoSuccess}
+                discount={discount}
+              />
             </StripeProvider>
           )}
         </div>
