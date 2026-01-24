@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2, Plus, Save, LogOut, Instagram, Music, AlertCircle, Settings, ShoppingCart, Eye, EyeOff, BarChart3 } from 'lucide-react';
+import { Trash2, Plus, Save, LogOut, Instagram, Music, AlertCircle, Settings, ShoppingCart, Eye, EyeOff, BarChart3, Search, Filter, MessageSquare, X, ChevronDown } from 'lucide-react';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 
 interface Goal {
@@ -25,7 +25,11 @@ interface Order {
   payment_status: string;
   payment_intent_id: string | null;
   created_at: string;
+  order_status?: string;
+  notes?: string;
 }
+
+type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
 
 interface DeleteConfirmation {
   isOpen: boolean;
@@ -79,6 +83,16 @@ export default function AdminDashboard() {
     orderId: null,
     username: '',
   });
+
+  // Order management states
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterPlatform, setFilterPlatform] = useState<string>('all');
+  const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [filterDateRange, setFilterDateRange] = useState<string>('all');
+  const [showFilters, setShowFilters] = useState(false);
+  const [editingNotes, setEditingNotes] = useState<number | null>(null);
+  const [tempNotes, setTempNotes] = useState('');
+  const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
 
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
@@ -149,6 +163,104 @@ export default function AdminDashboard() {
       console.error('Error fetching Stripe settings:', error);
     }
   };
+
+  // Update order status
+  const handleUpdateOrderStatus = async (orderId: number, newStatus: OrderStatus) => {
+    setUpdatingOrderId(orderId);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/orders/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ orderId, orderStatus: newStatus }),
+      });
+
+      if (response.ok) {
+        setOrders(prev => prev.map(order => 
+          order.id === orderId ? { ...order, order_status: newStatus } : order
+        ));
+      }
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  // Update order notes
+  const handleSaveNotes = async (orderId: number) => {
+    setUpdatingOrderId(orderId);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/orders/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ orderId, notes: tempNotes }),
+      });
+
+      if (response.ok) {
+        setOrders(prev => prev.map(order => 
+          order.id === orderId ? { ...order, notes: tempNotes } : order
+        ));
+        setEditingNotes(null);
+        setTempNotes('');
+      }
+    } catch (error) {
+      console.error('Error updating order notes:', error);
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
+
+  // Filter orders
+  const filteredOrders = orders.filter(order => {
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      if (!order.username.toLowerCase().includes(query) && 
+          !order.email?.toLowerCase().includes(query)) {
+        return false;
+      }
+    }
+
+    // Platform filter
+    if (filterPlatform !== 'all' && order.platform !== filterPlatform) {
+      return false;
+    }
+
+    // Status filter
+    if (filterStatus !== 'all') {
+      const orderStatus = order.order_status || 'pending';
+      if (orderStatus !== filterStatus) {
+        return false;
+      }
+    }
+
+    // Date filter
+    if (filterDateRange !== 'all') {
+      const orderDate = new Date(order.created_at);
+      const now = new Date();
+      
+      if (filterDateRange === 'today') {
+        const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        if (orderDate < todayStart) return false;
+      } else if (filterDateRange === 'week') {
+        const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        if (orderDate < weekAgo) return false;
+      } else if (filterDateRange === 'month') {
+        const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        if (orderDate < monthAgo) return false;
+      }
+    }
+
+    return true;
+  });
 
   const handleAddGoal = (platform: 'instagram' | 'tiktok') => {
     setPricing((prev) => ({
@@ -833,24 +945,112 @@ export default function AdminDashboard() {
 
         {activeTab === 'orders' && (
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-purple-100 dark:border-purple-900/30">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg">
-                <ShoppingCart className="w-6 h-6 text-white" />
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl shadow-lg">
+                  <ShoppingCart className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Orders
+                  </h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    {filteredOrders.length} of {orders.length} order{orders.length !== 1 ? 's' : ''}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  Orders
-                </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-                  {orders.length} order{orders.length !== 1 ? 's' : ''} total
-                </p>
+
+              {/* Search Bar */}
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder="Search username or email..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10 pr-4 py-2 w-64 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                </div>
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`p-2 rounded-xl border transition-colors ${
+                    showFilters 
+                      ? 'bg-purple-100 dark:bg-purple-900/30 border-purple-300 dark:border-purple-700 text-purple-600 dark:text-purple-400' 
+                      : 'border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
+                >
+                  <Filter className="w-5 h-5" />
+                </button>
               </div>
             </div>
 
-            {orders.length === 0 ? (
+            {/* Filters */}
+            {showFilters && (
+              <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+                <div className="flex flex-wrap gap-4">
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Platform</label>
+                    <select
+                      value={filterPlatform}
+                      onChange={(e) => setFilterPlatform(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                    >
+                      <option value="all">All Platforms</option>
+                      <option value="instagram">Instagram</option>
+                      <option value="tiktok">TikTok</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Order Status</label>
+                    <select
+                      value={filterStatus}
+                      onChange={(e) => setFilterStatus(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                    >
+                      <option value="all">All Statuses</option>
+                      <option value="pending">Pending</option>
+                      <option value="processing">Processing</option>
+                      <option value="completed">Completed</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Date Range</label>
+                    <select
+                      value={filterDateRange}
+                      onChange={(e) => setFilterDateRange(e.target.value)}
+                      className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white text-sm"
+                    >
+                      <option value="all">All Time</option>
+                      <option value="today">Today</option>
+                      <option value="week">Last 7 Days</option>
+                      <option value="month">Last 30 Days</option>
+                    </select>
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        setSearchQuery('');
+                        setFilterPlatform('all');
+                        setFilterStatus('all');
+                        setFilterDateRange('all');
+                      }}
+                      className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                    >
+                      Reset Filters
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {filteredOrders.length === 0 ? (
               <div className="text-center py-12">
                 <ShoppingCart className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
-                <p className="text-gray-500 dark:text-gray-400">No orders yet</p>
+                <p className="text-gray-500 dark:text-gray-400">
+                  {orders.length === 0 ? 'No orders yet' : 'No orders match your filters'}
+                </p>
               </div>
             ) : (
               <div className="overflow-x-auto">
@@ -859,42 +1059,96 @@ export default function AdminDashboard() {
                     <tr className="border-b border-gray-200 dark:border-gray-700">
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Order ID</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Username</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Email</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Platform</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Followers</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Price</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Order Status</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Date</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Notes</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {orders.map((order) => (
+                    {filteredOrders.map((order) => (
                       <tr key={order.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
                         <td className="py-4 px-4 text-sm text-gray-900 dark:text-white font-medium">#{order.id}</td>
-                        <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">@{order.username}</td>
-                        <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">{order.email || '-'}</td>
+                        <td className="py-4 px-4">
+                          <div className="text-sm text-gray-900 dark:text-white">@{order.username}</div>
+                          <div className="text-xs text-gray-500 dark:text-gray-400">{order.email || '-'}</div>
+                        </td>
                         <td className="py-4 px-4">
                           <span className="inline-flex items-center gap-1 text-sm font-medium text-gray-900 dark:text-white capitalize">
-                            {order.platform === 'instagram' ? <Instagram className="w-4 h-4" /> : <Music className="w-4 h-4" />}
+                            {order.platform === 'instagram' ? <Instagram className="w-4 h-4 text-pink-500" /> : <Music className="w-4 h-4 text-cyan-500" />}
                             {order.platform}
                           </span>
                         </td>
                         <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">{order.followers.toLocaleString()}</td>
                         <td className="py-4 px-4 text-sm font-semibold text-gray-900 dark:text-white">€{Number(order.price).toFixed(2)}</td>
                         <td className="py-4 px-4">
-                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
-                            order.payment_status === 'succeeded' || order.payment_status === 'paid' || order.payment_status === 'completed'
-                              ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
-                              : order.payment_status === 'pending'
-                              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
-                              : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
-                          }`}>
-                            {order.payment_status}
-                          </span>
+                          <div className="relative">
+                            <select
+                              value={order.order_status || 'pending'}
+                              onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value as OrderStatus)}
+                              disabled={updatingOrderId === order.id}
+                              className={`appearance-none pl-3 pr-8 py-1.5 rounded-full text-xs font-medium border-0 cursor-pointer ${
+                                (order.order_status || 'pending') === 'completed'
+                                  ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                  : (order.order_status || 'pending') === 'processing'
+                                  ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'
+                                  : (order.order_status || 'pending') === 'cancelled'
+                                  ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'
+                                  : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400'
+                              } ${updatingOrderId === order.id ? 'opacity-50' : ''}`}
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="processing">Processing</option>
+                              <option value="completed">Completed</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none" />
+                          </div>
                         </td>
                         <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">
                           {new Date(order.created_at).toLocaleDateString()}
+                        </td>
+                        <td className="py-4 px-4">
+                          {editingNotes === order.id ? (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={tempNotes}
+                                onChange={(e) => setTempNotes(e.target.value)}
+                                className="w-32 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                                placeholder="Add note..."
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => handleSaveNotes(order.id)}
+                                disabled={updatingOrderId === order.id}
+                                className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
+                              >
+                                <Save className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => { setEditingNotes(null); setTempNotes(''); }}
+                                className="p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => { setEditingNotes(order.id); setTempNotes(order.notes || ''); }}
+                              className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+                            >
+                              <MessageSquare className="w-3 h-3" />
+                              {order.notes ? (
+                                <span className="max-w-[100px] truncate">{order.notes}</span>
+                              ) : (
+                                <span>Add note</span>
+                              )}
+                            </button>
+                          )}
                         </td>
                         <td className="py-4 px-4">
                           <button
@@ -903,7 +1157,6 @@ export default function AdminDashboard() {
                             title="Delete order"
                           >
                             <Trash2 className="w-4 h-4" />
-                            Delete
                           </button>
                         </td>
                       </tr>

@@ -36,10 +36,21 @@ export async function initDatabase() {
         payment_intent_id VARCHAR(255),
         payment_id VARCHAR(255),
         status VARCHAR(50) DEFAULT 'completed',
+        order_status VARCHAR(50) DEFAULT 'pending',
+        notes TEXT DEFAULT '',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
+    
+    // Add order_status and notes columns if they don't exist (for existing tables)
+    try {
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_status VARCHAR(50) DEFAULT 'pending'`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS notes TEXT DEFAULT ''`;
+    } catch (e) {
+      // Columns might already exist
+      console.log('Columns may already exist:', e);
+    }
     
     // Create settings table if it doesn't exist
     await sql`
@@ -207,5 +218,41 @@ export async function updateStripeSettings(secretKey: string, publishableKey: st
   } catch (error) {
     console.error('Error updating Stripe settings:', error);
     throw error;
+  }
+}
+
+export async function updateOrderStatus(orderId: number, orderStatus: string) {
+  try {
+    await sql`
+      UPDATE orders SET order_status = ${orderStatus}, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${orderId}
+    `;
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw error;
+  }
+}
+
+export async function updateOrderNotes(orderId: number, notes: string) {
+  try {
+    await sql`
+      UPDATE orders SET notes = ${notes}, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${orderId}
+    `;
+  } catch (error) {
+    console.error('Error updating order notes:', error);
+    throw error;
+  }
+}
+
+export async function getOrderById(orderId: number) {
+  try {
+    const result = await sql`
+      SELECT * FROM orders WHERE id = ${orderId}
+    `;
+    return result.rows.length > 0 ? result.rows[0] : null;
+  } catch (error) {
+    console.error('Error fetching order:', error);
+    return null;
   }
 }
