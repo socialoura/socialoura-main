@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2, Plus, Save, LogOut, Instagram, Music, AlertCircle, Settings, ShoppingCart, Eye, EyeOff, BarChart3, Search, Filter, MessageSquare, X, ChevronDown } from 'lucide-react';
+import { Trash2, Plus, Save, LogOut, Instagram, Music, AlertCircle, Settings, ShoppingCart, Eye, EyeOff, BarChart3, Search, Filter, MessageSquare, X, ChevronDown, Tag, Percent, Calendar, Hash } from 'lucide-react';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
 
 interface Goal {
@@ -44,7 +44,19 @@ interface OrderDeleteConfirmation {
   username: string;
 }
 
-type TabType = 'pricing' | 'settings' | 'orders' | 'analytics';
+interface PromoCode {
+  id: number;
+  code: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  max_uses: number | null;
+  current_uses: number;
+  expires_at: string | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+type TabType = 'pricing' | 'settings' | 'orders' | 'analytics' | 'promo';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -94,6 +106,23 @@ export default function AdminDashboard() {
   const [tempNotes, setTempNotes] = useState('');
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
 
+  // Promo codes states
+  const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
+  const [showPromoForm, setShowPromoForm] = useState(false);
+  const [editingPromo, setEditingPromo] = useState<PromoCode | null>(null);
+  const [promoForm, setPromoForm] = useState({
+    code: '',
+    discount_type: 'percentage' as 'percentage' | 'fixed',
+    discount_value: '',
+    max_uses: '',
+    expires_at: '',
+  });
+  const [promoDeleteConfirm, setPromoDeleteConfirm] = useState<{ isOpen: boolean; id: number | null; code: string }>({
+    isOpen: false,
+    id: null,
+    code: '',
+  });
+
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
     if (!token) {
@@ -108,6 +137,8 @@ export default function AdminDashboard() {
     } else if (activeTab === 'settings') {
       fetchStripeSettings();
       setIsLoading(false);
+    } else if (activeTab === 'promo') {
+      fetchPromoCodes();
     } else {
       setIsLoading(false);
     }
@@ -162,6 +193,154 @@ export default function AdminDashboard() {
     } catch (error) {
       console.error('Error fetching Stripe settings:', error);
     }
+  };
+
+  const fetchPromoCodes = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/promo-codes', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setPromoCodes(data);
+      }
+    } catch (error) {
+      console.error('Error fetching promo codes:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleCreatePromoCode = async () => {
+    if (!promoForm.code || !promoForm.discount_value) {
+      setMessage('Code and discount value are required');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/promo-codes', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          code: promoForm.code,
+          discount_type: promoForm.discount_type,
+          discount_value: parseFloat(promoForm.discount_value),
+          max_uses: promoForm.max_uses ? parseInt(promoForm.max_uses) : null,
+          expires_at: promoForm.expires_at || null,
+        }),
+      });
+
+      if (response.ok) {
+        setMessage('Promo code created successfully!');
+        setShowPromoForm(false);
+        setPromoForm({ code: '', discount_type: 'percentage', discount_value: '', max_uses: '', expires_at: '' });
+        fetchPromoCodes();
+      } else {
+        const error = await response.json();
+        setMessage(error.error || 'Error creating promo code');
+      }
+    } catch (error) {
+      console.error('Error creating promo code:', error);
+      setMessage('Error creating promo code');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdatePromoCode = async () => {
+    if (!editingPromo) return;
+
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/promo-codes', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id: editingPromo.id,
+          code: promoForm.code,
+          discount_type: promoForm.discount_type,
+          discount_value: parseFloat(promoForm.discount_value),
+          max_uses: promoForm.max_uses ? parseInt(promoForm.max_uses) : null,
+          expires_at: promoForm.expires_at || null,
+        }),
+      });
+
+      if (response.ok) {
+        setMessage('Promo code updated successfully!');
+        setEditingPromo(null);
+        setShowPromoForm(false);
+        setPromoForm({ code: '', discount_type: 'percentage', discount_value: '', max_uses: '', expires_at: '' });
+        fetchPromoCodes();
+      }
+    } catch (error) {
+      console.error('Error updating promo code:', error);
+      setMessage('Error updating promo code');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleTogglePromoActive = async (promo: PromoCode) => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      await fetch('/api/admin/promo-codes', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          id: promo.id,
+          is_active: !promo.is_active,
+        }),
+      });
+      fetchPromoCodes();
+    } catch (error) {
+      console.error('Error toggling promo code:', error);
+    }
+  };
+
+  const handleDeletePromoCode = async () => {
+    if (!promoDeleteConfirm.id) return;
+
+    try {
+      const token = localStorage.getItem('adminToken');
+      await fetch(`/api/admin/promo-codes?id=${promoDeleteConfirm.id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      setPromoDeleteConfirm({ isOpen: false, id: null, code: '' });
+      fetchPromoCodes();
+    } catch (error) {
+      console.error('Error deleting promo code:', error);
+    }
+  };
+
+  const openEditPromo = (promo: PromoCode) => {
+    setEditingPromo(promo);
+    setPromoForm({
+      code: promo.code,
+      discount_type: promo.discount_type,
+      discount_value: promo.discount_value.toString(),
+      max_uses: promo.max_uses?.toString() || '',
+      expires_at: promo.expires_at ? promo.expires_at.split('T')[0] : '',
+    });
+    setShowPromoForm(true);
   };
 
   // Update order status
@@ -557,6 +736,17 @@ export default function AdminDashboard() {
             >
               <BarChart3 className="w-5 h-5" />
               Analytics
+            </button>
+            <button
+              onClick={() => setActiveTab('promo')}
+              className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
+                activeTab === 'promo'
+                  ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+            >
+              <Tag className="w-5 h-5" />
+              Promo Codes
             </button>
           </div>
         </div>
@@ -1170,6 +1360,280 @@ export default function AdminDashboard() {
 
         {activeTab === 'analytics' && (
           <AnalyticsDashboard orders={orders} totalVisitors={1000} />
+        )}
+
+        {activeTab === 'promo' && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-purple-100 dark:border-purple-900/30">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl shadow-lg">
+                  <Tag className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    Promo Codes
+                  </h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    {promoCodes.length} code{promoCodes.length !== 1 ? 's' : ''} total
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setEditingPromo(null);
+                  setPromoForm({ code: '', discount_type: 'percentage', discount_value: '', max_uses: '', expires_at: '' });
+                  setShowPromoForm(true);
+                }}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white rounded-xl hover:from-yellow-600 hover:to-orange-600 transition-all shadow-lg"
+              >
+                <Plus className="w-5 h-5" />
+                New Promo Code
+              </button>
+            </div>
+
+            {/* Promo Form Modal */}
+            {showPromoForm && (
+              <div className="mb-6 p-6 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+                  {editingPromo ? 'Edit Promo Code' : 'Create New Promo Code'}
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Code *
+                    </label>
+                    <div className="relative">
+                      <Hash className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="text"
+                        value={promoForm.code}
+                        onChange={(e) => setPromoForm({ ...promoForm, code: e.target.value.toUpperCase() })}
+                        placeholder="PROMO20"
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Discount Type *
+                    </label>
+                    <select
+                      value={promoForm.discount_type}
+                      onChange={(e) => setPromoForm({ ...promoForm, discount_type: e.target.value as 'percentage' | 'fixed' })}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    >
+                      <option value="percentage">Percentage (%)</option>
+                      <option value="fixed">Fixed Amount (€)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Discount Value *
+                    </label>
+                    <div className="relative">
+                      <Percent className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="number"
+                        value={promoForm.discount_value}
+                        onChange={(e) => setPromoForm({ ...promoForm, discount_value: e.target.value })}
+                        placeholder={promoForm.discount_type === 'percentage' ? '20' : '5'}
+                        min="0"
+                        max={promoForm.discount_type === 'percentage' ? '100' : undefined}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">
+                      {promoForm.discount_type === 'percentage' ? 'Enter a value between 0 and 100' : 'Enter the amount in euros'}
+                    </p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Max Uses (optional)
+                    </label>
+                    <input
+                      type="number"
+                      value={promoForm.max_uses}
+                      onChange={(e) => setPromoForm({ ...promoForm, max_uses: e.target.value })}
+                      placeholder="100"
+                      min="1"
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Leave empty for unlimited uses</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Expiration Date (optional)
+                    </label>
+                    <div className="relative">
+                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                      <input
+                        type="date"
+                        value={promoForm.expires_at}
+                        onChange={(e) => setPromoForm({ ...promoForm, expires_at: e.target.value })}
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-3 mt-6">
+                  <button
+                    onClick={editingPromo ? handleUpdatePromoCode : handleCreatePromoCode}
+                    disabled={isSaving}
+                    className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white rounded-lg hover:from-green-600 hover:to-emerald-600 disabled:opacity-50"
+                  >
+                    <Save className="w-4 h-4" />
+                    {isSaving ? 'Saving...' : (editingPromo ? 'Update' : 'Create')}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setShowPromoForm(false);
+                      setEditingPromo(null);
+                      setPromoForm({ code: '', discount_type: 'percentage', discount_value: '', max_uses: '', expires_at: '' });
+                    }}
+                    className="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Promo Codes List */}
+            {promoCodes.length === 0 ? (
+              <div className="text-center py-12">
+                <Tag className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+                <p className="text-gray-500 dark:text-gray-400">No promo codes yet</p>
+                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Create your first promo code to get started</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Code</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Discount</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Usage</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Expires</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Status</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {promoCodes.map((promo) => (
+                      <tr key={promo.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
+                        <td className="py-4 px-4">
+                          <span className="inline-flex items-center gap-2 px-3 py-1 bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 rounded-lg font-mono font-bold">
+                            <Tag className="w-4 h-4" />
+                            {promo.code}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="text-lg font-bold text-gray-900 dark:text-white">
+                            {promo.discount_type === 'percentage' ? `${promo.discount_value}%` : `€${promo.discount_value}`}
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                            {promo.discount_type === 'percentage' ? 'off' : 'discount'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold text-gray-900 dark:text-white">{promo.current_uses}</span>
+                            <span className="text-gray-500 dark:text-gray-400">/</span>
+                            <span className="text-gray-500 dark:text-gray-400">{promo.max_uses || '∞'}</span>
+                          </div>
+                          {promo.max_uses && (
+                            <div className="w-20 h-1.5 bg-gray-200 dark:bg-gray-600 rounded-full mt-1">
+                              <div 
+                                className="h-full bg-gradient-to-r from-yellow-500 to-orange-500 rounded-full"
+                                style={{ width: `${Math.min((promo.current_uses / promo.max_uses) * 100, 100)}%` }}
+                              />
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">
+                          {promo.expires_at ? (
+                            <span className={new Date(promo.expires_at) < new Date() ? 'text-red-500' : ''}>
+                              {new Date(promo.expires_at).toLocaleDateString()}
+                            </span>
+                          ) : (
+                            <span className="text-gray-400">Never</span>
+                          )}
+                        </td>
+                        <td className="py-4 px-4">
+                          <button
+                            onClick={() => handleTogglePromoActive(promo)}
+                            className={`px-3 py-1 rounded-full text-xs font-medium transition-colors ${
+                              promo.is_active
+                                ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400'
+                            }`}
+                          >
+                            {promo.is_active ? 'Active' : 'Inactive'}
+                          </button>
+                        </td>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => openEditPromo(promo)}
+                              className="p-2 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                              title="Edit"
+                            >
+                              <Settings className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => setPromoDeleteConfirm({ isOpen: true, id: promo.id, code: promo.code })}
+                              className="p-2 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Promo Delete Confirmation Modal */}
+        {promoDeleteConfirm.isOpen && (
+          <div className="fixed inset-0 z-50 overflow-y-auto">
+            <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={() => setPromoDeleteConfirm({ isOpen: false, id: null, code: '' })} />
+            <div className="flex min-h-full items-center justify-center p-4">
+              <div className="relative transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 text-left shadow-xl transition-all w-full max-w-md">
+                <div className="bg-white dark:bg-gray-800 px-6 pt-6 pb-4">
+                  <div className="flex items-start">
+                    <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
+                      <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+                    </div>
+                    <div className="ml-4 mt-0 text-left flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Delete Promo Code</h3>
+                      <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        Are you sure you want to delete <span className="font-bold text-yellow-600">{promoDeleteConfirm.code}</span>? This action cannot be undone.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-gray-50 dark:bg-gray-700/50 px-6 py-4 flex gap-3 justify-end">
+                  <button
+                    onClick={() => setPromoDeleteConfirm({ isOpen: false, id: null, code: '' })}
+                    className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleDeletePromoCode}
+                    className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-xl hover:bg-red-700"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {deleteConfirmation.isOpen && (

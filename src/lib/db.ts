@@ -69,6 +69,30 @@ export async function initDatabase() {
     await sql`CREATE INDEX IF NOT EXISTS idx_payment_status ON orders(payment_status)`;
     await sql`CREATE INDEX IF NOT EXISTS idx_created_at ON orders(created_at)`;
     
+    // Create promo_codes table if it doesn't exist
+    await sql`
+      CREATE TABLE IF NOT EXISTS promo_codes (
+        id SERIAL PRIMARY KEY,
+        code VARCHAR(50) UNIQUE NOT NULL,
+        discount_type VARCHAR(20) NOT NULL,
+        discount_value DECIMAL(10, 2) NOT NULL,
+        max_uses INTEGER DEFAULT NULL,
+        current_uses INTEGER DEFAULT 0,
+        expires_at TIMESTAMP DEFAULT NULL,
+        is_active BOOLEAN DEFAULT true,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    
+    // Add promo_code column to orders if it doesn't exist
+    try {
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS promo_code VARCHAR(50) DEFAULT NULL`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10, 2) DEFAULT 0`;
+    } catch (e) {
+      console.log('Promo columns may already exist:', e);
+    }
+    
     console.log('Database initialized successfully');
   } catch (error) {
     console.error('Database initialization error:', error);
@@ -254,5 +278,169 @@ export async function getOrderById(orderId: number) {
   } catch (error) {
     console.error('Error fetching order:', error);
     return null;
+  }
+}
+
+// Promo Codes Functions
+export interface PromoCode {
+  id: number;
+  code: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  max_uses: number | null;
+  current_uses: number;
+  expires_at: string | null;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export async function getAllPromoCodes(): Promise<PromoCode[]> {
+  try {
+    const result = await sql`
+      SELECT * FROM promo_codes ORDER BY created_at DESC
+    `;
+    return result.rows as PromoCode[];
+  } catch (error) {
+    console.error('Error fetching promo codes:', error);
+    return [];
+  }
+}
+
+export async function getPromoCodeByCode(code: string): Promise<PromoCode | null> {
+  try {
+    const result = await sql`
+      SELECT * FROM promo_codes WHERE UPPER(code) = UPPER(${code})
+    `;
+    return result.rows.length > 0 ? result.rows[0] as PromoCode : null;
+  } catch (error) {
+    console.error('Error fetching promo code:', error);
+    return null;
+  }
+}
+
+export async function createPromoCode(data: {
+  code: string;
+  discount_type: 'percentage' | 'fixed';
+  discount_value: number;
+  max_uses?: number | null;
+  expires_at?: string | null;
+}): Promise<PromoCode | null> {
+  try {
+    const result = await sql`
+      INSERT INTO promo_codes (code, discount_type, discount_value, max_uses, expires_at)
+      VALUES (${data.code.toUpperCase()}, ${data.discount_type}, ${data.discount_value}, ${data.max_uses || null}, ${data.expires_at || null})
+      RETURNING *
+    `;
+    return result.rows[0] as PromoCode;
+  } catch (error) {
+    console.error('Error creating promo code:', error);
+    throw error;
+  }
+}
+
+export async function updatePromoCode(id: number, data: {
+  code?: string;
+  discount_type?: 'percentage' | 'fixed';
+  discount_value?: number;
+  max_uses?: number | null;
+  expires_at?: string | null;
+  is_active?: boolean;
+}): Promise<void> {
+  try {
+    const updates: string[] = [];
+    const values: (string | number | boolean | null)[] = [];
+    
+    if (data.code !== undefined) {
+      updates.push('code = $' + (values.length + 1));
+      values.push(data.code.toUpperCase());
+    }
+    if (data.discount_type !== undefined) {
+      updates.push('discount_type = $' + (values.length + 1));
+      values.push(data.discount_type);
+    }
+    if (data.discount_value !== undefined) {
+      updates.push('discount_value = $' + (values.length + 1));
+      values.push(data.discount_value);
+    }
+    if (data.max_uses !== undefined) {
+      updates.push('max_uses = $' + (values.length + 1));
+      values.push(data.max_uses);
+    }
+    if (data.expires_at !== undefined) {
+      updates.push('expires_at = $' + (values.length + 1));
+      values.push(data.expires_at);
+    }
+    if (data.is_active !== undefined) {
+      updates.push('is_active = $' + (values.length + 1));
+      values.push(data.is_active);
+    }
+    
+    if (updates.length > 0) {
+      await sql.query(
+        `UPDATE promo_codes SET ${updates.join(', ')}, updated_at = CURRENT_TIMESTAMP WHERE id = $${values.length + 1}`,
+        [...values, id]
+      );
+    }
+  } catch (error) {
+    console.error('Error updating promo code:', error);
+    throw error;
+  }
+}
+
+export async function deletePromoCode(id: number): Promise<void> {
+  try {
+    await sql`DELETE FROM promo_codes WHERE id = ${id}`;
+  } catch (error) {
+    console.error('Error deleting promo code:', error);
+    throw error;
+  }
+}
+
+export async function validatePromoCode(code: string): Promise<{ valid: boolean; promoCode?: PromoCode; error?: string }> {
+  try {
+    const promoCode = await getPromoCodeByCode(code);
+    
+    if (!promoCode) {
+      return { valid: false, error: 'Code promo invalide' };
+    }
+    
+    if (!promoCode.is_active) {
+      return { valid: false, error: 'Ce code promo n\'est plus actif' };
+    }
+    
+    if (promoCode.expires_at && new Date(promoCode.expires_at) < new Date()) {
+      return { valid: false, error: 'Ce code promo a expiré' };
+    }
+    
+    if (promoCode.max_uses !== null && promoCode.current_uses >= promoCode.max_uses) {
+      return { valid: false, error: 'Ce code promo a atteint sa limite d\'utilisation' };
+    }
+    
+    return { valid: true, promoCode };
+  } catch (error) {
+    console.error('Error validating promo code:', error);
+    return { valid: false, error: 'Erreur lors de la validation du code' };
+  }
+}
+
+export async function incrementPromoCodeUsage(code: string): Promise<void> {
+  try {
+    await sql`
+      UPDATE promo_codes 
+      SET current_uses = current_uses + 1, updated_at = CURRENT_TIMESTAMP 
+      WHERE UPPER(code) = UPPER(${code})
+    `;
+  } catch (error) {
+    console.error('Error incrementing promo code usage:', error);
+    throw error;
+  }
+}
+
+export function calculateDiscount(price: number, promoCode: PromoCode): number {
+  if (promoCode.discount_type === 'percentage') {
+    return price * (Number(promoCode.discount_value) / 100);
+  } else {
+    return Math.min(Number(promoCode.discount_value), price);
   }
 }
