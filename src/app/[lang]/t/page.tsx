@@ -595,6 +595,11 @@ export default function TikTokPage({ params }: PageProps) {
           productName={`+${selectedGoal.followers} TikTok followers`}
           language={lang}
           email={email}
+          orderDetails={{
+            platform: 'tiktok',
+            followers: selectedGoal.followers,
+            username: username,
+          }}
         />
       )}
 

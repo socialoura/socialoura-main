@@ -602,6 +602,11 @@ export default function InstagramPage({ params }: PageProps) {
           productName={`+${selectedGoal.followers} Instagram followers`}
           language={lang}
           email={email}
+          orderDetails={{
+            platform: 'instagram',
+            followers: selectedGoal.followers,
+            username: username,
+          }}
         />
       )}
 

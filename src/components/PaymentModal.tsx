@@ -15,6 +15,11 @@ interface PaymentModalProps {
   language?: 'en' | 'fr';
   email?: string;
   onPromoApplied?: (discount: number, finalAmount: number, promoCode: string) => void;
+  orderDetails?: {
+    platform: string;
+    followers: number;
+    username: string;
+  };
 }
 
 // Inner component that uses Stripe hooks
@@ -35,6 +40,7 @@ function PaymentForm({
   promoError,
   promoSuccess,
   discount,
+  orderDetails,
 }: Omit<PaymentModalProps, 'isOpen'> & {
   originalAmount: number;
   promoFieldEnabled?: boolean;
@@ -45,6 +51,11 @@ function PaymentForm({
   promoError?: string | null;
   promoSuccess?: string | null;
   discount?: number;
+  orderDetails?: {
+    platform: string;
+    followers: number;
+    username: string;
+  };
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -153,6 +164,34 @@ function PaymentForm({
             'currency': currency.toUpperCase(),
             'transaction_id': paymentIntent.id
           });
+        }
+
+        // Send confirmation email
+        if (email && orderDetails) {
+          try {
+            await fetch('/api/send-confirmation-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                email,
+                customerName: orderDetails.username,
+                orderDetails: {
+                  platform: orderDetails.platform,
+                  followers: orderDetails.followers,
+                  price: formatAmount(amount, currency),
+                  orderId: paymentIntent.id.slice(-8).toUpperCase(),
+                  date: new Date().toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  }),
+                },
+                language,
+              }),
+            });
+          } catch (emailError) {
+            console.error('Failed to send confirmation email:', emailError);
+          }
         }
         
         if (onSuccess) {
@@ -422,6 +461,7 @@ export default function PaymentModal({
   productName,
   language = 'en',
   email = '',
+  orderDetails,
 }: PaymentModalProps) {
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -696,6 +736,7 @@ export default function PaymentModal({
                 promoError={promoError}
                 promoSuccess={promoSuccess}
                 discount={discount}
+                orderDetails={orderDetails}
               />
             </StripeProvider>
           )}
