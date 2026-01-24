@@ -12,6 +12,8 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [message, setMessage] = useState('');
+  const [email, setEmail] = useState('');
+  const [isSending, setIsSending] = useState(false);
   const [messages, setMessages] = useState<Array<{ text: string; sender: 'user' | 'support'; timestamp: Date }>>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -23,9 +25,12 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
       send: 'Send',
       online: 'Online',
       typingIndicator: 'Support is typing...',
-      initialMessage: 'Hi! How can we help you today?',
+      initialMessage: 'Hi! How can we help you today? Leave your message and email, we\'ll get back to you shortly.',
       closeChat: 'Close chat',
       minimizeChat: 'Minimize chat',
+      emailPlaceholder: 'Your email (optional)',
+      messageSent: 'Message sent! We\'ll reply to your email soon.',
+      messageError: 'Error sending message. Please try again.',
     },
     fr: {
       title: 'Discutez avec nous',
@@ -34,9 +39,12 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
       send: 'Envoyer',
       online: 'En ligne',
       typingIndicator: 'Le support écrit...',
-      initialMessage: 'Bonjour ! Comment pouvons-nous vous aider aujourd\'hui ?',
+      initialMessage: 'Bonjour ! Comment pouvons-nous vous aider ? Laissez votre message et email, nous vous répondrons rapidement.',
       closeChat: 'Fermer le chat',
       minimizeChat: 'Minimiser le chat',
+      emailPlaceholder: 'Votre email (optionnel)',
+      messageSent: 'Message envoyé ! Nous répondrons à votre email bientôt.',
+      messageError: 'Erreur lors de l\'envoi. Veuillez réessayer.',
     },
   };
 
@@ -62,44 +70,61 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
     }
   }, [isOpen, messages.length, t.initialMessage]);
 
-  const handleSendMessage = (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || isSending) return;
 
-    // Add user message
+    const userMessage = message;
+    const userEmail = email;
+
+    // Add user message to chat
     const newMessage = {
-      text: message,
+      text: userMessage,
       sender: 'user' as const,
       timestamp: new Date(),
     };
-    setMessages([...messages, newMessage]);
+    setMessages(prev => [...prev, newMessage]);
     setMessage('');
+    setIsSending(true);
 
-    // Simulate support response after a delay
-    setTimeout(() => {
-      const responses = lang === 'en' 
-        ? [
-            'Thank you for your message! A support agent will respond shortly.',
-            'We\'ve received your inquiry and will get back to you soon.',
-            'Great question! Let me check that for you.',
-          ]
-        : [
-            'Merci pour votre message ! Un agent va vous répondre bientôt.',
-            'Nous avons reçu votre demande et vous répondrons rapidement.',
-            'Excellente question ! Laissez-moi vérifier cela pour vous.',
-          ];
-      
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      
+    try {
+      // Send message to support via API
+      const response = await fetch('/api/support-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          email: userEmail || 'Non fourni',
+          language: lang,
+        }),
+      });
+
+      if (response.ok) {
+        // Show confirmation message
+        setMessages(prev => [
+          ...prev,
+          {
+            text: t.messageSent,
+            sender: 'support',
+            timestamp: new Date(),
+          },
+        ]);
+      } else {
+        throw new Error('Failed to send');
+      }
+    } catch {
+      // Show error message
       setMessages(prev => [
         ...prev,
         {
-          text: randomResponse,
+          text: t.messageError,
           sender: 'support',
           timestamp: new Date(),
         },
       ]);
-    }, 1500);
+    } finally {
+      setIsSending(false);
+    }
   };
 
   const toggleChat = () => {
@@ -206,7 +231,14 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
               </div>
 
               {/* Chat Input */}
-              <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
+              <form onSubmit={handleSendMessage} className="p-4 border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 space-y-2">
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder={t.emailPlaceholder}
+                  className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 transition-colors text-sm"
+                />
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -217,11 +249,15 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
                   />
                   <button
                     type="submit"
-                    disabled={!message.trim()}
+                    disabled={!message.trim() || isSending}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-full p-2.5 transition-all hover:scale-105 disabled:hover:scale-100"
                     aria-label={t.send}
                   >
-                    <Send className="h-5 w-5" />
+                    {isSending ? (
+                      <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Send className="h-5 w-5" />
+                    )}
                   </button>
                 </div>
               </form>
