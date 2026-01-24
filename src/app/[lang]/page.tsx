@@ -5,6 +5,7 @@ import { Language } from '@/i18n/config';
 import Link from 'next/link';
 import { Plus, Minus, Camera, Music, BarChart3, Calendar, MessageCircle, HeadphonesIcon, Instagram } from 'lucide-react';
 import ChatWidget from '@/components/ChatWidget';
+import ReviewsSection from '@/components/ReviewsSection';
 
 interface PageProps {
   params: { lang: string };
@@ -446,6 +447,9 @@ export default function HomePage({ params }: PageProps) {
           </dl>
         </div>
       </section>
+
+      {/* Reviews Section */}
+      <ReviewsSection lang={lang} platform="all" />
 
       {/* Chat Widget */}
       <ChatWidget lang={lang} />

@@ -8,6 +8,7 @@ import OrderSuccessModal from '@/components/OrderSuccessModal';
 import { Bot, Clock, Shield, Package, Megaphone, BarChart3 } from 'lucide-react';
 import Image from 'next/image';
 import ChatWidget from '@/components/ChatWidget';
+import ReviewsSection from '@/components/ReviewsSection';
 
 interface PageProps {
   params: { lang: string };
@@ -617,6 +618,9 @@ export default function TikTokPage({ params }: PageProps) {
           language={lang}
         />
       )}
+
+      {/* Reviews Section */}
+      <ReviewsSection lang={lang} platform="tiktok" />
 
       {/* Chat Widget */}
       <ChatWidget lang={lang} />
