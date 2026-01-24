@@ -298,9 +298,9 @@ function PaymentForm({
                   {promoCode} {t.promoApplied}
                 </span>
                 <div className="text-right">
-                  <span className="text-gray-500 line-through mr-2">{(originalAmount / 100).toFixed(2)}€</span>
+                  <span className="text-gray-500 line-through mr-2">{formatAmount(originalAmount, currency)}</span>
                   <span className="text-green-700 dark:text-green-400 font-bold">
-                    {(amount / 100).toFixed(2)}€
+                    {formatAmount(amount, currency)}
                   </span>
                 </div>
               </div>
