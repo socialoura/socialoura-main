@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, useCallback } from 'react';
 import {
   LineChart,
   Line,
@@ -27,7 +27,7 @@ interface Order {
   price?: number;
   amount?: number;
   payment_status?: string;
-  payment_intent_id?: string;
+  payment_intent_id?: string | null;
   created_at: string;
 }
 
@@ -40,7 +40,7 @@ type TimeRange = 'week' | 'month' | 'year';
 
 export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: AnalyticsDashboardProps) {
   // Calculate revenue data by time period
-  const getRevenueData = (range: TimeRange) => {
+  const getRevenueData = useCallback((range: TimeRange) => {
     const now = new Date();
     const data: { [key: string]: number } = {};
     
@@ -87,7 +87,7 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
       name,
       revenue: Number(revenue.toFixed(2)),
     }));
-  };
+  }, [orders]);
 
   // Platform distribution
   const platformData = useMemo(() => {
@@ -142,8 +142,8 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
       .slice(0, 5);
   }, [orders]);
 
-  const weeklyData = useMemo(() => getRevenueData('week'), [orders]);
-  const monthlyData = useMemo(() => getRevenueData('month'), [orders]);
+  const weeklyData = useMemo(() => getRevenueData('week'), [getRevenueData]);
+  const monthlyData = useMemo(() => getRevenueData('month'), [getRevenueData]);
 
   const COLORS = ['#E1306C', '#00F2EA'];
 
@@ -225,7 +225,7 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
                     borderRadius: '8px',
                     color: '#fff',
                   }}
-                  formatter={(value: number) => [`€${value}`, 'Revenue']}
+                  formatter={(value) => [`€${value}`, 'Revenue']}
                 />
                 <Line
                   type="monotone"
@@ -258,7 +258,7 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
                     borderRadius: '8px',
                     color: '#fff',
                   }}
-                  formatter={(value: number) => [`€${value}`, 'Revenue']}
+                  formatter={(value) => [`€${value}`, 'Revenue']}
                 />
                 <Bar dataKey="revenue" fill="#EC4899" radius={[4, 4, 0, 0]} />
               </BarChart>
@@ -286,7 +286,7 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
                     outerRadius={100}
                     paddingAngle={5}
                     dataKey="value"
-                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                    label={({ name, percent }) => `${name} ${((percent || 0) * 100).toFixed(0)}%`}
                     labelLine={false}
                   >
                     {platformData.map((entry, index) => (
@@ -300,7 +300,7 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
                       borderRadius: '8px',
                       color: '#fff',
                     }}
-                    formatter={(value: number) => [`${value} orders`, '']}
+                    formatter={(value) => [`${value} orders`, '']}
                   />
                   <Legend />
                 </PieChart>
