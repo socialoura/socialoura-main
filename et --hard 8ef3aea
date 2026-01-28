@@ -1,0 +1,54 @@
+[33meb2374c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m correct patch
+[33m5d76168[m new site copy
+[33m8ef3aea[m optimisation vitesse
+[33mef6c232[m Update TrustedBrands title to serif italic font
+[33mb07d203[m Update TrustedBrands with real brand logos (prix, dbrand, MIXTILES, SENNHEISER, Victoria's Secret, BIRKENSTOCK)
+[33mc6bfae2[m Add TrustedBrands scrolling section to homepage, Instagram and TikTok pages
+[33m5cedec8[m Replace emojis with SVG logos for Instagram and TikTok in reviews
+[33m762698a[m Fix: remove unused MessageCircle import from FAQ page
+[33mdc77995[m Add ReviewsSection with carousel to homepage, Instagram and TikTok pages
+[33m6c99653[m Add FAQ page with bilingual content and integrate in header/footer
+[33m53e8290[m Add ChatWidget to homepage
+[33m7937105[m Add ChatWidget to Instagram and TikTok pages
+[33m0792e06[m Add chat support widget with email and Discord notifications
+[33m327950c[m Fix: remove unused currency parameter from Discord notification
+[33m74e46c5[m Add Discord notification on new orders
+[33mbf3a874[m Fix: make Resend initialization conditional to avoid build error
+[33m6e29d4f[m Add order confirmation email feature with Resend
+[33m16a5055[m Improve Stripe form visibility in dark mode with custom appearance
+[33mbf439c8[m Redesign PaymentModal with modern premium style
+[33m4d13081[m Fix: use formatAmount for currency display in promo banner
+[33m9b6b89a[m Fix: remove t.promoApplied reference
+[33m716c50b[m Move promo code field below payment info and before terms
+[33m5cfc64f[m Add toggle to enable/disable promo code field in payment modal
+[33m64564f2[m Add promo code validation in payment modal
+[33m675fb10[m Add promo codes management system
+[33mdb31bff[m Add order management: status, notes, search, filters
+[33m1afa80e[m Fix average cart calculation and add revenue summary by period
+[33mac0e165[m Fix toFixed error by converting price/amount to Number
+[33m44b0e56[m Fix TypeScript errors in AnalyticsDashboard
+[33mff379fd[m Add Analytics dashboard with charts
+[33mf9afdc4[m Fix ESLint errors - remove unused imports and variables
+[33m7df6b24[m Add Google Ads conversion tracking
+[33m91cce2b[m contact
+[33mb4c8649[m changement texte complet + approprié google ads
+[33mdbbd8ef[m ajout lp
+[33mbf28d2a[m Revert "Implement Apple Pay button component"
+[33me5a08d0[m Revert "Update Payment Modal to include Apple Pay buttons"
+[33m17d3195[m Update Payment Modal to include Apple Pay buttons
+[33mb3098be[m Merge pull request #1 from socialoura/copilot/remove-applepay-button-component
+[33m44e8468[m[33m ([m[1;31morigin/copilot/remove-applepay-button-component[m[33m)[m Initial plan
+[33m5f300a4[m Implement Apple Pay button component
+[33m2b2f9ae[m apply pay refix
+[33m5618638[m apply pay fix
+[33meea52cb[m apply pay
+[33mb779e76[m fix 2
+[33mb8c070e[m fix
+[33m77080b6[m responsive
+[33m9faec60[m amélioration final
+[33m7b25bf1[m amélioration modal2
+[33m293b8cd[m amélioration modal
+[33m86bf00f[m ajout favicon et reduction espace hero page produit
+[33m0c2496c[m amélioration section header
+[33m9ca65ca[m amélioration header
+[33m8fe194c[m Initial commit - clean history
