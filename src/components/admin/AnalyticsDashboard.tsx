@@ -26,19 +26,27 @@ interface Order {
   followers: number;
   price?: number;
   amount?: number;
+  cost?: number;
   payment_status?: string;
   payment_intent_id?: string | null;
   created_at: string;
 }
 
+interface GoogleAdsExpense {
+  month: string;
+  amount: number;
+  updated_at?: string;
+}
+
 interface AnalyticsDashboardProps {
   orders: Order[];
   totalVisitors?: number;
+  googleAdsExpenses?: GoogleAdsExpense[];
 }
 
 type TimeRange = 'week' | 'month' | 'year';
 
-export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: AnalyticsDashboardProps) {
+export default function AnalyticsDashboard({ orders, totalVisitors = 0, googleAdsExpenses = [] }: AnalyticsDashboardProps) {
   // Calculate revenue data by time period
   const getRevenueData = useCallback((range: TimeRange) => {
     const now = new Date();
@@ -89,6 +97,57 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
     }));
   }, [orders]);
 
+  // Calculate profit data by time period (revenue - cost)
+  const getProfitData = useCallback((range: TimeRange) => {
+    const now = new Date();
+    const data: { [key: string]: number } = {};
+
+    let daysBack: number;
+    let dateFormat: (date: Date) => string;
+
+    switch (range) {
+      case 'week':
+        daysBack = 7;
+        dateFormat = (date: Date) => date.toLocaleDateString('en-US', { weekday: 'short' });
+        break;
+      case 'month':
+        daysBack = 30;
+        dateFormat = (date: Date) => date.toLocaleDateString('en-US', { day: '2-digit', month: 'short' });
+        break;
+      case 'year':
+        daysBack = 365;
+        dateFormat = (date: Date) => date.toLocaleDateString('en-US', { month: 'short' });
+        break;
+    }
+
+    // Initialize all dates with 0
+    for (let i = daysBack - 1; i >= 0; i--) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - i);
+      const key = dateFormat(date);
+      if (!data[key]) data[key] = 0;
+    }
+
+    // Sum up orders
+    orders.forEach(order => {
+      const orderDate = new Date(order.created_at);
+      const diffTime = now.getTime() - orderDate.getTime();
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+      if (diffDays <= daysBack) {
+        const key = dateFormat(orderDate);
+        const revenue = Number(order.price) || Number(order.amount) || 0;
+        const cost = Number(order.cost) || 0;
+        data[key] = (data[key] || 0) + (revenue - cost);
+      }
+    });
+
+    return Object.entries(data).map(([name, profit]) => ({
+      name,
+      profit: Number(profit.toFixed(2)),
+    }));
+  }, [orders]);
+
   // Platform distribution
   const platformData = useMemo(() => {
     const instagram = orders.filter(o => o.platform === 'instagram').length;
@@ -112,6 +171,56 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
     const total = orders.reduce((sum, order) => sum + (Number(order.price) || Number(order.amount) || 0), 0);
     return total.toFixed(2);
   }, [orders]);
+
+  const totalProfit = useMemo(() => {
+    const total = orders.reduce((sum, order) => {
+      const revenue = Number(order.price) || Number(order.amount) || 0;
+      const cost = Number(order.cost) || 0;
+      return sum + (revenue - cost);
+    }, 0);
+    return total.toFixed(2);
+  }, [orders]);
+
+  const googleAdsByMonth = useMemo(() => {
+    const map = new Map<string, number>();
+    googleAdsExpenses.forEach((e) => {
+      const month = String(e.month);
+      const amount = Number(e.amount) || 0;
+      map.set(month, amount);
+    });
+    return map;
+  }, [googleAdsExpenses]);
+
+  const monthlyNetProfitData = useMemo(() => {
+    const now = new Date();
+    const monthsBack = 12;
+    const data: Array<{ name: string; netProfit: number }> = [];
+
+    for (let i = monthsBack - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+      const orderProfitForMonth = orders.reduce((sum, order) => {
+        const od = new Date(order.created_at);
+        const ok = `${od.getFullYear()}-${String(od.getMonth() + 1).padStart(2, '0')}`;
+        if (ok !== monthKey) return sum;
+
+        const revenue = Number(order.price) || Number(order.amount) || 0;
+        const cost = Number(order.cost) || 0;
+        return sum + (revenue - cost);
+      }, 0);
+
+      const ads = googleAdsByMonth.get(monthKey) || 0;
+      const net = orderProfitForMonth - ads;
+
+      data.push({
+        name: monthKey,
+        netProfit: Number(net.toFixed(2)),
+      });
+    }
+
+    return data;
+  }, [orders, googleAdsByMonth]);
 
   // Revenue by period
   const revenueByPeriod = useMemo(() => {
@@ -178,6 +287,8 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
 
   const weeklyData = useMemo(() => getRevenueData('week'), [getRevenueData]);
   const monthlyData = useMemo(() => getRevenueData('month'), [getRevenueData]);
+
+  const monthlyProfitData = useMemo(() => getProfitData('month'), [getProfitData]);
 
   const COLORS = ['#E1306C', '#00F2EA'];
 
@@ -323,6 +434,71 @@ export default function AnalyticsDashboard({ orders, totalVisitors = 0 }: Analyt
               </BarChart>
             </ResponsiveContainer>
           </div>
+        </div>
+      </div>
+
+      {/* Profit Chart */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-gray-700">
+        <div className="flex items-start justify-between gap-4 mb-4">
+          <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            Profit - Last 30 Days
+          </h3>
+          <div className="text-right">
+            <p className="text-xs text-gray-500 dark:text-gray-400">All Time Profit</p>
+            <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400">€{totalProfit}</p>
+          </div>
+        </div>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={monthlyProfitData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+              <XAxis dataKey="name" stroke="#9CA3AF" fontSize={10} interval={2} />
+              <YAxis stroke="#9CA3AF" fontSize={12} tickFormatter={(value) => `€${value}`} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1F2937',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: '#fff',
+                }}
+                formatter={(value) => [`€${value}`, 'Profit']}
+              />
+              <Line
+                type="monotone"
+                dataKey="profit"
+                stroke="#10B981"
+                strokeWidth={3}
+                dot={{ fill: '#10B981', strokeWidth: 2 }}
+                activeDot={{ r: 6, fill: '#34D399' }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      {/* Net Profit by Month (includes Google Ads) */}
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-xl border border-gray-200 dark:border-gray-700">
+        <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-4">
+          Net Profit by Month (incl. Google Ads)
+        </h3>
+        <div className="h-64">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={monthlyNetProfitData}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#374151" opacity={0.3} />
+              <XAxis dataKey="name" stroke="#9CA3AF" fontSize={10} interval={1} />
+              <YAxis stroke="#9CA3AF" fontSize={12} tickFormatter={(value) => `€${value}`} />
+              <Tooltip
+                contentStyle={{
+                  backgroundColor: '#1F2937',
+                  border: 'none',
+                  borderRadius: '8px',
+                  color: '#fff',
+                }}
+                formatter={(value) => [`€${value}`, 'Net Profit']}
+              />
+              <Bar dataKey="netProfit" fill="#22C55E" radius={[4, 4, 0, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 

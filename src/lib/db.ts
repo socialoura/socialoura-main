@@ -32,6 +32,7 @@ export async function initDatabase() {
         followers INTEGER NOT NULL,
         price DECIMAL(10, 2) NOT NULL,
         amount DECIMAL(10, 2) NOT NULL,
+        cost DECIMAL(10, 2) DEFAULT 0,
         payment_status VARCHAR(50) DEFAULT 'completed',
         payment_intent_id VARCHAR(255),
         payment_id VARCHAR(255),
@@ -47,6 +48,7 @@ export async function initDatabase() {
     try {
       await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_status VARCHAR(50) DEFAULT 'pending'`;
       await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS notes TEXT DEFAULT ''`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS cost DECIMAL(10, 2) DEFAULT 0`;
     } catch (e) {
       // Columns might already exist
       console.log('Columns may already exist:', e);
@@ -59,6 +61,14 @@ export async function initDatabase() {
         key VARCHAR(255) UNIQUE NOT NULL,
         value TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+
+    await sql`
+      CREATE TABLE IF NOT EXISTS google_ads_expenses (
+        month VARCHAR(7) PRIMARY KEY,
+        amount DECIMAL(10, 2) NOT NULL,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
     `;
@@ -291,6 +301,52 @@ export async function updateOrderNotes(orderId: number, notes: string) {
     `;
   } catch (error) {
     console.error('Error updating order notes:', error);
+    throw error;
+  }
+}
+
+export async function updateOrderCost(orderId: number, cost: number) {
+  try {
+    await sql`
+      UPDATE orders SET cost = ${cost}, updated_at = CURRENT_TIMESTAMP
+      WHERE id = ${orderId}
+    `;
+  } catch (error) {
+    console.error('Error updating order cost:', error);
+    throw error;
+  }
+}
+
+export interface GoogleAdsExpense {
+  month: string;
+  amount: number;
+  updated_at?: string;
+}
+
+export async function getGoogleAdsExpenses(): Promise<GoogleAdsExpense[]> {
+  try {
+    const result = await sql`
+      SELECT month, amount, updated_at
+      FROM google_ads_expenses
+      ORDER BY month DESC
+    `;
+    return result.rows as GoogleAdsExpense[];
+  } catch (error) {
+    console.error('Error fetching Google Ads expenses:', error);
+    return [];
+  }
+}
+
+export async function upsertGoogleAdsExpense(month: string, amount: number): Promise<void> {
+  try {
+    await sql`
+      INSERT INTO google_ads_expenses (month, amount)
+      VALUES (${month}, ${amount})
+      ON CONFLICT (month)
+      DO UPDATE SET amount = ${amount}, updated_at = CURRENT_TIMESTAMP
+    `;
+  } catch (error) {
+    console.error('Error upserting Google Ads expense:', error);
     throw error;
   }
 }

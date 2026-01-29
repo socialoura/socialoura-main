@@ -22,6 +22,7 @@ interface Order {
   platform: string;
   followers: number;
   price: number;
+  cost?: number;
   payment_status: string;
   payment_intent_id: string | null;
   created_at: string;
@@ -54,6 +55,12 @@ interface PromoCode {
   expires_at: string | null;
   is_active: boolean;
   created_at: string;
+}
+
+interface GoogleAdsExpense {
+  month: string;
+  amount: number;
+  updated_at?: string;
 }
 
 type TabType = 'pricing' | 'settings' | 'orders' | 'analytics' | 'promo';
@@ -104,6 +111,8 @@ export default function AdminDashboard() {
   const [showFilters, setShowFilters] = useState(false);
   const [editingNotes, setEditingNotes] = useState<number | null>(null);
   const [tempNotes, setTempNotes] = useState('');
+  const [editingCost, setEditingCost] = useState<number | null>(null);
+  const [tempCost, setTempCost] = useState('');
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
 
   // Promo codes states
@@ -124,6 +133,10 @@ export default function AdminDashboard() {
   });
   const [promoFieldEnabled, setPromoFieldEnabled] = useState(true);
 
+  const [googleAdsExpenses, setGoogleAdsExpenses] = useState<GoogleAdsExpense[]>([]);
+  const [googleAdsMonth, setGoogleAdsMonth] = useState('');
+  const [googleAdsAmount, setGoogleAdsAmount] = useState('');
+
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
     if (!token) {
@@ -135,6 +148,9 @@ export default function AdminDashboard() {
       fetchPricing();
     } else if (activeTab === 'orders' || activeTab === 'analytics') {
       fetchOrders();
+      if (activeTab === 'analytics') {
+        fetchGoogleAdsExpenses();
+      }
     } else if (activeTab === 'settings') {
       fetchStripeSettings();
       setIsLoading(false);
@@ -145,6 +161,50 @@ export default function AdminDashboard() {
       setIsLoading(false);
     }
   }, [router, activeTab]);
+
+  const fetchGoogleAdsExpenses = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/google-ads-expenses', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setGoogleAdsExpenses(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching Google Ads expenses:', error);
+    }
+  };
+
+  const handleUpsertGoogleAdsExpense = async () => {
+    if (!googleAdsMonth || !googleAdsAmount) return;
+
+    setIsSaving(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/google-ads-expenses', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ month: googleAdsMonth, amount: googleAdsAmount }),
+      });
+
+      if (response.ok) {
+        setGoogleAdsMonth('');
+        setGoogleAdsAmount('');
+        await fetchGoogleAdsExpenses();
+      }
+    } catch (error) {
+      console.error('Error updating Google Ads expense:', error);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const fetchPricing = async () => {
     try {
@@ -157,6 +217,34 @@ export default function AdminDashboard() {
       console.error('Error fetching pricing:', error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Update order cost
+  const handleSaveCost = async (orderId: number) => {
+    setUpdatingOrderId(orderId);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/orders/update', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({ orderId, cost: tempCost }),
+      });
+
+      if (response.ok) {
+        setOrders(prev => prev.map(order =>
+          order.id === orderId ? { ...order, cost: Number(tempCost) } : order
+        ));
+        setEditingCost(null);
+        setTempCost('');
+      }
+    } catch (error) {
+      console.error('Error updating order cost:', error);
+    } finally {
+      setUpdatingOrderId(null);
     }
   };
 
@@ -1292,6 +1380,7 @@ export default function AdminDashboard() {
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Platform</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Followers</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Price</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Cost</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Order Status</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Date</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Notes</th>
@@ -1314,6 +1403,46 @@ export default function AdminDashboard() {
                         </td>
                         <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">{order.followers.toLocaleString()}</td>
                         <td className="py-4 px-4 text-sm font-semibold text-gray-900 dark:text-white">€{Number(order.price).toFixed(2)}</td>
+                        <td className="py-4 px-4">
+                          {editingCost === order.id ? (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="number"
+                                value={tempCost}
+                                onChange={(e) => setTempCost(e.target.value)}
+                                className="w-24 px-2 py-1 text-xs border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                                placeholder="0.00"
+                                min="0"
+                                step="0.01"
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => handleSaveCost(order.id)}
+                                disabled={updatingOrderId === order.id}
+                                className="p-1 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
+                              >
+                                <Save className="w-4 h-4" />
+                              </button>
+                              <button
+                                onClick={() => { setEditingCost(null); setTempCost(''); }}
+                                className="p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setEditingCost(order.id);
+                                const currentCost = order.cost === undefined || order.cost === null ? 0 : Number(order.cost);
+                                setTempCost(currentCost.toFixed(2));
+                              }}
+                              className="text-sm font-semibold text-gray-900 dark:text-white hover:text-purple-600 dark:hover:text-purple-400"
+                            >
+                              €{Number(order.cost || 0).toFixed(2)}
+                            </button>
+                          )}
+                        </td>
                         <td className="py-4 px-4">
                           <div className="relative">
                             <select
@@ -1399,7 +1528,75 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'analytics' && (
-          <AnalyticsDashboard orders={orders} totalVisitors={1000} />
+          <div className="space-y-8">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-purple-100 dark:border-purple-900/30">
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Google Ads Expenses</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Add your monthly Google Ads spend (YYYY-MM)</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Month</label>
+                  <input
+                    type="month"
+                    value={googleAdsMonth}
+                    onChange={(e) => setGoogleAdsMonth(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount (€)</label>
+                  <input
+                    type="number"
+                    value={googleAdsAmount}
+                    onChange={(e) => setGoogleAdsAmount(e.target.value)}
+                    min="0"
+                    step="0.01"
+                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-900 text-gray-900 dark:text-white"
+                    placeholder="0.00"
+                  />
+                </div>
+                <button
+                  onClick={handleUpsertGoogleAdsExpense}
+                  disabled={isSaving || !googleAdsMonth || !googleAdsAmount}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save className="w-4 h-4" />
+                  Save
+                </button>
+              </div>
+
+              <div className="mt-6 overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200 dark:border-gray-700">
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Month</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {googleAdsExpenses.length === 0 ? (
+                      <tr>
+                        <td colSpan={2} className="py-6 px-4 text-sm text-gray-500 dark:text-gray-400">No expenses yet</td>
+                      </tr>
+                    ) : (
+                      googleAdsExpenses.map((exp) => (
+                        <tr key={exp.month} className="border-b border-gray-100 dark:border-gray-700/50">
+                          <td className="py-3 px-4 text-sm text-gray-900 dark:text-white">{exp.month}</td>
+                          <td className="py-3 px-4 text-sm font-semibold text-gray-900 dark:text-white">€{Number(exp.amount || 0).toFixed(2)}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <AnalyticsDashboard orders={orders} totalVisitors={1000} googleAdsExpenses={googleAdsExpenses} />
+          </div>
         )}
 
         {activeTab === 'promo' && (
