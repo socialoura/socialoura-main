@@ -199,6 +199,7 @@ function PaymentForm({
                 orderDetails: {
                   platform: orderDetails.platform,
                   followers: orderDetails.followers,
+                  username: orderDetails.username,
                   price: priceFormatted,
                   orderId,
                   date: orderDate,

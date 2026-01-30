@@ -16,6 +16,7 @@ interface OrderConfirmationEmailProps {
   orderDetails: {
     platform: string;
     followers: number;
+    username?: string;
     price: string;
     orderId: string;
     date: string;
@@ -104,7 +105,7 @@ export async function sendOrderConfirmationEmail({
               <h2 style="margin: 0; color: #1f2937; font-size: 28px; font-weight: 700; line-height: 1.3;">
                 ${isEnglish ? 'Thank you for your order!' : 'Merci pour votre commande !'}
               </h2>
-              <p style="margin: 20px 0 0; color: #6b7280; font-size: 17px; line-height: 1.7;">
+              <p style="margin: 20px 0 0; color: #000000; font-size: 17px; line-height: 1.7;">
                 ${isEnglish 
                   ? `Hi${customerName ? ` <strong style="color: #374151;">${customerName}</strong>` : ''}, your payment has been successfully processed. We're excited to help you grow!`
                   : `Bonjour${customerName ? ` <strong style="color: #374151;">${customerName}</strong>` : ''}, votre paiement a été traité avec succès. Nous sommes ravis de vous aider à grandir !`
@@ -143,7 +144,7 @@ export async function sendOrderConfirmationEmail({
                         <td style="padding: 14px 0; border-bottom: 1px solid #e5e7eb;">
                           <table role="presentation" style="width: 100%; border-collapse: collapse;">
                             <tr>
-                              <td style="color: #6b7280; font-size: 14px; font-weight: 500;">
+                              <td style="color: #000000; font-size: 14px; font-weight: 500;">
                                 📅 ${isEnglish ? 'Date' : 'Date'}
                               </td>
                               <td style="color: #1f2937; font-size: 15px; font-weight: 600; text-align: right;">
@@ -157,7 +158,7 @@ export async function sendOrderConfirmationEmail({
                         <td style="padding: 14px 0; border-bottom: 1px solid #e5e7eb;">
                           <table role="presentation" style="width: 100%; border-collapse: collapse;">
                             <tr>
-                              <td style="color: #6b7280; font-size: 14px; font-weight: 500;">
+                              <td style="color: #000000; font-size: 14px; font-weight: 500;">
                                 📱 ${isEnglish ? 'Platform' : 'Plateforme'}
                               </td>
                               <td style="color: #1f2937; font-size: 15px; font-weight: 600; text-align: right;">
@@ -171,7 +172,7 @@ export async function sendOrderConfirmationEmail({
                         <td style="padding: 14px 0; border-bottom: 1px solid #e5e7eb;">
                           <table role="presentation" style="width: 100%; border-collapse: collapse;">
                             <tr>
-                              <td style="color: #6b7280; font-size: 14px; font-weight: 500;">
+                              <td style="color: #000000; font-size: 14px; font-weight: 500;">
                                 👥 ${isEnglish ? 'Followers' : 'Abonnés'}
                               </td>
                               <td style="color: #1f2937; font-size: 15px; font-weight: 600; text-align: right;">
@@ -181,6 +182,22 @@ export async function sendOrderConfirmationEmail({
                           </table>
                         </td>
                       </tr>
+                      ${orderDetails.username ? `
+                      <tr>
+                        <td style="padding: 14px 0; border-bottom: 1px solid #e5e7eb;">
+                          <table role="presentation" style="width: 100%; border-collapse: collapse;">
+                            <tr>
+                              <td style="color: #000000; font-size: 14px; font-weight: 500;">
+                                👤 ${isEnglish ? 'Username' : "Nom d'utilisateur"}
+                              </td>
+                              <td style="color: #1f2937; font-size: 15px; font-weight: 600; text-align: right;">
+                                @${orderDetails.username}
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                      ` : ''}
                       <tr>
                         <td style="padding: 20px 0 0;">
                           <table role="presentation" style="width: 100%; border-collapse: collapse;">
@@ -210,10 +227,10 @@ export async function sendOrderConfirmationEmail({
               <table role="presentation" style="width: 100%; border-collapse: collapse; background-color: #f0fdf4; border-radius: 16px; border-left: 5px solid #10B981;">
                 <tr>
                   <td style="padding: 25px;">
-                    <h3 style="margin: 0 0 12px; color: #166534; font-size: 18px; font-weight: 700;">
+                    <h3 style="margin: 0 0 12px; color: #000000; font-size: 18px; font-weight: 700;">
                       🚀 ${isEnglish ? "What's Next?" : 'Et Maintenant ?'}
                     </h3>
-                    <p style="margin: 0; color: #15803d; font-size: 15px; line-height: 1.7;">
+                    <p style="margin: 0; color: #000000; font-size: 15px; line-height: 1.7;">
                       ${isEnglish 
                         ? 'Your order is being processed by our team. You will start seeing results within <strong>24-48 hours</strong>. The delivery will be gradual to ensure natural, authentic growth for your account.'
                         : 'Votre commande est en cours de traitement par notre équipe. Vous commencerez à voir les résultats dans <strong>24-48 heures</strong>. La livraison sera progressive pour assurer une croissance naturelle et authentique de votre compte.'
@@ -231,15 +248,15 @@ export async function sendOrderConfirmationEmail({
               <table role="presentation" style="width: 100%; border-collapse: collapse;">
                 <tr>
                   <td align="center" style="padding: 12px; background-color: #fefce8; border-radius: 12px;">
-                    <span style="color: #854d0e; font-size: 14px;">🔒 ${isEnglish ? 'Secure Payment' : 'Paiement Sécurisé'}</span>
+                    <span style="color: #000000; font-size: 14px;">🔒 ${isEnglish ? 'Secure Payment' : 'Paiement Sécurisé'}</span>
                   </td>
                   <td width="12"></td>
                   <td align="center" style="padding: 12px; background-color: #f0fdf4; border-radius: 12px;">
-                    <span style="color: #166534; font-size: 14px;">⚡ ${isEnglish ? 'Fast Delivery' : 'Livraison Rapide'}</span>
+                    <span style="color: #000000; font-size: 14px;">⚡ ${isEnglish ? 'Fast Delivery' : 'Livraison Rapide'}</span>
                   </td>
                   <td width="12"></td>
                   <td align="center" style="padding: 12px; background-color: #faf5ff; border-radius: 12px;">
-                    <span style="color: #6b21a8; font-size: 14px;">✅ ${isEnglish ? '100% Guarantee' : 'Garantie 100%'}</span>
+                    <span style="color: #000000; font-size: 14px;">✅ ${isEnglish ? '100% Guarantee' : 'Garantie 100%'}</span>
                   </td>
                 </tr>
               </table>
