@@ -20,7 +20,7 @@ Ce document décrit **toutes les fonctionnalités** du dashboard admin, **commen
 - **Source des identifiants**: variables d’env
   - `ADMIN_USERNAME`
   - `ADMIN_PASSWORD`
-- **Token émis**: base64 de JSON
+- **Token émis**: base64 de JSON 
   - `{ username, role: 'admin', exp: Date.now() + 24h }`
 - **Sortie**: `{ token, success: true }` ou `{ error }`
 
