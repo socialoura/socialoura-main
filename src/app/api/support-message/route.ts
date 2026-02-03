@@ -13,6 +13,22 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (typeof email !== 'string' || !email.trim()) {
+      return NextResponse.json(
+        { error: 'Email is required' },
+        { status: 400 }
+      );
+    }
+
+    const normalizedEmail = email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(normalizedEmail)) {
+      return NextResponse.json(
+        { error: 'Email is invalid' },
+        { status: 400 }
+      );
+    }
+
     const supportEmail = process.env.SUPPORT_EMAIL || 'support@socialoura.com';
     const timestamp = new Date().toLocaleString(language === 'fr' ? 'fr-FR' : 'en-US', {
       dateStyle: 'full',
@@ -27,7 +43,7 @@ export async function POST(request: NextRequest) {
       await resend.emails.send({
         from: 'SocialOura Support <noreply@socialoura.com>',
         to: [supportEmail],
-        subject: `💬 New Support Message from ${email}`,
+        subject: `💬 New Support Message from ${normalizedEmail}`,
         html: `
 <!DOCTYPE html>
 <html>
@@ -42,7 +58,7 @@ export async function POST(request: NextRequest) {
     <div style="padding: 24px;">
       <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
         <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">📧 Customer Email</p>
-        <p style="margin: 0; color: #1f2937; font-size: 16px; font-weight: 600;">${email}</p>
+        <p style="margin: 0; color: #1f2937; font-size: 16px; font-weight: 600;">${normalizedEmail}</p>
       </div>
       <div style="background: #f9fafb; border-radius: 8px; padding: 16px; margin-bottom: 16px;">
         <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">🌐 Language</p>
@@ -52,17 +68,15 @@ export async function POST(request: NextRequest) {
         <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">🕐 Date & Time</p>
         <p style="margin: 0; color: #1f2937; font-size: 16px; font-weight: 600;">${timestamp}</p>
       </div>
-      <div style="background: #EEF2FF; border-radius: 8px; padding: 16px; border-left: 4px solid #8B5CF6;">
+      <div style="background: #EEF2FF; border-radius: 8px; padding: 16px; margin-bottom: 16px; border-left: 4px solid #8B5CF6;">
         <p style="margin: 0 0 8px; color: #6b7280; font-size: 14px;">💬 Message</p>
         <p style="margin: 0; color: #1f2937; font-size: 16px; line-height: 1.6;">${message}</p>
       </div>
-      ${email !== 'Non fourni' ? `
       <div style="margin-top: 24px; text-align: center;">
-        <a href="mailto:${email}" style="display: inline-block; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        <a href="mailto:${normalizedEmail}" style="display: inline-block; background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 600;">
           Reply to Customer
         </a>
       </div>
-      ` : ''}
     </div>
     <div style="background: #f9fafb; padding: 16px; text-align: center; border-top: 1px solid #e5e7eb;">
       <p style="margin: 0; color: #9ca3af; font-size: 12px;">SocialOura Support System</p>
@@ -85,7 +99,7 @@ export async function POST(request: NextRequest) {
             title: '💬 New Support Message',
             color: 0x3B82F6,
             fields: [
-              { name: '📧 Email', value: email, inline: true },
+              { name: '📧 Email', value: normalizedEmail, inline: true },
               { name: '🌐 Language', value: language === 'fr' ? 'Français' : 'English', inline: true },
               { name: '💬 Message', value: message.length > 1000 ? message.substring(0, 1000) + '...' : message, inline: false },
             ],

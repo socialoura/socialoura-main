@@ -28,7 +28,7 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
       initialMessage: 'Hi! How can we help you today? Leave your message and email, we\'ll get back to you shortly.',
       closeChat: 'Close chat',
       minimizeChat: 'Minimize chat',
-      emailPlaceholder: 'Your email (optional)',
+      emailPlaceholder: 'Your email',
       messageSent: 'Message sent! We\'ll reply to your email soon.',
       messageError: 'Error sending message. Please try again.',
     },
@@ -42,7 +42,7 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
       initialMessage: 'Bonjour ! Comment pouvons-nous vous aider ? Laissez votre message et email, nous vous répondrons rapidement.',
       closeChat: 'Fermer le chat',
       minimizeChat: 'Minimiser le chat',
-      emailPlaceholder: 'Votre email (optionnel)',
+      emailPlaceholder: 'Votre email',
       messageSent: 'Message envoyé ! Nous répondrons à votre email bientôt.',
       messageError: 'Erreur lors de l\'envoi. Veuillez réessayer.',
     },
@@ -72,10 +72,15 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || isSending) return;
+    const trimmedMessage = message.trim();
+    const trimmedEmail = email.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    const userMessage = message;
-    const userEmail = email;
+    if (!trimmedMessage || isSending) return;
+    if (!trimmedEmail || !emailRegex.test(trimmedEmail)) return;
+
+    const userMessage = trimmedMessage;
+    const userEmail = trimmedEmail;
 
     // Add user message to chat
     const newMessage = {
@@ -94,7 +99,7 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: userMessage,
-          email: userEmail || 'Non fourni',
+          email: userEmail,
           language: lang,
         }),
       });
@@ -237,6 +242,7 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder={t.emailPlaceholder}
+                  required
                   className="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-600 transition-colors text-sm"
                 />
                 <div className="flex gap-2">
@@ -249,7 +255,7 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
                   />
                   <button
                     type="submit"
-                    disabled={!message.trim() || isSending}
+                    disabled={!message.trim() || !email.trim() || isSending}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-400 disabled:cursor-not-allowed text-white rounded-full p-2.5 transition-all hover:scale-105 disabled:hover:scale-100"
                     aria-label={t.send}
                   >
