@@ -156,6 +156,14 @@ function PaymentForm({
         setPaymentIntentId(paymentIntent.id);
         setPaymentStatus('success');
         
+        const orderId = paymentIntent.id.slice(-8).toUpperCase();
+        const priceFormatted = formatAmount(amount, currency);
+        const orderDate = new Date().toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
+        
         // Google Ads Conversion Tracking
         if (typeof window !== 'undefined' && (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag) {
           (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
@@ -168,8 +176,17 @@ function PaymentForm({
 
         // Send confirmation email and Discord notification
         if (email && orderDetails) {
-          const orderId = paymentIntent.id.slice(-8).toUpperCase();
-          const priceFormatted = formatAmount(amount, currency);
+          // Store order details in sessionStorage for the confirmation page
+          const orderData = {
+            orderId,
+            platform: orderDetails.platform,
+            followers: orderDetails.followers,
+            price: priceFormatted,
+            email,
+            username: orderDetails.username,
+            date: orderDate,
+          };
+          sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
           
           // Send confirmation email
           try {
@@ -182,13 +199,10 @@ function PaymentForm({
                 orderDetails: {
                   platform: orderDetails.platform,
                   followers: orderDetails.followers,
+                  username: orderDetails.username,
                   price: priceFormatted,
                   orderId,
-                  date: new Date().toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  }),
+                  date: orderDate,
                 },
                 language,
               }),
@@ -215,6 +229,11 @@ function PaymentForm({
           } catch (discordError) {
             console.error('Failed to send Discord notification:', discordError);
           }
+          
+          // Redirect to order confirmation page after a short delay
+          setTimeout(() => {
+            window.location.href = `/${language}/order-confirmation`;
+          }, 1500);
         }
         
         if (onSuccess) {
