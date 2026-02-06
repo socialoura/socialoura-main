@@ -39,6 +39,7 @@ export async function initDatabase() {
         status VARCHAR(50) DEFAULT 'completed',
         order_status VARCHAR(50) DEFAULT 'pending',
         notes TEXT DEFAULT '',
+        country VARCHAR(100) DEFAULT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
@@ -49,6 +50,7 @@ export async function initDatabase() {
       await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_status VARCHAR(50) DEFAULT 'pending'`;
       await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS notes TEXT DEFAULT ''`;
       await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS cost DECIMAL(10, 2) DEFAULT 0`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS country VARCHAR(100) DEFAULT NULL`;
     } catch (e) {
       // Columns might already exist
       console.log('Columns may already exist:', e);

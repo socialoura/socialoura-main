@@ -28,6 +28,7 @@ interface Order {
   created_at: string;
   order_status?: string;
   notes?: string;
+  country?: string;
 }
 
 type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
@@ -1378,6 +1379,7 @@ export default function AdminDashboard() {
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Order ID</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Username</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Platform</th>
+                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Country</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Followers</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Price</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700 dark:text-gray-300">Cost</th>
@@ -1401,6 +1403,7 @@ export default function AdminDashboard() {
                             {order.platform}
                           </span>
                         </td>
+                        <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">{order.country || '-'}</td>
                         <td className="py-4 px-4 text-sm text-gray-600 dark:text-gray-400">{order.followers.toLocaleString()}</td>
                         <td className="py-4 px-4 text-sm font-semibold text-gray-900 dark:text-white">€{Number(order.price).toFixed(2)}</td>
                         <td className="py-4 px-4">
