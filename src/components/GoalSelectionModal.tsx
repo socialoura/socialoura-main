@@ -338,7 +338,7 @@ export default function GoalSelectionModal({
                       <span>-{goal.discount}%</span>
                     </div>
                     <div className="text-2xl font-black text-white mb-1 group-hover:text-purple-300 transition-colors">
-                      +{goal.followers.toLocaleString()}
+                      +{goal.followers.toLocaleString()} {language === 'fr' ? 'abonnés' : 'followers'}
                     </div>
                     <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                       {language === 'fr' ? `${goal.price.toFixed(2)}€` : `$${goal.price.toFixed(2)}`}
