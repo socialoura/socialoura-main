@@ -50,9 +50,11 @@ const BrandLogos = {
 const brandKeys = ['prix', 'dbrand', 'mixtiles', 'sennheiser', 'victoriasSecret', 'birkenstock'] as const;
 
 export default function TrustedBrands({ lang }: TrustedBrandsProps) {
-  const title = lang === 'en' 
-    ? 'Trusted by brands of all sizes' 
-    : 'La confiance des marques de toutes tailles';
+  const title = lang === 'fr' 
+    ? 'La confiance des marques de toutes tailles' 
+    : lang === 'de'
+    ? 'Vertraut von Marken jeder Größe'
+    : 'Trusted by brands of all sizes';
 
   const renderBrands = (keyPrefix: string) => (
     <div className="flex items-center gap-20 px-10 shrink-0">

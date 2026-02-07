@@ -36,7 +36,7 @@ export default function TikTokPage({ params }: PageProps) {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [showToast, setShowToast] = useState(false);
 
-  const getCurrency = () => (lang === 'fr' ? 'eur' : 'usd');
+  const getCurrency = () => (lang === 'fr' || lang === 'de' ? 'eur' : 'usd');
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -283,6 +283,96 @@ export default function TikTokPage({ params }: PageProps) {
         text: 'Avertissement de conformité : Tous nos services sont basés sur des stratégies marketing authentiques et des solutions de visibilité conformes aux politiques et conditions de la plateforme.',
       },
     },
+    de: {
+      hero: {
+        title: 'STEIGERN SIE IHRE PRÄSENZ AUF',
+        platform: 'TIKTOK',
+        subtitle: 'Professionelle Marketinglösungen über unser exklusives Partnernetzwerk — entwickelt, um Ihre Reichweite authentisch zu erweitern.',
+        badges: [
+          { text: '100% Authentischer Ansatz' },
+          { text: 'Sicher & Privat' },
+          { text: 'Von Kunden bestätigt' },
+        ],
+        cta: 'WEITER',
+      },
+      difference: {
+        title: 'Was macht Socialoura anders?',
+        cards: [
+          {
+            title: 'Nur authentisches Marketing',
+            description: 'Wir bewerben Ihre Inhalte durch echte Partnerschaften und strategische Kooperationen. Jede Interaktion ist echt und konform mit den Plattformrichtlinien.',
+            icon: 'Bot'
+          },
+          {
+            title: 'Zeitsparende Lösungen',
+            description: 'Konzentrieren Sie sich auf die Erstellung großartiger Inhalte, während wir die Marketingstrategie übernehmen. Unser professioneller Ansatz spart Ihnen Stunden.',
+            icon: 'Clock'
+          },
+          {
+            title: 'Glaubwürdigkeit richtig aufbauen',
+            description: 'Strategische Promotion über vertrauenswürdige Kanäle baut echte Autorität und Engagement mit Ihrer Zielgruppe auf.',
+            icon: 'Shield'
+          },
+        ],
+      },
+      howItWorks: {
+        title: 'So funktioniert es',
+        cards: [
+          {
+            number: '1',
+            title: 'WÄHLEN SIE IHR PAKET',
+            description: 'Wählen Sie die Marketing-Unterstützungsstufe, die zu Ihren Zielen passt. Unsere Pläne bieten professionelle Promotion über unser exklusives Partnernetzwerk.',
+            icon: 'Package'
+          },
+          {
+            number: '2',
+            title: 'WIR BEWERBEN IHRE INHALTE',
+            description: 'Wir teilen Ihre Inhalte über ausgewählte Plattformen, Creator und Communities, um Menschen zu erreichen, die sich für Ihre Nische interessieren.',
+            icon: 'Megaphone'
+          },
+          {
+            number: '3',
+            title: 'VERFOLGEN SIE DIE WIRKUNG',
+            description: 'Überwachen Sie Ihre Ergebnisse über Ihr Dashboard, während Ihre Inhalte neue Zielgruppen erreichen und stärkere Sichtbarkeit aufbauen.',
+            icon: 'BarChart3'
+          },
+        ],
+        cta: 'JETZT STARTEN',
+      },
+      benefits: {
+        title: 'Übernehmen Sie jetzt (wieder) die Kontrolle',
+        items: [
+          'Größere Sichtbarkeit für Ihre Inhalte',
+          'Stärkere Präsenz auf allen Plattformen',
+          'Gewinnen Sie das Vertrauen Ihres Publikums durch konsistente Präsenz',
+          'Erreichen Sie mehr Menschen, die sich für Ihre Nische interessieren',
+          'Professioneller und sicherer Prozess',
+        ],
+      },
+      pricing: {
+        title: 'Testen Sie unser Abo mit unserem Probenangebot',
+        plan: {
+          name: 'PREMIUM',
+          price: '39,90€',
+          period: 'pro Monat',
+          features: [
+            '24h Probezeit zum Entdecken aller Funktionen',
+            'Zielgruppenrecherche und Targeting',
+            'Content-Platzierungsberatung',
+            'Professionelle Promotion',
+            'Strategische Empfehlungen zur Reichweitensteigerung',
+          ],
+          cta: 'JETZT ABONNIEREN',
+        },
+      },
+      finalCta: {
+        title: 'Viel mehr als nur eine Lösung. Ein echter Partner für Ihren Erfolg.',
+        cta: 'JETZT STARTEN',
+      },
+      compliance: {
+        text: 'Konformitätshinweis: Alle unsere Dienstleistungen basieren auf authentischen Marketingstrategien und Sichtbarkeitslösungen in Übereinstimmung mit den Plattformrichtlinien und Nutzungsbedingungen.',
+      },
+    },
   };
 
   const t = content[lang];
@@ -342,7 +432,7 @@ export default function TikTokPage({ params }: PageProps) {
                     type="text"
                     value={username}
                     onChange={handleUsernameChange}
-                    placeholder={lang === 'en' ? 'username' : 'nomutilisateur'}
+                    placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : 'username'}
                     className="w-full pl-10 pr-4 py-4 text-base bg-transparent border-0 focus:ring-0 text-white placeholder-gray-500"
                     onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
                   />
@@ -367,13 +457,13 @@ export default function TikTokPage({ params }: PageProps) {
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Paiement sécurisé' : 'Secure payment'}</span>
+                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Résultats garantis' : 'Guaranteed results'}</span>
+                  <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : 'Guaranteed results'}</span>
                 </div>
               </div>
             </div>
@@ -566,10 +656,10 @@ export default function TikTokPage({ params }: PageProps) {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">
-                  {lang === 'en' ? 'Payment Successful!' : 'Paiement Réussi !'}
+                  {lang === 'fr' ? 'Paiement Réussi !' : lang === 'de' ? 'Zahlung erfolgreich!' : 'Payment Successful!'}
                 </p>
                 <p className="text-xs text-green-50">
-                  {lang === 'en' ? 'Your order has been confirmed' : 'Votre commande a été confirmée'}
+                  {lang === 'fr' ? 'Votre commande a été confirmée' : lang === 'de' ? 'Ihre Bestellung wurde bestätigt' : 'Your order has been confirmed'}
                 </p>
               </div>
             </div>

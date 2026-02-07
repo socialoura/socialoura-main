@@ -20,6 +20,7 @@ interface Review {
   text: {
     en: string;
     fr: string;
+    de: string;
   };
   date: string;
   verified: boolean;
@@ -37,6 +38,7 @@ const reviews: Review[] = [
     text: {
       en: 'Incredible service! I was skeptical at first, but the results exceeded my expectations. My engagement has increased significantly and the followers look completely organic. Highly recommend!',
       fr: 'Service incroyable ! J\'étais sceptique au début, mais les résultats ont dépassé mes attentes. Mon engagement a considérablement augmenté et les abonnés semblent totalement organiques. Je recommande vivement !',
+      de: 'Unglaublicher Service! Anfangs war ich skeptisch, aber die Ergebnisse haben meine Erwartungen übertroffen. Mein Engagement ist deutlich gestiegen und die Follower sehen völlig organisch aus. Sehr empfehlenswert!',
     },
     date: '2 days ago',
     verified: true,
@@ -52,6 +54,7 @@ const reviews: Review[] = [
     text: {
       en: 'As a fitness influencer, I needed real growth. SocialOura delivered exactly that. The delivery was gradual and natural-looking. My brand partnerships have increased since using their service.',
       fr: 'En tant qu\'influenceur fitness, j\'avais besoin d\'une vraie croissance. SocialOura a livré exactement cela. La livraison était progressive et naturelle. Mes partenariats de marque ont augmenté depuis.',
+      de: 'Als Fitness-Influencer brauchte ich echtes Wachstum. SocialOura hat genau das geliefert. Die Lieferung war schrittweise und natürlich. Meine Markenpartnerschaften sind seitdem gestiegen.',
     },
     date: '1 week ago',
     verified: true,
@@ -67,6 +70,7 @@ const reviews: Review[] = [
     text: {
       en: 'Started with 500 followers on TikTok, now I\'m at 15K! The growth was steady and my videos started getting way more views. Best investment for my content creator journey.',
       fr: 'J\'ai commencé avec 500 abonnés sur TikTok, maintenant j\'en ai 15K ! La croissance était régulière et mes vidéos ont commencé à avoir beaucoup plus de vues. Meilleur investissement pour ma carrière de créatrice.',
+      de: 'Angefangen mit 500 Followern auf TikTok, jetzt bin ich bei 15K! Das Wachstum war stetig und meine Videos bekamen viel mehr Aufrufe. Beste Investition für meine Creator-Karriere.',
     },
     date: '3 days ago',
     verified: true,
@@ -82,6 +86,7 @@ const reviews: Review[] = [
     text: {
       en: 'Professional photography account needed a boost. Got exactly what I paid for, delivered on time. The support team was super helpful when I had questions. Will order again!',
       fr: 'Mon compte de photographie professionnelle avait besoin d\'un coup de pouce. J\'ai eu exactement ce pour quoi j\'ai payé, livré à temps. L\'équipe support était super utile. Je commanderai à nouveau !',
+      de: 'Mein professionelles Fotografie-Konto brauchte einen Schub. Genau das bekommen, wofür ich bezahlt habe, pünktlich geliefert. Das Support-Team war super hilfreich. Werde wieder bestellen!',
     },
     date: '5 days ago',
     verified: true,
@@ -97,6 +102,7 @@ const reviews: Review[] = [
     text: {
       en: 'My travel content finally getting the attention it deserves! The followers are real and engaging with my posts. Customer service responded within hours. Amazing experience overall.',
       fr: 'Mon contenu voyage reçoit enfin l\'attention qu\'il mérite ! Les abonnés sont réels et interagissent avec mes posts. Le service client a répondu en quelques heures. Expérience incroyable !',
+      de: 'Mein Reise-Content bekommt endlich die Aufmerksamkeit, die er verdient! Die Follower sind echt und interagieren mit meinen Beiträgen. Der Kundenservice hat innerhalb von Stunden geantwortet. Tolle Erfahrung!',
     },
     date: '1 week ago',
     verified: true,
@@ -112,6 +118,7 @@ const reviews: Review[] = [
     text: {
       en: 'As a musician, visibility is everything. SocialOura helped me reach new audiences. My music clips are now getting shared more than ever. The growth feels completely natural!',
       fr: 'En tant que musicien, la visibilité est primordiale. SocialOura m\'a aidé à atteindre de nouveaux publics. Mes clips sont maintenant partagés plus que jamais. La croissance semble totalement naturelle !',
+      de: 'Als Musiker ist Sichtbarkeit alles. SocialOura hat mir geholfen, neues Publikum zu erreichen. Meine Musikclips werden jetzt mehr geteilt als je zuvor. Das Wachstum fühlt sich völlig natürlich an!',
     },
     date: '4 days ago',
     verified: true,
@@ -127,6 +134,7 @@ const reviews: Review[] = [
     text: {
       en: 'Beauty brands started noticing me after my follower count grew! The process was seamless and secure. No password needed, just my username. Super safe and effective.',
       fr: 'Les marques de beauté ont commencé à me remarquer après la croissance de mes abonnés ! Le processus était fluide et sécurisé. Pas de mot de passe requis, juste mon nom d\'utilisateur. Super sûr et efficace.',
+      de: 'Beauty-Marken begannen mich zu bemerken, nachdem meine Followerzahl gewachsen ist! Der Prozess war nahtlos und sicher. Kein Passwort nötig, nur mein Benutzername. Super sicher und effektiv.',
     },
     date: '6 days ago',
     verified: true,
@@ -142,6 +150,7 @@ const reviews: Review[] = [
     text: {
       en: 'Food blogger here! My recipes are reaching so many more people now. The engagement on my posts has doubled. Worth every penny. Thank you SocialOura!',
       fr: 'Blogueur culinaire ici ! Mes recettes atteignent tellement plus de personnes maintenant. L\'engagement sur mes posts a doublé. Chaque centime en valait la peine. Merci SocialOura !',
+      de: 'Food-Blogger hier! Meine Rezepte erreichen jetzt so viel mehr Menschen. Das Engagement auf meinen Beiträgen hat sich verdoppelt. Jeden Cent wert. Danke SocialOura!',
     },
     date: '1 week ago',
     verified: true,
@@ -168,6 +177,12 @@ export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectio
       subtitle: 'Rejoignez des milliers de clients satisfaits qui ont développé leur présence sur les réseaux sociaux avec SocialOura',
       verified: 'Achat Vérifié',
       followers: 'abonnés gagnés',
+    },
+    de: {
+      title: 'Beliebt bei Creators weltweit',
+      subtitle: 'Schließen Sie sich Tausenden zufriedener Kunden an, die ihre Social-Media-Präsenz mit SocialOura ausgebaut haben',
+      verified: 'Verifizierter Kauf',
+      followers: 'Follower gewonnen',
     },
   };
 
@@ -227,21 +242,21 @@ export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectio
               <div className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 50K+
               </div>
-              <div className="text-sm text-gray-500">{lang === 'en' ? 'Happy Customers' : 'Clients Satisfaits'}</div>
+              <div className="text-sm text-gray-500">{lang === 'fr' ? 'Clients Satisfaits' : lang === 'de' ? 'Zufriedene Kunden' : 'Happy Customers'}</div>
             </div>
             <div className="w-px h-12 bg-gray-700" />
             <div className="text-center">
               <div className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 4.9/5
               </div>
-              <div className="text-sm text-gray-500">{lang === 'en' ? 'Average Rating' : 'Note Moyenne'}</div>
+              <div className="text-sm text-gray-500">{lang === 'fr' ? 'Note Moyenne' : lang === 'de' ? 'Durchschnittsbewertung' : 'Average Rating'}</div>
             </div>
             <div className="w-px h-12 bg-gray-700" />
             <div className="text-center">
               <div className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 10M+
               </div>
-              <div className="text-sm text-gray-500">{lang === 'en' ? 'Followers Delivered' : 'Abonnés Livrés'}</div>
+              <div className="text-sm text-gray-500">{lang === 'fr' ? 'Abonnés Livrés' : lang === 'de' ? 'Follower geliefert' : 'Followers Delivered'}</div>
             </div>
           </div>
         </div>
@@ -390,19 +405,19 @@ export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectio
             <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
-            <span className="text-sm">{lang === 'en' ? 'Verified Reviews' : 'Avis Vérifiés'}</span>
+            <span className="text-sm">{lang === 'fr' ? 'Avis Vérifiés' : lang === 'de' ? 'Verifizierte Bewertungen' : 'Verified Reviews'}</span>
           </div>
           <div className="flex items-center gap-2">
             <svg className="w-5 h-5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
             </svg>
-            <span className="text-sm">{lang === 'en' ? 'Secure Payments' : 'Paiements Sécurisés'}</span>
+            <span className="text-sm">{lang === 'fr' ? 'Paiements Sécurisés' : lang === 'de' ? 'Sichere Zahlungen' : 'Secure Payments'}</span>
           </div>
           <div className="flex items-center gap-2">
             <svg className="w-5 h-5 text-purple-500" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
             </svg>
-            <span className="text-sm">{lang === 'en' ? '5-Star Service' : 'Service 5 Étoiles'}</span>
+            <span className="text-sm">{lang === 'fr' ? 'Service 5 Étoiles' : lang === 'de' ? '5-Sterne-Service' : '5-Star Service'}</span>
           </div>
         </div>
       </div>

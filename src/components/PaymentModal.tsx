@@ -12,7 +12,7 @@ interface PaymentModalProps {
   onClose: () => void;
   onSuccess?: (paymentIntentId: string, email?: string) => void;
   productName?: string;
-  language?: 'en' | 'fr';
+  language?: 'en' | 'fr' | 'de';
   email?: string;
   onPromoApplied?: (discount: number, finalAmount: number, promoCode: string) => void;
   orderDetails?: {
@@ -116,6 +116,30 @@ function PaymentForm({
       promoApply: 'Appliquer',
       promoApplied: 'appliqué !',
     },
+    de: {
+      title: 'Zahlung abschließen',
+      titleSuccess: 'Zahlung erfolgreich!',
+      processing: 'Verarbeitung...',
+      loadingForm: 'Zahlungsformular wird geladen...',
+      paymentComplete: 'Zahlung erfolgreich!',
+      paymentSuccessDesc: 'Ihre Zahlung wurde erfolgreich verarbeitet.',
+      paymentId: 'Zahlungs-ID:',
+      payButton: 'Bezahlen',
+      cancel: 'Abbrechen',
+      close: 'Schließen',
+      securePayment: 'Sichere Zahlung über Stripe',
+      paymentFailed: 'Zahlung fehlgeschlagen',
+      initializingPayment: 'Sichere Zahlung wird initialisiert...',
+      paymentSetupFailed: 'Einrichtung fehlgeschlagen',
+      termsLabel: 'Ich habe die',
+      termsLink: 'Allgemeinen Geschäftsbedingungen',
+      safeTransaction: 'Sichere Transaktion',
+      secureEncryption: 'Sichere SSL-Verschlüsselung',
+      serviceGuaranteed: 'Service garantiert',
+      promoPlaceholder: 'Gutscheincode eingeben',
+      promoApply: 'Anwenden',
+      promoApplied: 'angewendet!',
+    },
   };
 
   const t = text[language];
@@ -158,7 +182,7 @@ function PaymentForm({
         
         const orderId = paymentIntent.id.slice(-8).toUpperCase();
         const priceFormatted = formatAmount(amount, currency);
-        const orderDate = new Date().toLocaleDateString(language === 'fr' ? 'fr-FR' : 'en-US', {
+        const orderDate = new Date().toLocaleDateString(language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : 'en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
@@ -531,6 +555,11 @@ export default function PaymentModal({
       initializingPayment: 'Initialisation du paiement sécurisé...',
       paymentSetupFailed: 'Échec de la Configuration',
       close: 'Fermer',
+    },
+    de: {
+      initializingPayment: 'Sichere Zahlung wird initialisiert...',
+      paymentSetupFailed: 'Einrichtung fehlgeschlagen',
+      close: 'Schließen',
     },
   };
 

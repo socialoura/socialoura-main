@@ -8,14 +8,16 @@ interface FooterProps {
 export default function Footer({ lang }: FooterProps) {
   const currentYear = new Date().getFullYear();
   
-  const footerText = lang === 'en' 
-    ? `© ${currentYear} Socialoura. All rights reserved.`
-    : `© ${currentYear} Socialoura. Tous droits réservés.`;
+  const footerText = lang === 'fr' 
+    ? `© ${currentYear} Socialoura. Tous droits réservés.`
+    : lang === 'de'
+    ? `© ${currentYear} Socialoura. Alle Rechte vorbehalten.`
+    : `© ${currentYear} Socialoura. All rights reserved.`;
     
-  const linksTitle = lang === 'en' ? 'Quick Links' : 'Liens rapides';
-  const aboutText = lang === 'en' ? 'About' : 'À propos';
-  const contactText = lang === 'en' ? 'Contact' : 'Contact';
-  const privacyText = lang === 'en' ? 'Privacy' : 'Confidentialité';
+  const linksTitle = lang === 'fr' ? 'Liens rapides' : lang === 'de' ? 'Schnelllinks' : 'Quick Links';
+  const aboutText = lang === 'fr' ? 'À propos' : lang === 'de' ? 'Über uns' : 'About';
+  const contactText = lang === 'fr' ? 'Contact' : lang === 'de' ? 'Kontakt' : 'Contact';
+  const privacyText = lang === 'fr' ? 'Confidentialité' : lang === 'de' ? 'Datenschutz' : 'Privacy';
   const faqText = 'FAQ';
   const instagramText = lang === 'en' ? 'Instagram' : 'Instagram';
   const tiktokText = lang === 'en' ? 'TikTok' : 'TikTok';
@@ -100,7 +102,7 @@ export default function Footer({ lang }: FooterProps) {
           
           <div>
             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-              {lang === 'en' ? 'Follow Us' : 'Suivez-nous'}
+              {lang === 'fr' ? 'Suivez-nous' : lang === 'de' ? 'Folgen Sie uns' : 'Follow Us'}
             </h4>
             <div className="flex gap-4">
               <a 

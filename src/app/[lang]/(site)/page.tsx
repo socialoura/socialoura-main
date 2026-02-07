@@ -169,6 +169,80 @@ export default function HomePage({ params }: PageProps) {
         ],
       },
     },
+    de: {
+      hero: {
+        headline: 'Steigern Sie Ihre Social-Media-Präsenz',
+        subheadline: 'Professionelle Marketinglösungen, um Ihren Instagram- und TikTok-Accounts zu vollem Potenzial zu verhelfen',
+        instagramCta: 'Instagram',
+        tiktokCta: 'TikTok',
+      },
+      services: {
+        title: 'Unsere Dienstleistungen',
+        subtitle: 'Alles, was Sie für Ihren Social-Media-Erfolg brauchen',
+        items: [
+          {
+            title: 'Instagram Marketing',
+            description: 'Strategische Marketingkampagnen, um Ihre Instagram-Reichweite zu erweitern und Ihre ideale Zielgruppe zu erreichen.',
+            icon: Camera,
+          },
+          {
+            title: 'TikTok Promotion',
+            description: 'Professionelle Werbestrategien zur Steigerung Ihrer TikTok-Sichtbarkeit und Ihres Publikums-Engagements.',
+            icon: Music,
+          },
+          {
+            title: 'Analytics Dashboard',
+            description: 'Verfolgen Sie Ihren Fortschritt mit detaillierten Analysen und Einblicken zur Optimierung Ihrer Social-Media-Strategie.',
+            icon: BarChart3,
+          },
+          {
+            title: 'Content-Strategie',
+            description: 'Planen und organisieren Sie Ihre Inhalte im Voraus, um eine konsistente Präsenz auf Ihren Kanälen zu gewährleisten.',
+            icon: Calendar,
+          },
+          {
+            title: 'Zielgruppenentwicklung',
+            description: 'Bauen Sie bedeutungsvolle Verbindungen zu Ihrer Zielgruppe auf, um Ihre Sichtbarkeit und Reichweite zu steigern.',
+            icon: MessageCircle,
+          },
+          {
+            title: '24/7 Support',
+            description: 'Unser engagiertes Support-Team ist immer bereit, Ihnen zu helfen, Ihre Ergebnisse zu maximieren.',
+            icon: HeadphonesIcon,
+          },
+        ],
+      },
+      faq: {
+        title: 'Häufig gestellte Fragen',
+        subtitle: 'Alles, was Sie über unsere Dienstleistungen wissen müssen',
+        items: [
+          {
+            question: 'Ist Ihr Service sicher für mein Konto?',
+            answer: 'Ja, unsere Marketingstrategien sind so konzipiert, dass sie den Plattformrichtlinien und Best Practices entsprechen, um Ihr Konto sicher zu halten.',
+          },
+          {
+            question: 'Wie schnell werde ich Ergebnisse sehen?',
+            answer: 'Die meisten Kunden sehen innerhalb der ersten 2-4 Wochen spürbare Verbesserungen, mit stetigem Fortschritt über die Zeit.',
+          },
+          {
+            question: 'Kann ich mein Abonnement jederzeit kündigen?',
+            answer: 'Absolut! Sie können Ihr Abonnement jederzeit ohne Angabe von Gründen kündigen. Keine versteckten Gebühren oder Verpflichtungen.',
+          },
+          {
+            question: 'Bieten Sie eine kostenlose Testversion an?',
+            answer: 'Ja, wir bieten eine 7-tägige kostenlose Testversion für alle unsere Pläne an, damit Sie unsere Dienste risikofrei testen können.',
+          },
+          {
+            question: 'Was unterscheidet Sie von der Konkurrenz?',
+            answer: 'Wir konzentrieren uns auf authentische Zielgruppenentwicklung mit strategischem Targeting, bieten erstklassigen Kundensupport und transparente Preise ohne versteckte Kosten.',
+          },
+          {
+            question: 'Welche Plattformen unterstützen Sie?',
+            answer: 'Derzeit unterstützen wir Instagram und TikTok, mit Plänen, in naher Zukunft auf weitere Plattformen zu expandieren.',
+          },
+        ],
+      },
+    },
   };
 
   const t = content[lang];
@@ -232,13 +306,13 @@ export default function HomePage({ params }: PageProps) {
                 <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
-                <span>{lang === 'fr' ? 'Paiement sécurisé' : 'Secure payment'}</span>
+                <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
               </div>
               <div className="flex items-center gap-1">
                 <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>{lang === 'fr' ? 'Résultats garantis' : 'Guaranteed results'}</span>
+                <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : 'Guaranteed results'}</span>
               </div>
             </div>
           </div>

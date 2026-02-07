@@ -32,10 +32,29 @@ export default function Header({ lang }: HeaderProps) {
     return `/${targetLang}${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
   };
 
-  // Toggle to the other language
+  // Cycle to the next language
+  const getNextLang = (): Language => {
+    if (lang === 'en') return 'fr';
+    if (lang === 'fr') return 'de';
+    return 'en';
+  };
+
+  const getNextFlagCode = () => {
+    const next = getNextLang();
+    if (next === 'fr') return 'FR';
+    if (next === 'de') return 'DE';
+    return 'GB';
+  };
+
+  const getNextLangName = () => {
+    const next = getNextLang();
+    if (next === 'fr') return 'Français';
+    if (next === 'de') return 'Deutsch';
+    return 'English';
+  };
+
   const toggleLanguage = () => {
-    const newLang = lang === 'en' ? 'fr' : 'en';
-    return getPathForLanguage(newLang);
+    return getPathForLanguage(getNextLang());
   };
 
   return (
@@ -81,7 +100,7 @@ export default function Header({ lang }: HeaderProps) {
               href={`/${lang}/pricing`}
               className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              {lang === 'en' ? 'Pricing' : 'Tarifs'}
+              {lang === 'fr' ? 'Tarifs' : lang === 'de' ? 'Preise' : 'Pricing'}
             </Link>
             <Link
               href={`/${lang}/contact`}
@@ -103,17 +122,17 @@ export default function Header({ lang }: HeaderProps) {
             <Link
               href={toggleLanguage()}
               className="px-2 py-1 rounded-md transition-all hover:scale-110 flex items-center"
-              aria-label={lang === 'en' ? 'Passer au français' : 'Switch to English'}
-              title={lang === 'en' ? 'Français' : 'English'}
+              aria-label={getNextLangName()}
+              title={getNextLangName()}
             >
               <ReactCountryFlag
-                countryCode={lang === 'en' ? 'FR' : 'GB'}
+                countryCode={getNextFlagCode()}
                 svg
                 style={{
                   width: '1.5em',
                   height: '1.5em',
                 }}
-                title={lang === 'en' ? 'Français' : 'English'}
+                title={getNextLangName()}
               />
             </Link>
             
@@ -161,7 +180,7 @@ export default function Header({ lang }: HeaderProps) {
                 className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {lang === 'en' ? 'Pricing' : 'Tarifs'}
+                {lang === 'fr' ? 'Tarifs' : lang === 'de' ? 'Preise' : 'Pricing'}
               </Link>
               <Link
                 href={`/${lang}/contact`}
@@ -185,15 +204,15 @@ export default function Header({ lang }: HeaderProps) {
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 <ReactCountryFlag
-                  countryCode={lang === 'en' ? 'FR' : 'GB'}
+                  countryCode={getNextFlagCode()}
                   svg
                   style={{
                     width: '1.5em',
                     height: '1.5em',
                   }}
-                  title={lang === 'en' ? 'Français' : 'English'}
+                  title={getNextLangName()}
                 />
-                <span>{lang === 'en' ? 'Français' : 'English'}</span>
+                <span>{getNextLangName()}</span>
               </Link>
             </nav>
           </div>

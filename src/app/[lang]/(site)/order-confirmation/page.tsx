@@ -24,8 +24,6 @@ export default function OrderConfirmationPage({
   const [orderDetails, setOrderDetails] = useState<OrderDetails | null>(null);
   const [mounted, setMounted] = useState(false);
 
-  const isEnglish = lang === 'en';
-
   const text = {
     en: {
       title: 'Thank You for Your Order!',
@@ -54,6 +52,34 @@ export default function OrderConfirmationPage({
       securePayment: 'Secure Payment',
       fastDelivery: 'Fast Delivery',
       guarantee: '100% Guarantee',
+    },
+    de: {
+      title: 'Vielen Dank für Ihre Bestellung!',
+      subtitle: 'Ihre Zahlung war erfolgreich',
+      orderConfirmed: 'Bestellung bestätigt',
+      orderNumber: 'Bestellnummer',
+      emailSent: 'Bestätigungs-E-Mail gesendet an',
+      orderDetails: 'Bestelldetails',
+      platform: 'Plattform',
+      followers: 'Follower',
+      username: 'Benutzername',
+      total: 'Gesamt',
+      date: 'Datum',
+      whatNext: 'Was kommt als Nächstes?',
+      step1Title: 'Bestellung wird bearbeitet',
+      step1Desc: 'Ihre Bestellung wird jetzt von unserem Team bearbeitet',
+      step2Title: 'Schrittweise Lieferung',
+      step2Desc: 'Sie werden innerhalb von 24-48 Stunden erste Ergebnisse sehen',
+      step3Title: 'Natürliches Wachstum',
+      step3Desc: 'Follower werden schrittweise für authentisches Engagement hinzugefügt',
+      backHome: 'Zurück zur Startseite',
+      viewPricing: 'Andere Angebote ansehen',
+      support: 'Brauchen Sie Hilfe?',
+      contactSupport: 'Support kontaktieren',
+      thankYouMessage: 'Wir schätzen Ihr Vertrauen in SocialOura. Ihr Erfolg ist unsere Priorität!',
+      securePayment: 'Sichere Zahlung',
+      fastDelivery: 'Schnelle Lieferung',
+      guarantee: '100% Garantie',
     },
     fr: {
       title: 'Merci pour Votre Commande !',
@@ -85,7 +111,7 @@ export default function OrderConfirmationPage({
     },
   };
 
-  const t = text[isEnglish ? 'en' : 'fr'];
+  const t = text[lang as keyof typeof text] || text.en;
 
   useEffect(() => {
     setMounted(true);
@@ -117,14 +143,14 @@ export default function OrderConfirmationPage({
         price,
         email: email || '',
         username: username || '',
-        date: new Date().toLocaleDateString(isEnglish ? 'en-US' : 'fr-FR', {
+        date: new Date().toLocaleDateString(lang === 'fr' ? 'fr-FR' : lang === 'de' ? 'de-DE' : 'en-US', {
           year: 'numeric',
           month: 'long',
           day: 'numeric',
         }),
       });
     }
-  }, [searchParams, isEnglish]);
+  }, [searchParams, lang]);
 
   if (!mounted) {
     return null;

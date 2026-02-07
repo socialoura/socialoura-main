@@ -46,6 +46,23 @@ export default function PricingPage({ params }: PageProps) {
         cta: 'S\'ABONNER MAINTENANT',
       },
     },
+    de: {
+      title: 'Testen Sie unser Abo mit unserem Probenangebot',
+      subtitle: 'Beginnen Sie noch heute, Ihre Social-Media-Präsenz auszubauen',
+      plan: {
+        name: 'PREMIUM',
+        price: '39,90€',
+        period: 'pro Monat',
+        features: [
+          '24h Probezeit zum Entdecken aller Funktionen',
+          'Zielgruppenrecherche und Targeting',
+          'Content-Platzierungsempfehlungen',
+          'Manuelle, von Menschen gesteuerte Promotion',
+          'Strategische Empfehlungen zur Reichweitensteigerung',
+        ],
+        cta: 'JETZT ABONNIEREN',
+      },
+    },
   };
 
   const t = content[lang];

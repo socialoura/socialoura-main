@@ -172,6 +172,83 @@ export default function FAQPage({ params }: PageProps) {
       contactEmail: 'Envoyez-nous un email',
       responseTime: 'Nous répondons sous 24 heures',
     },
+    de: {
+      title: 'Häufig gestellte Fragen',
+      subtitle: 'Finden Sie Antworten auf die häufigsten Fragen zu unseren Dienstleistungen',
+      categories: {
+        general: 'Allgemein',
+        orders: 'Bestellungen & Lieferung',
+        payment: 'Zahlung & Sicherheit',
+        support: 'Support',
+      },
+      faqs: [
+        {
+          category: 'general',
+          question: 'Was ist SocialOura?',
+          answer: 'SocialOura ist eine professionelle Marketingplattform, die Ihnen hilft, Ihre Social-Media-Präsenz auf Instagram und TikTok über unser exklusives Partnernetzwerk auszubauen. Wir bieten authentisches Engagement, um Ihre Reichweite zu erweitern.',
+        },
+        {
+          category: 'general',
+          question: 'Ist die Nutzung Ihrer Dienste sicher?',
+          answer: 'Ja, absolut! Wir verwenden sichere und konforme Methoden, die die Plattformrichtlinien respektieren. Ihre Kontosicherheit hat für uns höchste Priorität, und wir fragen niemals nach Ihrem Passwort.',
+        },
+        {
+          category: 'general',
+          question: 'Wird mein Konto gesperrt?',
+          answer: 'Nein. Wir verwenden schrittweise Liefermethoden, die organische Wachstumsmuster nachahmen. Dies stellt sicher, dass Ihr Konto sicher und in gutem Zustand bleibt.',
+        },
+        {
+          category: 'orders',
+          question: 'Wie lange dauert die Lieferung?',
+          answer: 'Die Lieferung beginnt in der Regel innerhalb von 0-24 Stunden nach Bestätigung Ihrer Bestellung. Die vollständige Lieferung erfolgt schrittweise über 24-72 Stunden für natürlich wirkendes Wachstum.',
+        },
+        {
+          category: 'orders',
+          question: 'Muss ich mein Passwort angeben?',
+          answer: 'Nein, niemals! Wir benötigen nur Ihren öffentlichen Benutzernamen. Wir werden niemals nach Ihrem Passwort oder sensiblen Kontoinformationen fragen.',
+        },
+        {
+          category: 'orders',
+          question: 'Was passiert, wenn ich meine Bestellung nicht erhalte?',
+          answer: 'Wenn Sie Probleme mit Ihrer Bestellung haben, kontaktieren Sie bitte unser Support-Team. Wir bieten eine vollständige Rückerstattung oder Neulieferung, falls wir Ihre Bestellung nicht liefern können.',
+        },
+        {
+          category: 'orders',
+          question: 'Kann ich für mehrere Konten bestellen?',
+          answer: 'Ja! Sie können separate Bestellungen für verschiedene Konten aufgeben. Jede Bestellung wird unabhängig bearbeitet.',
+        },
+        {
+          category: 'payment',
+          question: 'Welche Zahlungsmethoden akzeptieren Sie?',
+          answer: 'Wir akzeptieren alle gängigen Kreditkarten (Visa, Mastercard, American Express), Apple Pay und Google Pay über unseren sicheren Stripe-Zahlungsprozessor.',
+        },
+        {
+          category: 'payment',
+          question: 'Sind meine Zahlungsinformationen sicher?',
+          answer: 'Ja, zu 100%. Wir verwenden Stripe, einen PCI-konformen Zahlungsprozessor. Ihre Zahlungsdaten werden verschlüsselt und niemals auf unseren Servern gespeichert.',
+        },
+        {
+          category: 'payment',
+          question: 'Bieten Sie Rückerstattungen an?',
+          answer: 'Ja, wir bieten Rückerstattungen an, wenn wir Ihre Bestellung nicht liefern können. Bitte kontaktieren Sie unser Support-Team innerhalb von 7 Tagen nach Ihrem Kauf bei Problemen.',
+        },
+        {
+          category: 'support',
+          question: 'Wie kann ich den Support kontaktieren?',
+          answer: 'Sie können uns über das Chat-Widget auf unserer Website erreichen oder uns eine E-Mail an support@socialoura.com senden. Wir antworten in der Regel innerhalb von 24 Stunden.',
+        },
+        {
+          category: 'support',
+          question: 'Was sind Ihre Support-Zeiten?',
+          answer: 'Unser Support-Team ist montags bis freitags von 9 bis 18 Uhr (MEZ) verfügbar. Für dringende Angelegenheiten nutzen Sie bitte das Chat-Widget für schnellere Antworten.',
+        },
+      ],
+      contactTitle: 'Noch Fragen?',
+      contactSubtitle: 'Unser Support-Team ist hier, um Ihnen zu helfen',
+      contactChat: 'Mit uns chatten',
+      contactEmail: 'E-Mail senden',
+      responseTime: 'Wir antworten innerhalb von 24 Stunden',
+    },
   };
 
   const t = content[lang];

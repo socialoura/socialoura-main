@@ -11,7 +11,7 @@ interface OrderSuccessModalProps {
   amount: number;
   currency: string;
   username: string;
-  language?: 'en' | 'fr';
+  language?: 'en' | 'fr' | 'de';
 }
 
 export default function OrderSuccessModal({
@@ -60,6 +60,22 @@ export default function OrderSuccessModal({
       step2: 'Vous recevrez un email de confirmation sous peu',
       step3: 'Les résultats seront visibles dans 24-48 heures',
       close: 'Fermer',
+    },
+    de: {
+      title: 'Bestellung bestätigt!',
+      subtitle: 'Vielen Dank für Ihren Einkauf',
+      orderSummary: 'Bestellübersicht',
+      username: 'Benutzername',
+      product: 'Produkt',
+      amount: 'Betrag',
+      paymentId: 'Zahlungs-ID',
+      copyId: 'ID kopieren',
+      copied: 'Kopiert!',
+      nextSteps: 'Nächste Schritte?',
+      step1: 'Ihre Bestellung wird bearbeitet',
+      step2: 'Sie erhalten in Kürze eine Bestätigungs-E-Mail',
+      step3: 'Ergebnisse werden innerhalb von 24-48 Stunden sichtbar',
+      close: 'Schließen',
     },
   };
 

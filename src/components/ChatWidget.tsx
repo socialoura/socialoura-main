@@ -46,6 +46,20 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
       messageSent: 'Message envoyé ! Nous répondrons à votre email bientôt.',
       messageError: 'Erreur lors de l\'envoi. Veuillez réessayer.',
     },
+    de: {
+      title: 'Chatten Sie mit uns',
+      subtitle: 'Wir sind hier, um zu helfen!',
+      placeholder: 'Ihre Nachricht eingeben...',
+      send: 'Senden',
+      online: 'Online',
+      typingIndicator: 'Support schreibt...',
+      initialMessage: 'Hallo! Wie können wir Ihnen helfen? Hinterlassen Sie Ihre Nachricht und E-Mail, wir melden uns in Kürze.',
+      closeChat: 'Chat schließen',
+      minimizeChat: 'Chat minimieren',
+      emailPlaceholder: 'Ihre E-Mail',
+      messageSent: 'Nachricht gesendet! Wir antworten bald auf Ihre E-Mail.',
+      messageError: 'Fehler beim Senden. Bitte versuchen Sie es erneut.',
+    },
   };
 
   const t = content[lang];

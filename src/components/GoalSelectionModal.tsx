@@ -17,7 +17,7 @@ interface GoalSelectionModalProps {
   onSelectGoal: (goal: FollowerGoal, email: string) => void;
   username: string;
   platform: 'instagram' | 'tiktok';
-  language?: 'en' | 'fr';
+  language?: 'en' | 'fr' | 'de';
 }
 
 export default function GoalSelectionModal({
@@ -63,6 +63,19 @@ export default function GoalSelectionModal({
       custom: 'Personnalisé',
       customFollowers: 'Forfait personnalisé',
       selectCustomAmount: 'Sélectionnez votre niveau d\'exposition souhaité',
+    },
+    de: {
+      title: 'Wählen Sie Ihr Sichtbarkeitspaket',
+      emailLabel: 'E-Mail-Adresse',
+      emailPlaceholder: 'ihre@email.com',
+      continue: 'Weiter',
+      disclaimer: `**Socialoura steht vollständig im Einklang mit den Nutzungsbedingungen von ${platform === 'instagram' ? 'Instagram' : 'TikTok'} und Google Ads. Unser Ansatz basiert auf authentischen Marketingstrategien und professionellen Partnerschaften.**`,
+      disclaimerPart2: 'Wir steigern die Sichtbarkeit Ihres Profils, indem wir Ihre Inhalte über unser globales Partnernetzwerk teilen, darunter echte Creator, mobile Plattformen, Influencer-Gruppen und Nischen-Communities. Das gewählte Paket bestimmt das Maß an Reichweite, das durch diese Partnerschaften erzielt wird.',
+      disclaimerPart3: '**Haftungsausschluss:** Die Sichtbarkeitsergebnisse hängen von der Qualität Ihres Contents, der Nischenrelevanz und Ihrer Konsistenz ab. Obwohl Socialoura Reichweiten-Tools bereitstellt, versprechen wir keine bestimmten Leistungskennzahlen.',
+      mostPopular: 'Beliebteste',
+      custom: 'Individuell',
+      customFollowers: 'Individuelles Paket',
+      selectCustomAmount: 'Wählen Sie Ihr gewünschtes Reichweiten-Level',
     },
   };
 
@@ -298,7 +311,7 @@ export default function GoalSelectionModal({
                 {t.title}
               </h2>
               <p className="text-gray-400 text-sm">
-                {language === 'fr' ? 'Sélectionnez le forfait qui vous convient' : 'Select the package that suits you'}
+                {language === 'fr' ? 'Sélectionnez le forfait qui vous convient' : language === 'de' ? 'Wählen Sie das passende Paket' : 'Select the package that suits you'}
               </p>
             </div>
 
@@ -338,13 +351,13 @@ export default function GoalSelectionModal({
                       <span>-{goal.discount}%</span>
                     </div>
                     <div className="text-2xl font-black text-white mb-1 group-hover:text-purple-300 transition-colors">
-                      +{goal.followers.toLocaleString()} {language === 'fr' ? 'abonnés' : 'followers'}
+                      +{goal.followers.toLocaleString()} {language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
                     </div>
                     <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      {language === 'fr' ? `${goal.price.toFixed(2)}€` : `$${goal.price.toFixed(2)}`}
+                      {language === 'fr' || language === 'de' ? `${goal.price.toFixed(2)}€` : `$${goal.price.toFixed(2)}`}
                     </div>
                     <div className="text-xs text-gray-500 line-through">
-                      {language === 'fr' ? `${goal.originalPrice.toFixed(1)}€` : `$${goal.originalPrice.toFixed(1)}`}
+                      {language === 'fr' || language === 'de' ? `${goal.originalPrice.toFixed(1)}€` : `$${goal.originalPrice.toFixed(1)}`}
                     </div>
                   </div>
                   {/* Selection indicator */}
@@ -393,7 +406,7 @@ export default function GoalSelectionModal({
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      {language === 'fr' ? `${calculateCustomPrice(customFollowers)}€` : `$${calculateCustomPrice(customFollowers)}`}
+                      {language === 'fr' || language === 'de' ? `${calculateCustomPrice(customFollowers)}€` : `$${calculateCustomPrice(customFollowers)}`}
                     </div>
                   </div>
                 </div>
@@ -455,7 +468,7 @@ export default function GoalSelectionModal({
                 <svg className="w-4 h-4 group-open:rotate-90 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                {language === 'fr' ? 'Informations légales' : 'Legal information'}
+                {language === 'fr' ? 'Informations légales' : language === 'de' ? 'Rechtliche Hinweise' : 'Legal information'}
               </summary>
               <div className="mt-3 text-xs text-gray-500 space-y-2 pl-6">
                 <p dangerouslySetInnerHTML={{ __html: t.disclaimer.replace(/\*\*(.*?)\*\*/g, '<strong class="text-gray-400">$1</strong>') }} />
