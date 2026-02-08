@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getPricing, setPricing, initDatabase } from '@/lib/db';
+import { getPricing, setPricing, initDatabase, getPopularPack, setPopularPack } from '@/lib/db';
 
 // Initialize database on module load
 initDatabase().catch(console.error);
@@ -88,14 +88,27 @@ export async function GET() {
   try {
     // Try to read from storage
     const pricing = await storage.get();
-    if (pricing) {
-      return NextResponse.json(pricing);
+    const data = pricing || DEFAULT_PRICING;
+    
+    // Fetch popular pack settings
+    let popularPackInstagram: string | null = null;
+    let popularPackTiktok: string | null = null;
+    if (isDBConfigured()) {
+      try {
+        popularPackInstagram = await getPopularPack('instagram');
+        popularPackTiktok = await getPopularPack('tiktok');
+      } catch (e) {
+        console.error('Error fetching popular packs:', e);
+      }
     }
-    // If no data in storage, return default pricing
-    return NextResponse.json(DEFAULT_PRICING);
+    
+    return NextResponse.json({
+      ...data,
+      popularPackInstagram: popularPackInstagram || null,
+      popularPackTiktok: popularPackTiktok || null,
+    });
   } catch (error) {
     console.error('Error fetching pricing:', error);
-    // If storage fails, return default pricing
     return NextResponse.json(DEFAULT_PRICING);
   }
 }
@@ -115,7 +128,7 @@ async function updatePricing(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { instagram, tiktok } = body;
+    const { instagram, tiktok, popularPackInstagram, popularPackTiktok } = body;
 
     // Validate data
     if (!instagram || !tiktok || !Array.isArray(instagram) || !Array.isArray(tiktok)) {
@@ -125,8 +138,22 @@ async function updatePricing(request: NextRequest) {
       );
     }
 
-    // Save to storage
+    // Save pricing to storage
     await storage.set('pricing-data', { instagram, tiktok });
+
+    // Save popular pack settings if provided
+    if (isDBConfigured()) {
+      try {
+        if (popularPackInstagram !== undefined) {
+          await setPopularPack('instagram', popularPackInstagram || '');
+        }
+        if (popularPackTiktok !== undefined) {
+          await setPopularPack('tiktok', popularPackTiktok || '');
+        }
+      } catch (e) {
+        console.error('Error saving popular packs:', e);
+      }
+    }
 
     return NextResponse.json({ success: true, message: 'Pricing updated successfully' });
   } catch (error) {

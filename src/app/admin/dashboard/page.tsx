@@ -134,6 +134,8 @@ export default function AdminDashboard() {
   });
   const [promoFieldEnabled, setPromoFieldEnabled] = useState(true);
 
+  const [popularPackInstagram, setPopularPackInstagram] = useState<string>('');
+  const [popularPackTiktok, setPopularPackTiktok] = useState<string>('');
   const [googleAdsExpenses, setGoogleAdsExpenses] = useState<GoogleAdsExpense[]>([]);
   const [googleAdsMonth, setGoogleAdsMonth] = useState('');
   const [googleAdsAmount, setGoogleAdsAmount] = useState('');
@@ -212,7 +214,9 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/pricing');
       if (response.ok) {
         const data = await response.json();
-        setPricing(data);
+        setPricing({ instagram: data.instagram, tiktok: data.tiktok });
+        if (data.popularPackInstagram) setPopularPackInstagram(data.popularPackInstagram);
+        if (data.popularPackTiktok) setPopularPackTiktok(data.popularPackTiktok);
       }
     } catch (error) {
       console.error('Error fetching pricing:', error);
@@ -665,7 +669,11 @@ export default function AdminDashboard() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(pricing),
+        body: JSON.stringify({
+          ...pricing,
+          popularPackInstagram,
+          popularPackTiktok,
+        }),
       });
 
       if (response.ok) {
@@ -963,6 +971,29 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
+
+              {/* Popular Pack Selector - Instagram */}
+              {pricing.instagram.length > 0 && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800/50">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      &quot;Most Popular&quot; badge on:
+                    </span>
+                    <select
+                      value={popularPackInstagram}
+                      onChange={(e) => setPopularPackInstagram(e.target.value)}
+                      className="flex-1 px-4 py-2.5 border-2 border-purple-300 dark:border-purple-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm font-medium"
+                    >
+                      <option value="">None</option>
+                      {pricing.instagram.map((goal) => (
+                        <option key={goal.followers} value={goal.followers}>
+                          {parseInt(goal.followers).toLocaleString()} followers — {goal.price}€
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-pink-100 dark:border-pink-900/30">
@@ -1046,6 +1077,29 @@ export default function AdminDashboard() {
                   </div>
                 )}
               </div>
+
+              {/* Popular Pack Selector - TikTok */}
+              {pricing.tiktok.length > 0 && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-xl border border-pink-200 dark:border-pink-800/50">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      &quot;Most Popular&quot; badge on:
+                    </span>
+                    <select
+                      value={popularPackTiktok}
+                      onChange={(e) => setPopularPackTiktok(e.target.value)}
+                      className="flex-1 px-4 py-2.5 border-2 border-pink-300 dark:border-pink-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all text-sm font-medium"
+                    >
+                      <option value="">None</option>
+                      {pricing.tiktok.map((goal) => (
+                        <option key={goal.followers} value={goal.followers}>
+                          {parseInt(goal.followers).toLocaleString()} followers — {goal.price}€
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex justify-center sticky bottom-8">

@@ -133,6 +133,7 @@ export default function GoalSelectionModal({
         if (response.ok) {
           const data = await response.json();
           const platformGoals = platform === 'instagram' ? data.instagram : data.tiktok;
+          const popularPack = platform === 'instagram' ? data.popularPackInstagram : data.popularPackTiktok;
           
           // Convert API data to FollowerGoal format
           const formattedGoals: FollowerGoal[] = platformGoals.map((goal: { followers: string; price: string }, index: number) => {
@@ -147,7 +148,7 @@ export default function GoalSelectionModal({
               price,
               originalPrice: parseFloat(originalPrice.toFixed(2)),
               discount: discountPercentage,
-              popular: index === 3, // Make 1000 followers option popular
+              popular: popularPack ? followers === parseInt(popularPack) : index === 3,
             };
           });
           

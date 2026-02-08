@@ -528,3 +528,30 @@ export function calculateDiscount(price: number, promoCode: PromoCode): number {
     return Math.min(Number(promoCode.discount_value), price);
   }
 }
+
+export async function getPopularPack(platform: 'instagram' | 'tiktok'): Promise<string | null> {
+  try {
+    const result = await sql`
+      SELECT value FROM settings WHERE key = ${'popular_pack_' + platform}
+    `;
+    return result.rows.length > 0 ? result.rows[0].value : null;
+  } catch (error) {
+    console.error('Error fetching popular pack:', error);
+    return null;
+  }
+}
+
+export async function setPopularPack(platform: 'instagram' | 'tiktok', followers: string): Promise<void> {
+  try {
+    const key = 'popular_pack_' + platform;
+    await sql`
+      INSERT INTO settings (key, value)
+      VALUES (${key}, ${followers})
+      ON CONFLICT (key)
+      DO UPDATE SET value = ${followers}, updated_at = CURRENT_TIMESTAMP
+    `;
+  } catch (error) {
+    console.error('Error setting popular pack:', error);
+    throw error;
+  }
+}
