@@ -58,7 +58,6 @@ function ApplePayButtonInner({
       },
       requestPayerName: true,
       requestPayerEmail: true,
-      disableWallets: ['link'],
     });
 
     // Check browser / wallet availability
