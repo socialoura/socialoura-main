@@ -12,6 +12,7 @@ import {
 interface ApplePayButtonProps {
   amount: number; // Amount in EUR (e.g. 9.99)
   currency?: string;
+  forceDisplay?: boolean;
   onSuccess?: (paymentIntentId: string) => void;
   onError?: (error: string) => void;
   language?: 'en' | 'fr' | 'de';
@@ -23,12 +24,24 @@ interface ApplePayButtonProps {
 function ExpressCheckoutInner({
   amount,
   currency = 'eur',
+  forceDisplay,
   // onSuccess is not called here — successful payments redirect via return_url
   onError,
   language = 'en',
 }: ApplePayButtonProps) {
   const stripe = useStripe();
   const elements = useElements();
+
+  const expressCheckoutOptions = (forceDisplay
+    ? {
+        paymentMethods: {
+          applePay: 'always',
+          googlePay: 'always',
+        },
+      }
+    : {
+        buttonHeight: 48,
+      }) as unknown as Record<string, unknown>;
 
   const onConfirm = async () => {
     if (!stripe || !elements) return;
@@ -76,9 +89,7 @@ function ExpressCheckoutInner({
     <div className="w-full">
       <ExpressCheckoutElement
         onConfirm={onConfirm}
-        options={{
-          buttonHeight: 48,
-        }}
+        options={expressCheckoutOptions}
       />
     </div>
   );
