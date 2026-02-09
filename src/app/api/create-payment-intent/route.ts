@@ -15,7 +15,7 @@ async function getStripeInstance(): Promise<Stripe> {
   }
   
   return new Stripe(secretKey, {
-    apiVersion: '2025-12-15.clover',
+    apiVersion: '2026-01-28.clover',
     typescript: true,
   });
 }

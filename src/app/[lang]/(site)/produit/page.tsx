@@ -1,0 +1,59 @@
+'use client';
+
+import { useParams } from 'next/navigation';
+import ApplePayButton from '@/components/ApplePayButton';
+
+export default function ProduitPage() {
+  const params = useParams();
+  const lang = (params.lang as 'en' | 'fr' | 'de') || 'en';
+
+  const handleSuccess = (paymentIntentId: string) => {
+    console.log('Payment succeeded:', paymentIntentId);
+  };
+
+  const handleError = (error: string) => {
+    console.error('Payment error:', error);
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-950 flex items-center justify-center px-6">
+      <div className="max-w-md w-full space-y-8 text-center">
+        <h1 className="text-3xl font-black text-white">
+          {lang === 'fr' ? 'Exemple de paiement' : lang === 'de' ? 'Zahlungsbeispiel' : 'Payment Example'}
+        </h1>
+
+        <p className="text-gray-400">
+          {lang === 'fr'
+            ? 'Testez Apple Pay / Google Pay ci-dessous :'
+            : lang === 'de'
+              ? 'Testen Sie Apple Pay / Google Pay unten:'
+              : 'Test Apple Pay / Google Pay below:'}
+        </p>
+
+        <div className="bg-gray-800/50 rounded-2xl border border-gray-700/50 p-6 space-y-4">
+          <div className="flex justify-between text-white">
+            <span className="font-medium">Total</span>
+            <span className="font-bold">9,99 €</span>
+          </div>
+
+          <ApplePayButton
+            amount={9.99}
+            currency="eur"
+            label="SocialOura — Example"
+            language={lang}
+            onSuccess={handleSuccess}
+            onError={handleError}
+          />
+
+          <p className="text-xs text-gray-500">
+            {lang === 'fr'
+              ? 'Le bouton n\'apparaît que si Apple Pay ou Google Pay est disponible sur votre appareil.'
+              : lang === 'de'
+                ? 'Die Schaltfläche wird nur angezeigt, wenn Apple Pay oder Google Pay auf Ihrem Gerät verfügbar ist.'
+                : 'The button only appears if Apple Pay or Google Pay is available on your device.'}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
