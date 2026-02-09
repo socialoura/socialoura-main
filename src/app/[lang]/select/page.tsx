@@ -2,6 +2,7 @@
 
 import { Language } from '@/i18n/config';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface PageProps {
   params: { lang: string };
@@ -9,6 +10,7 @@ interface PageProps {
 
 export default function SelectPlatformPage({ params }: PageProps) {
   const lang = params.lang as Language;
+  const router = useRouter();
 
   const content = {
     en: {
@@ -29,6 +31,23 @@ export default function SelectPlatformPage({ params }: PageProps) {
   };
 
   const t = content[lang];
+
+  const trackCtaAndNavigate = (href: string) => {
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+    if (!gtag) {
+      router.push(href);
+      return;
+    }
+
+    gtag('event', 'conversion', {
+      send_to: 'AW-17898687645/IwwNCPiBzfUbEJ2Z4dZC',
+      value: 1.0,
+      currency: 'EUR',
+      event_callback: () => router.push(href),
+    });
+
+    window.setTimeout(() => router.push(href), 600);
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center relative overflow-hidden">
@@ -53,6 +72,10 @@ export default function SelectPlatformPage({ params }: PageProps) {
           <Link
             href={`/${lang}/i`}
             className="group relative"
+            onClick={(e) => {
+              e.preventDefault();
+              trackCtaAndNavigate(`/${lang}/i`);
+            }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-3xl blur-xl opacity-50 group-hover:opacity-80 transition-opacity duration-300" />
             <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 rounded-3xl flex flex-col items-center justify-center shadow-2xl shadow-purple-500/30 group-hover:scale-105 group-hover:shadow-purple-500/50 transition-all duration-300 cursor-pointer">
@@ -67,6 +90,10 @@ export default function SelectPlatformPage({ params }: PageProps) {
           <Link
             href={`/${lang}/t`}
             className="group relative"
+            onClick={(e) => {
+              e.preventDefault();
+              trackCtaAndNavigate(`/${lang}/t`);
+            }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-400 via-purple-500 to-pink-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-80 transition-opacity duration-300" />
             <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-black rounded-3xl flex flex-col items-center justify-center shadow-2xl shadow-cyan-500/30 group-hover:scale-105 group-hover:shadow-cyan-500/50 transition-all duration-300 cursor-pointer border border-gray-800">

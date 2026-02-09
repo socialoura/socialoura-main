@@ -3,6 +3,7 @@
 import { Language } from '@/i18n/config';
 import Link from 'next/link';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
+import { useRouter } from 'next/navigation';
 
 interface PageProps {
   params: { lang: string };
@@ -10,6 +11,7 @@ interface PageProps {
 
 export default function TikTokViewsLandingPage({ params }: PageProps) {
   const lang = params.lang as Language;
+  const router = useRouter();
 
   const content = {
     en: {
@@ -30,6 +32,23 @@ export default function TikTokViewsLandingPage({ params }: PageProps) {
   };
 
   const t = content[lang];
+
+  const trackCtaAndNavigate = (href: string) => {
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+    if (!gtag) {
+      router.push(href);
+      return;
+    }
+
+    gtag('event', 'conversion', {
+      send_to: 'AW-17898687645/IwwNCPiBzfUbEJ2Z4dZC',
+      value: 1.0,
+      currency: 'EUR',
+      event_callback: () => router.push(href),
+    });
+
+    window.setTimeout(() => router.push(href), 600);
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center relative overflow-hidden">
@@ -66,7 +85,14 @@ export default function TikTokViewsLandingPage({ params }: PageProps) {
         </div>
 
         <div className="flex items-center justify-center">
-          <Link href={`/${lang}/tv`} className="group relative">
+          <Link
+            href={`/${lang}/tv`}
+            className="group relative"
+            onClick={(e) => {
+              e.preventDefault();
+              trackCtaAndNavigate(`/${lang}/tv`);
+            }}
+          >
             <div className="absolute inset-0 bg-gradient-to-br from-cyan-500 via-teal-500 to-cyan-400 rounded-3xl blur-xl opacity-50 group-hover:opacity-80 transition-opacity duration-300" />
             <div className="relative px-10 py-5 bg-gradient-to-r from-cyan-500 via-teal-500 to-cyan-500 rounded-2xl text-white font-bold text-lg sm:text-xl shadow-2xl shadow-cyan-500/30 group-hover:scale-[1.03] group-hover:shadow-cyan-500/50 transition-all duration-300">
               <span className="inline-flex items-center gap-3">

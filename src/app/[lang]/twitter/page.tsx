@@ -2,6 +2,7 @@
 
 import { Language } from '@/i18n/config';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface PageProps {
   params: { lang: string };
@@ -9,6 +10,7 @@ interface PageProps {
 
 export default function TwitterSelectPage({ params }: PageProps) {
   const lang = params.lang as Language;
+  const router = useRouter();
 
   const content = {
     en: {
@@ -26,6 +28,23 @@ export default function TwitterSelectPage({ params }: PageProps) {
   };
 
   const t = content[lang];
+
+  const trackCtaAndNavigate = (href: string) => {
+    const gtag = (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag;
+    if (!gtag) {
+      router.push(href);
+      return;
+    }
+
+    gtag('event', 'conversion', {
+      send_to: 'AW-17898687645/IwwNCPiBzfUbEJ2Z4dZC',
+      value: 1.0,
+      currency: 'EUR',
+      event_callback: () => router.push(href),
+    });
+
+    window.setTimeout(() => router.push(href), 600);
+  };
 
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center relative overflow-hidden">
@@ -50,6 +69,10 @@ export default function TwitterSelectPage({ params }: PageProps) {
           <Link
             href={`/${lang}/x`}
             className="group relative"
+            onClick={(e) => {
+              e.preventDefault();
+              trackCtaAndNavigate(`/${lang}/x`);
+            }}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-gray-600 via-gray-800 to-black rounded-3xl blur-xl opacity-50 group-hover:opacity-80 transition-opacity duration-300" />
             <div className="relative w-40 h-40 sm:w-48 sm:h-48 md:w-56 md:h-56 bg-black rounded-3xl flex flex-col items-center justify-center shadow-2xl shadow-gray-500/30 group-hover:scale-105 group-hover:shadow-gray-400/50 transition-all duration-300 cursor-pointer border border-gray-800">
