@@ -16,7 +16,7 @@ interface GoalSelectionModalProps {
   onClose: () => void;
   onSelectGoal: (goal: FollowerGoal, email: string) => void;
   username: string;
-  platform: 'instagram' | 'tiktok';
+  platform: 'instagram' | 'tiktok' | 'twitter';
   language?: 'en' | 'fr' | 'de';
 }
 
@@ -43,7 +43,7 @@ export default function GoalSelectionModal({
       emailLabel: 'Email address',
       emailPlaceholder: 'your@email.com',
       continue: 'Continue',
-      disclaimer: `**Socialoura is fully aligned with the terms of service of ${platform === 'instagram' ? 'Instagram' : 'TikTok'} and Google Ads. Our approach is based on authentic marketing strategies and professional partnerships.**`,
+      disclaimer: `**Socialoura is fully aligned with the terms of service of ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : 'X (Twitter)'} and Google Ads. Our approach is based on authentic marketing strategies and professional partnerships.**`,
       disclaimerPart2: 'We enhance your profile\'s visibility by sharing your content through our global partner network, including real creators, mobile platforms, influencer groups, and niche communities. The package you select defines the level of exposure delivered through these partnerships.',
       disclaimerPart3: '**Disclaimer:** Visibility results depend on your content quality, niche relevance, and consistency. While Socialoura provides exposure tools, we do not promise specific performance metrics.',
       mostPopular: 'Most popular',
@@ -56,7 +56,7 @@ export default function GoalSelectionModal({
       emailLabel: 'Adresse e-mail',
       emailPlaceholder: 'votre@email.com',
       continue: 'Continuer',
-      disclaimer: `**Socialoura est entièrement conforme aux conditions d'utilisation de ${platform === 'instagram' ? 'Instagram' : 'TikTok'} et Google Ads. Notre approche est basée sur des stratégies marketing authentiques et des partenariats professionnels.**`,
+      disclaimer: `**Socialoura est entièrement conforme aux conditions d'utilisation de ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : 'X (Twitter)'} et Google Ads. Notre approche est basée sur des stratégies marketing authentiques et des partenariats professionnels.**`,
       disclaimerPart2: '**Nous améliorons la visibilité de votre profil en partageant votre contenu à travers notre réseau mondial de partenaires, incluant de vrais créateurs, des plateformes mobiles, des groupes d\'influenceurs et des communautés de niche. Le forfait que vous sélectionnez définit le niveau d\'exposition fourni par ces partenariats.**',
       disclaimerPart3: '**Avertissement :** Les résultats de visibilité dépendent de la qualité de votre contenu, de la pertinence de votre niche et de votre régularité. Bien que Socialoura fournisse des outils d\'exposition, nous ne promettons pas de mesures de performance spécifiques.',
       mostPopular: 'Plus populaire',
@@ -69,7 +69,7 @@ export default function GoalSelectionModal({
       emailLabel: 'E-Mail-Adresse',
       emailPlaceholder: 'ihre@email.com',
       continue: 'Weiter',
-      disclaimer: `**Socialoura steht vollständig im Einklang mit den Nutzungsbedingungen von ${platform === 'instagram' ? 'Instagram' : 'TikTok'} und Google Ads. Unser Ansatz basiert auf authentischen Marketingstrategien und professionellen Partnerschaften.**`,
+      disclaimer: `**Socialoura steht vollständig im Einklang mit den Nutzungsbedingungen von ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : 'X (Twitter)'} und Google Ads. Unser Ansatz basiert auf authentischen Marketingstrategien und professionellen Partnerschaften.**`,
       disclaimerPart2: 'Wir steigern die Sichtbarkeit Ihres Profils, indem wir Ihre Inhalte über unser globales Partnernetzwerk teilen, darunter echte Creator, mobile Plattformen, Influencer-Gruppen und Nischen-Communities. Das gewählte Paket bestimmt das Maß an Reichweite, das durch diese Partnerschaften erzielt wird.',
       disclaimerPart3: '**Haftungsausschluss:** Die Sichtbarkeitsergebnisse hängen von der Qualität Ihres Contents, der Nischenrelevanz und Ihrer Konsistenz ab. Obwohl Socialoura Reichweiten-Tools bereitstellt, versprechen wir keine bestimmten Leistungskennzahlen.',
       mostPopular: 'Beliebteste',
@@ -96,7 +96,8 @@ export default function GoalSelectionModal({
           { followers: 25000, price: 80.00 },
           { followers: 50000, price: 150.00 },
         ]
-      : [
+      : platform === 'tiktok'
+      ? [
           { followers: 100, price: 2.90 },
           { followers: 250, price: 5.90 },
           { followers: 500, price: 8.90 },
@@ -106,6 +107,17 @@ export default function GoalSelectionModal({
           { followers: 10000, price: 89.90 },
           { followers: 25000, price: 120.00 },
           { followers: 50000, price: 200.00 },
+        ]
+      : [
+          { followers: 100, price: 2.50 },
+          { followers: 250, price: 4.90 },
+          { followers: 500, price: 7.90 },
+          { followers: 1000, price: 12.90 },
+          { followers: 2500, price: 24.90 },
+          { followers: 5000, price: 44.90 },
+          { followers: 10000, price: 79.90 },
+          { followers: 25000, price: 110.00 },
+          { followers: 50000, price: 180.00 },
         ];
 
     // Find the two price points to interpolate between
@@ -132,8 +144,8 @@ export default function GoalSelectionModal({
         const response = await fetch('/api/admin/pricing');
         if (response.ok) {
           const data = await response.json();
-          const platformGoals = platform === 'instagram' ? data.instagram : data.tiktok;
-          const popularPack = platform === 'instagram' ? data.popularPackInstagram : data.popularPackTiktok;
+          const platformGoals = platform === 'instagram' ? data.instagram : platform === 'tiktok' ? data.tiktok : data.twitter;
+          const popularPack = platform === 'instagram' ? data.popularPackInstagram : platform === 'tiktok' ? data.popularPackTiktok : data.popularPackTwitter;
           
           // Convert API data to FollowerGoal format
           const formattedGoals: FollowerGoal[] = platformGoals.map((goal: { followers: string; price: string }, index: number) => {

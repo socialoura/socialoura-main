@@ -13,6 +13,7 @@ interface Goal {
 interface PricingData {
   instagram: Goal[];
   tiktok: Goal[];
+  twitter: Goal[];
 }
 
 interface Order {
@@ -35,7 +36,7 @@ type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
 
 interface DeleteConfirmation {
   isOpen: boolean;
-  platform: 'instagram' | 'tiktok' | null;
+  platform: 'instagram' | 'tiktok' | 'twitter' | null;
   index: number | null;
   followers: string;
 }
@@ -74,6 +75,7 @@ export default function AdminDashboard() {
   const [pricing, setPricing] = useState<PricingData>({
     instagram: [],
     tiktok: [],
+    twitter: [],
   });
   const [orders, setOrders] = useState<Order[]>([]);
   const [passwordData, setPasswordData] = useState({
@@ -136,6 +138,7 @@ export default function AdminDashboard() {
 
   const [popularPackInstagram, setPopularPackInstagram] = useState<string>('');
   const [popularPackTiktok, setPopularPackTiktok] = useState<string>('');
+  const [popularPackTwitter, setPopularPackTwitter] = useState<string>('');
   const [googleAdsExpenses, setGoogleAdsExpenses] = useState<GoogleAdsExpense[]>([]);
   const [googleAdsMonth, setGoogleAdsMonth] = useState('');
   const [googleAdsAmount, setGoogleAdsAmount] = useState('');
@@ -214,9 +217,10 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/pricing');
       if (response.ok) {
         const data = await response.json();
-        setPricing({ instagram: data.instagram, tiktok: data.tiktok });
+        setPricing({ instagram: data.instagram, tiktok: data.tiktok, twitter: data.twitter || [] });
         if (data.popularPackInstagram) setPopularPackInstagram(data.popularPackInstagram);
         if (data.popularPackTiktok) setPopularPackTiktok(data.popularPackTiktok);
+        if (data.popularPackTwitter) setPopularPackTwitter(data.popularPackTwitter);
       }
     } catch (error) {
       console.error('Error fetching pricing:', error);
@@ -574,14 +578,14 @@ export default function AdminDashboard() {
     return true;
   });
 
-  const handleAddGoal = (platform: 'instagram' | 'tiktok') => {
+  const handleAddGoal = (platform: 'instagram' | 'tiktok' | 'twitter') => {
     setPricing((prev) => ({
       ...prev,
       [platform]: [...prev[platform], { followers: '', price: '' }],
     }));
   };
 
-  const handleRemoveGoal = (platform: 'instagram' | 'tiktok', index: number) => {
+  const handleRemoveGoal = (platform: 'instagram' | 'tiktok' | 'twitter', index: number) => {
     const goal = pricing[platform][index];
     setDeleteConfirmation({
       isOpen: true,
@@ -644,7 +648,7 @@ export default function AdminDashboard() {
   };
 
   const handleUpdateGoal = (
-    platform: 'instagram' | 'tiktok',
+    platform: 'instagram' | 'tiktok' | 'twitter',
     index: number,
     field: 'followers' | 'price',
     value: string
@@ -673,6 +677,7 @@ export default function AdminDashboard() {
           ...pricing,
           popularPackInstagram,
           popularPackTiktok,
+          popularPackTwitter,
         }),
       });
 
@@ -1092,6 +1097,116 @@ export default function AdminDashboard() {
                     >
                       <option value="">None</option>
                       {pricing.tiktok.map((goal) => (
+                        <option key={goal.followers} value={goal.followers}>
+                          {parseInt(goal.followers).toLocaleString()} followers — {goal.price}€
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700/30">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-gray-700 to-black rounded-xl shadow-lg">
+                    <svg viewBox="0 0 24 24" className="w-6 h-6 text-white" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      X (Twitter) Pricing
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                      {pricing.twitter.length} option{pricing.twitter.length !== 1 ? 's' : ''} available
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleAddGoal('twitter')}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-gray-700 to-black rounded-xl hover:from-gray-800 hover:to-gray-900 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Goal
+                </button>
+              </div>
+
+              <div className="grid gap-4">
+                {pricing.twitter.map((goal, index) => (
+                  <div
+                    key={index}
+                    className="group relative bg-gradient-to-br from-gray-50 to-gray-100/30 dark:from-gray-700/50 dark:to-gray-800/10 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all"
+                  >
+                    <div className="flex gap-4 items-end">
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Followers
+                        </label>
+                        <input
+                          type="text"
+                          value={goal.followers}
+                          onChange={(e) =>
+                            handleUpdateGoal('twitter', index, 'followers', e.target.value)
+                          }
+                          placeholder="e.g., 100"
+                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
+                        />
+                      </div>
+
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Price (€)
+                        </label>
+                        <input
+                          type="text"
+                          value={goal.price}
+                          onChange={(e) =>
+                            handleUpdateGoal('twitter', index, 'price', e.target.value)
+                          }
+                          placeholder="e.g., 2.50"
+                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => handleRemoveGoal('twitter', index)}
+                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        title="Delete this pricing option"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {pricing.twitter.length === 0 && (
+                  <div className="text-center py-12 px-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
+                    <svg viewBox="0 0 24 24" className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" fill="currentColor">
+                      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                    </svg>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                      No pricing goals yet. Click &quot;Add Goal&quot; to create one.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Popular Pack Selector - Twitter */}
+              {pricing.twitter.length > 0 && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20 rounded-xl border border-gray-200 dark:border-gray-700/50">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      &quot;Most Popular&quot; badge on:
+                    </span>
+                    <select
+                      value={popularPackTwitter}
+                      onChange={(e) => setPopularPackTwitter(e.target.value)}
+                      className="flex-1 px-4 py-2.5 border-2 border-gray-300 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all text-sm font-medium"
+                    >
+                      <option value="">None</option>
+                      {pricing.twitter.map((goal) => (
                         <option key={goal.followers} value={goal.followers}>
                           {parseInt(goal.followers).toLocaleString()} followers — {goal.price}€
                         </option>

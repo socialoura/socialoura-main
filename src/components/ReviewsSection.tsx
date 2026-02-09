@@ -6,7 +6,7 @@ import { Language } from '@/i18n/config';
 
 interface ReviewsSectionProps {
   lang: Language;
-  platform?: 'instagram' | 'tiktok' | 'all';
+  platform?: 'instagram' | 'tiktok' | 'twitter' | 'all';
 }
 
 interface Review {
@@ -15,7 +15,7 @@ interface Review {
   username: string;
   avatar: string;
   rating: number;
-  platform: 'instagram' | 'tiktok';
+  platform: 'instagram' | 'tiktok' | 'twitter';
   followers: string;
   text: {
     en: string;
@@ -155,6 +155,54 @@ const reviews: Review[] = [
     date: '1 week ago',
     verified: true,
   },
+  {
+    id: 9,
+    name: 'Sarah M.',
+    username: '@sarahbuilds',
+    avatar: 'SM',
+    rating: 5,
+    platform: 'twitter',
+    followers: '+1,500',
+    text: {
+      en: 'My posts finally started getting consistent reach. The growth felt natural and my engagement rate improved a lot.',
+      fr: 'Mes posts ont enfin commencé à avoir une portée régulière. La croissance semblait naturelle et mon taux d\'engagement a beaucoup augmenté.',
+      de: 'Meine Posts haben endlich konstant Reichweite bekommen. Das Wachstum wirkte natürlich und meine Engagement-Rate ist deutlich gestiegen.',
+    },
+    date: '3 days ago',
+    verified: true,
+  },
+  {
+    id: 10,
+    name: 'Max K.',
+    username: '@maxmarketing',
+    avatar: 'MK',
+    rating: 5,
+    platform: 'twitter',
+    followers: '+3,000',
+    text: {
+      en: 'Perfect for building credibility fast. I saw better interaction on my threads within the first week.',
+      fr: 'Parfait pour gagner en crédibilité rapidement. J\'ai vu plus d\'interactions sur mes threads dès la première semaine.',
+      de: 'Perfekt, um schnell Glaubwürdigkeit aufzubauen. Schon in der ersten Woche mehr Interaktionen auf meinen Threads.',
+    },
+    date: '5 days ago',
+    verified: true,
+  },
+  {
+    id: 11,
+    name: 'Nina P.',
+    username: '@ninaproduct',
+    avatar: 'NP',
+    rating: 5,
+    platform: 'twitter',
+    followers: '+900',
+    text: {
+      en: 'Great support and clear process. My audience quality improved and I got more profile visits.',
+      fr: 'Super support et process clair. La qualité de mon audience s\'est améliorée et j\'ai eu plus de visites de profil.',
+      de: 'Toller Support und klarer Ablauf. Die Qualität meiner Audience wurde besser und ich bekam mehr Profilbesuche.',
+    },
+    date: '2 weeks ago',
+    verified: true,
+  },
 ];
 
 export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectionProps) {
@@ -164,6 +212,8 @@ export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectio
   const filteredReviews = platform === 'all' 
     ? reviews 
     : reviews.filter(r => r.platform === platform);
+
+  const hasReviews = filteredReviews.length > 0;
 
   const content = {
     en: {
@@ -191,26 +241,34 @@ export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectio
   // Auto-play carousel
   useEffect(() => {
     if (!isAutoPlaying) return;
+    if (!hasReviews) return;
     
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % filteredReviews.length);
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying, filteredReviews.length]);
+  }, [isAutoPlaying, filteredReviews.length, hasReviews]);
+
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [platform, filteredReviews.length]);
 
   const nextReview = () => {
     setIsAutoPlaying(false);
+    if (!hasReviews) return;
     setCurrentIndex((prev) => (prev + 1) % filteredReviews.length);
   };
 
   const prevReview = () => {
     setIsAutoPlaying(false);
+    if (!hasReviews) return;
     setCurrentIndex((prev) => (prev - 1 + filteredReviews.length) % filteredReviews.length);
   };
 
   // Get visible reviews (3 on desktop, 1 on mobile)
   const getVisibleReviews = () => {
+    if (!hasReviews) return [];
     const visible = [];
     for (let i = 0; i < 3; i++) {
       const index = (currentIndex + i) % filteredReviews.length;
@@ -297,7 +355,9 @@ export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectio
                   <div className={`w-14 h-14 rounded-full flex items-center justify-center text-white font-bold text-lg ${
                     review.platform === 'instagram' 
                       ? 'bg-gradient-to-br from-purple-500 to-pink-500' 
-                      : 'bg-gradient-to-br from-cyan-500 to-blue-500'
+                      : review.platform === 'tiktok'
+                      ? 'bg-gradient-to-br from-cyan-500 to-blue-500'
+                      : 'bg-gradient-to-br from-gray-600 to-black'
                   }`}>
                     {review.avatar}
                   </div>
@@ -338,7 +398,9 @@ export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectio
                     <span className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${
                       review.platform === 'instagram'
                         ? 'bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-pink-400'
-                        : 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400'
+                        : review.platform === 'tiktok'
+                        ? 'bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-400'
+                        : 'bg-gradient-to-r from-gray-500/20 to-gray-800/20 text-gray-300'
                     }`}>
                       {review.platform === 'instagram' ? (
                         <>
@@ -347,12 +409,19 @@ export default function ReviewsSection({ lang, platform = 'all' }: ReviewsSectio
                           </svg>
                           Instagram
                         </>
-                      ) : (
+                      ) : review.platform === 'tiktok' ? (
                         <>
                           <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                             <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z"/>
                           </svg>
                           TikTok
+                        </>
+                      ) : (
+                        <>
+                          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="currentColor">
+                            <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                          </svg>
+                          X
                         </>
                       )}
                     </span>

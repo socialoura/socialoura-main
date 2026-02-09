@@ -24,9 +24,10 @@ export default function HomePage({ params }: PageProps) {
     en: {
       hero: {
         headline: 'Elevate Your Social Media Presence',
-        subheadline: 'Professional marketing solutions to help your Instagram and TikTok accounts reach their full potential',
+        subheadline: 'Professional marketing solutions to help your Instagram, TikTok and X (Twitter) accounts reach their full potential',
         instagramCta: 'Instagram',
         tiktokCta: 'TikTok',
+        twitterCta: 'X (Twitter)',
       },
       services: {
         title: 'Our Services',
@@ -41,6 +42,11 @@ export default function HomePage({ params }: PageProps) {
             title: 'TikTok Promotion',
             description: 'Professional promotion strategies to increase your TikTok visibility and audience engagement.',
             icon: Music,
+          },
+          {
+            title: 'X (Twitter) Growth',
+            description: 'Targeted strategies to grow your X presence and build an engaged following in your niche.',
+            icon: MessageCircle,
           },
           {
             title: 'Analytics Dashboard',
@@ -90,7 +96,7 @@ export default function HomePage({ params }: PageProps) {
           },
           {
             question: 'Which platforms do you support?',
-            answer: 'Currently, we support Instagram and TikTok, with plans to expand to more platforms in the near future.',
+            answer: 'We support Instagram, TikTok and X (Twitter) to help you grow across multiple platforms.',
           },
         ],
       },
@@ -98,9 +104,10 @@ export default function HomePage({ params }: PageProps) {
     fr: {
       hero: {
         headline: 'Élevez Votre Présence Sur Les Réseaux Sociaux',
-        subheadline: 'Solutions marketing professionnelles pour aider vos comptes Instagram et TikTok à atteindre leur plein potentiel',
+        subheadline: 'Solutions marketing professionnelles pour aider vos comptes Instagram, TikTok et X (Twitter) à atteindre leur plein potentiel',
         instagramCta: 'Instagram',
         tiktokCta: 'TikTok',
+        twitterCta: 'X (Twitter)',
       },
       services: {
         title: 'Nos Services',
@@ -115,6 +122,11 @@ export default function HomePage({ params }: PageProps) {
             title: 'Promotion TikTok',
             description: 'Stratégies de promotion professionnelles pour augmenter votre visibilité TikTok et l\'engagement de votre audience.',
             icon: Music,
+          },
+          {
+            title: 'Croissance X (Twitter)',
+            description: 'Stratégies ciblées pour développer votre présence sur X et construire une communauté engagée dans votre niche.',
+            icon: MessageCircle,
           },
           {
             title: 'Tableau de Bord Analytique',
@@ -164,7 +176,7 @@ export default function HomePage({ params }: PageProps) {
           },
           {
             question: 'Quelles plateformes supportez-vous ?',
-            answer: 'Actuellement, nous supportons Instagram et TikTok, avec des plans d\'expansion vers d\'autres plateformes dans un avenir proche.',
+            answer: 'Nous supportons Instagram, TikTok et X (Twitter) pour vous aider à grandir sur plusieurs plateformes.',
           },
         ],
       },
@@ -172,9 +184,10 @@ export default function HomePage({ params }: PageProps) {
     de: {
       hero: {
         headline: 'Steigern Sie Ihre Social-Media-Präsenz',
-        subheadline: 'Professionelle Marketinglösungen, um Ihren Instagram- und TikTok-Accounts zu vollem Potenzial zu verhelfen',
+        subheadline: 'Professionelle Marketinglösungen, um Ihren Instagram-, TikTok- und X (Twitter)-Accounts zu vollem Potenzial zu verhelfen',
         instagramCta: 'Instagram',
         tiktokCta: 'TikTok',
+        twitterCta: 'X (Twitter)',
       },
       services: {
         title: 'Unsere Dienstleistungen',
@@ -189,6 +202,11 @@ export default function HomePage({ params }: PageProps) {
             title: 'TikTok Promotion',
             description: 'Professionelle Werbestrategien zur Steigerung Ihrer TikTok-Sichtbarkeit und Ihres Publikums-Engagements.',
             icon: Music,
+          },
+          {
+            title: 'X (Twitter) Wachstum',
+            description: 'Gezielte Strategien zum Ausbau Ihrer X-Präsenz und Aufbau einer engagierten Community in Ihrer Nische.',
+            icon: MessageCircle,
           },
           {
             title: 'Analytics Dashboard',
@@ -238,7 +256,7 @@ export default function HomePage({ params }: PageProps) {
           },
           {
             question: 'Welche Plattformen unterstützen Sie?',
-            answer: 'Derzeit unterstützen wir Instagram und TikTok, mit Plänen, in naher Zukunft auf weitere Plattformen zu expandieren.',
+            answer: 'Wir unterstützen Instagram, TikTok und X (Twitter), um Ihnen beim Wachstum auf mehreren Plattformen zu helfen.',
           },
         ],
       },
@@ -294,6 +312,20 @@ export default function HomePage({ params }: PageProps) {
                   </svg>
                 </div>
                 <span>{t.hero.tiktokCta}</span>
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
+              <Link
+                href={`/${lang}/x`}
+                className="group relative overflow-hidden rounded-xl bg-gray-800 border border-gray-700 hover:border-gray-500/50 px-8 py-4 text-base font-bold text-white shadow-lg hover:shadow-xl hover:shadow-gray-500/20 hover:scale-[1.02] transition-all duration-300 flex items-center gap-3"
+              >
+                <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center border border-gray-700">
+                  <svg viewBox="0 0 24 24" className="w-5 h-5 text-white" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </div>
+                <span>{t.hero.twitterCta}</span>
                 <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>

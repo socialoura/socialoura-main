@@ -16,6 +16,7 @@ interface HeaderProps {
 export default function Header({ lang }: HeaderProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   
   // Get the current path without the language prefix
   const getPathWithoutLang = () => {
@@ -32,30 +33,13 @@ export default function Header({ lang }: HeaderProps) {
     return `/${targetLang}${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
   };
 
-  // Cycle to the next language
-  const getNextLang = (): Language => {
-    if (lang === 'en') return 'fr';
-    if (lang === 'fr') return 'de';
-    return 'en';
+  const languageMeta: Record<Language, { flag: string; label: string }> = {
+    en: { flag: 'GB', label: 'English' },
+    fr: { flag: 'FR', label: 'Français' },
+    de: { flag: 'DE', label: 'Deutsch' },
   };
 
-  const getNextFlagCode = () => {
-    const next = getNextLang();
-    if (next === 'fr') return 'FR';
-    if (next === 'de') return 'DE';
-    return 'GB';
-  };
-
-  const getNextLangName = () => {
-    const next = getNextLang();
-    if (next === 'fr') return 'Français';
-    if (next === 'de') return 'Deutsch';
-    return 'English';
-  };
-
-  const toggleLanguage = () => {
-    return getPathForLanguage(getNextLang());
-  };
+  const currentLanguage = languageMeta[lang];
 
   return (
     <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
@@ -97,6 +81,12 @@ export default function Header({ lang }: HeaderProps) {
               {lang === 'en' ? 'TikTok' : 'TikTok'}
             </Link>
             <Link
+              href={`/${lang}/x`}
+              className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              X (Twitter)
+            </Link>
+            <Link
               href={`/${lang}/pricing`}
               className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
@@ -118,23 +108,63 @@ export default function Header({ lang }: HeaderProps) {
 
           {/* Right side - Language & Theme */}
           <div className="hidden md:flex items-center gap-4">
-            {/* Language Switcher */}
-            <Link
-              href={toggleLanguage()}
-              className="px-2 py-1 rounded-md transition-all hover:scale-110 flex items-center"
-              aria-label={getNextLangName()}
-              title={getNextLangName()}
-            >
-              <ReactCountryFlag
-                countryCode={getNextFlagCode()}
-                svg
-                style={{
-                  width: '1.5em',
-                  height: '1.5em',
-                }}
-                title={getNextLangName()}
-              />
-            </Link>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsLanguageMenuOpen((v) => !v)}
+                className="px-3 py-2 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors flex items-center gap-2"
+                aria-label={currentLanguage.label}
+                title={currentLanguage.label}
+              >
+                <ReactCountryFlag
+                  countryCode={currentLanguage.flag}
+                  svg
+                  style={{
+                    width: '1.3em',
+                    height: '1.3em',
+                  }}
+                  title={currentLanguage.label}
+                />
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                  {lang.toUpperCase()}
+                </span>
+                <svg className="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+
+              {isLanguageMenuOpen && (
+                <div className="absolute right-0 mt-2 w-44 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl overflow-hidden z-50">
+                  {languages.map((l) => {
+                    const meta = languageMeta[l];
+                    const isActive = l === lang;
+                    return (
+                      <Link
+                        key={l}
+                        href={getPathForLanguage(l)}
+                        onClick={() => setIsLanguageMenuOpen(false)}
+                        className={`flex items-center gap-2 px-3 py-2 text-sm font-medium transition-colors ${
+                          isActive
+                            ? 'bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white'
+                            : 'text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800'
+                        }`}
+                      >
+                        <ReactCountryFlag
+                          countryCode={meta.flag}
+                          svg
+                          style={{ width: '1.2em', height: '1.2em' }}
+                          title={meta.label}
+                        />
+                        <span className="flex-1">{meta.label}</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {l.toUpperCase()}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
             
             {/* Theme Toggle */}
             <ThemeToggle />
@@ -176,6 +206,13 @@ export default function Header({ lang }: HeaderProps) {
                 {lang === 'en' ? 'TikTok' : 'TikTok'}
               </Link>
               <Link
+                href={`/${lang}/x`}
+                className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                X (Twitter)
+              </Link>
+              <Link
                 href={`/${lang}/pricing`}
                 className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -198,22 +235,37 @@ export default function Header({ lang }: HeaderProps) {
               </Link>
               
               {/* Language Switcher */}
-              <Link
-                href={toggleLanguage()}
-                className="flex items-center gap-2 text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white pt-4 border-t border-gray-200 dark:border-gray-800 transition-colors"
-                onClick={() => setIsMobileMenuOpen(false)}
-              >
-                <ReactCountryFlag
-                  countryCode={getNextFlagCode()}
-                  svg
-                  style={{
-                    width: '1.5em',
-                    height: '1.5em',
-                  }}
-                  title={getNextLangName()}
-                />
-                <span>{getNextLangName()}</span>
-              </Link>
+              <div className="pt-4 border-t border-gray-200 dark:border-gray-800">
+                <div className="flex flex-col space-y-3">
+                  {languages.map((l) => {
+                    const meta = languageMeta[l];
+                    const isActive = l === lang;
+                    return (
+                      <Link
+                        key={l}
+                        href={getPathForLanguage(l)}
+                        className={`flex items-center gap-2 text-base font-medium transition-colors ${
+                          isActive
+                            ? 'text-gray-900 dark:text-white'
+                            : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white'
+                        }`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        <ReactCountryFlag
+                          countryCode={meta.flag}
+                          svg
+                          style={{
+                            width: '1.5em',
+                            height: '1.5em',
+                          }}
+                          title={meta.label}
+                        />
+                        <span>{meta.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
             </nav>
           </div>
         )}

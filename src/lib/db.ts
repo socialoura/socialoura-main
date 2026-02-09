@@ -118,7 +118,7 @@ export async function getPricing() {
     `;
     
     if (result.rows.length > 0) {
-      return result.rows[0].data as { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }> };
+      return result.rows[0].data as { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }> };
     }
     return null;
   } catch (error) {
@@ -127,7 +127,7 @@ export async function getPricing() {
   }
 }
 
-export async function setPricing(data: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }> }) {
+export async function setPricing(data: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }> }) {
   try {
     await sql`
       INSERT INTO pricing (id, data) 
@@ -529,7 +529,7 @@ export function calculateDiscount(price: number, promoCode: PromoCode): number {
   }
 }
 
-export async function getPopularPack(platform: 'instagram' | 'tiktok'): Promise<string | null> {
+export async function getPopularPack(platform: 'instagram' | 'tiktok' | 'twitter'): Promise<string | null> {
   try {
     const result = await sql`
       SELECT value FROM settings WHERE key = ${'popular_pack_' + platform}
@@ -541,7 +541,7 @@ export async function getPopularPack(platform: 'instagram' | 'tiktok'): Promise<
   }
 }
 
-export async function setPopularPack(platform: 'instagram' | 'tiktok', followers: string): Promise<void> {
+export async function setPopularPack(platform: 'instagram' | 'tiktok' | 'twitter', followers: string): Promise<void> {
   try {
     const key = 'popular_pack_' + platform;
     await sql`
