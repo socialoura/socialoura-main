@@ -10,6 +10,7 @@ import ChatWidget from '@/components/ChatWidget';
 import ReviewsSection from '@/components/ReviewsSection';
 import TrustedBrands from '@/components/TrustedBrands';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
+import SocialProofToast from '@/components/SocialProofToast';
 
 interface PageProps {
   params: { lang: string };
@@ -615,6 +616,9 @@ export default function InstagramLikesPage({ params }: PageProps) {
 
       {/* Chat Widget */}
       <ChatWidget lang={lang} />
+
+      {/* Social Proof Toast */}
+      <SocialProofToast lang={lang} />
     </div>
   );
 }
