@@ -17,7 +17,7 @@ interface GoalSelectionModalProps {
   onSelectGoal: (goal: FollowerGoal, email: string) => void;
   username: string;
   platform: 'instagram' | 'tiktok' | 'twitter';
-  serviceType?: 'followers' | 'likes';
+  serviceType?: 'followers' | 'likes' | 'views';
   language?: 'en' | 'fr' | 'de';
 }
 
@@ -41,7 +41,7 @@ export default function GoalSelectionModal({
 
   const text = {
     en: {
-      title: serviceType === 'likes' ? 'Choose your likes package' : 'Choose your visibility package',
+      title: serviceType === 'views' ? 'Choose your views package' : serviceType === 'likes' ? 'Choose your likes package' : 'Choose your visibility package',
       emailLabel: 'Email address',
       emailPlaceholder: 'your@email.com',
       continue: 'Continue',
@@ -54,7 +54,7 @@ export default function GoalSelectionModal({
       selectCustomAmount: 'Select your desired exposure level',
     },
     fr: {
-      title: serviceType === 'likes' ? 'Choisissez votre forfait de likes' : 'Choisissez votre forfait de visibilité',
+      title: serviceType === 'views' ? 'Choisissez votre forfait de vues' : serviceType === 'likes' ? 'Choisissez votre forfait de likes' : 'Choisissez votre forfait de visibilité',
       emailLabel: 'Adresse e-mail',
       emailPlaceholder: 'votre@email.com',
       continue: 'Continuer',
@@ -67,7 +67,7 @@ export default function GoalSelectionModal({
       selectCustomAmount: 'Sélectionnez votre niveau d\'exposition souhaité',
     },
     de: {
-      title: serviceType === 'likes' ? 'Wählen Sie Ihr Likes-Paket' : 'Wählen Sie Ihr Sichtbarkeitspaket',
+      title: serviceType === 'views' ? 'Wählen Sie Ihr Views-Paket' : serviceType === 'likes' ? 'Wählen Sie Ihr Likes-Paket' : 'Wählen Sie Ihr Sichtbarkeitspaket',
       emailLabel: 'E-Mail-Adresse',
       emailPlaceholder: 'ihre@email.com',
       continue: 'Weiter',
@@ -146,10 +146,14 @@ export default function GoalSelectionModal({
         const response = await fetch('/api/admin/pricing');
         if (response.ok) {
           const data = await response.json();
-          const platformGoals = serviceType === 'likes' 
+          const platformGoals = serviceType === 'views' 
+            ? data.tiktok_views 
+            : serviceType === 'likes' 
             ? data.instagram_likes 
             : platform === 'instagram' ? data.instagram : platform === 'tiktok' ? data.tiktok : data.twitter;
-          const popularPack = serviceType === 'likes'
+          const popularPack = serviceType === 'views'
+            ? data.popularPackTiktokViews
+            : serviceType === 'likes'
             ? data.popularPackInstagramLikes
             : platform === 'instagram' ? data.popularPackInstagram : platform === 'tiktok' ? data.popularPackTiktok : data.popularPackTwitter;
           
@@ -370,7 +374,7 @@ export default function GoalSelectionModal({
                       <span>-{goal.discount}%</span>
                     </div>
                     <div className="text-2xl font-black text-white mb-1 group-hover:text-purple-300 transition-colors">
-                      +{goal.followers.toLocaleString()} {serviceType === 'likes' ? 'likes' : language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
+                      +{goal.followers.toLocaleString()} {serviceType === 'views' ? 'views' : serviceType === 'likes' ? 'likes' : language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
                     </div>
                     <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                       {language === 'fr' || language === 'de' ? `${goal.price.toFixed(2)}€` : `$${goal.price.toFixed(2)}`}
@@ -421,7 +425,7 @@ export default function GoalSelectionModal({
                     <h3 className="text-xl font-bold text-white">
                       {customFollowers.toLocaleString()}
                     </h3>
-                    <p className="text-sm text-gray-400">{serviceType === 'likes' ? 'likes' : 'followers'}</p>
+                    <p className="text-sm text-gray-400">{serviceType === 'views' ? 'views' : serviceType === 'likes' ? 'likes' : 'followers'}</p>
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">

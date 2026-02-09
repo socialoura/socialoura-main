@@ -15,6 +15,7 @@ interface PricingData {
   tiktok: Goal[];
   twitter: Goal[];
   instagram_likes: Goal[];
+  tiktok_views: Goal[];
 }
 
 interface Order {
@@ -37,7 +38,7 @@ type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
 
 interface DeleteConfirmation {
   isOpen: boolean;
-  platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | null;
+  platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | null;
   index: number | null;
   followers: string;
 }
@@ -78,6 +79,7 @@ export default function AdminDashboard() {
     tiktok: [],
     twitter: [],
     instagram_likes: [],
+    tiktok_views: [],
   });
   const [orders, setOrders] = useState<Order[]>([]);
   const [passwordData, setPasswordData] = useState({
@@ -142,6 +144,7 @@ export default function AdminDashboard() {
   const [popularPackTiktok, setPopularPackTiktok] = useState<string>('');
   const [popularPackTwitter, setPopularPackTwitter] = useState<string>('');
   const [popularPackInstagramLikes, setPopularPackInstagramLikes] = useState<string>('');
+  const [popularPackTiktokViews, setPopularPackTiktokViews] = useState<string>('');
   const [googleAdsExpenses, setGoogleAdsExpenses] = useState<GoogleAdsExpense[]>([]);
   const [googleAdsMonth, setGoogleAdsMonth] = useState('');
   const [googleAdsAmount, setGoogleAdsAmount] = useState('');
@@ -220,11 +223,12 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/pricing');
       if (response.ok) {
         const data = await response.json();
-        setPricing({ instagram: data.instagram, tiktok: data.tiktok, twitter: data.twitter || [], instagram_likes: data.instagram_likes || [] });
+        setPricing({ instagram: data.instagram, tiktok: data.tiktok, twitter: data.twitter || [], instagram_likes: data.instagram_likes || [], tiktok_views: data.tiktok_views || [] });
         if (data.popularPackInstagram) setPopularPackInstagram(data.popularPackInstagram);
         if (data.popularPackTiktok) setPopularPackTiktok(data.popularPackTiktok);
         if (data.popularPackTwitter) setPopularPackTwitter(data.popularPackTwitter);
         if (data.popularPackInstagramLikes) setPopularPackInstagramLikes(data.popularPackInstagramLikes);
+        if (data.popularPackTiktokViews) setPopularPackTiktokViews(data.popularPackTiktokViews);
       }
     } catch (error) {
       console.error('Error fetching pricing:', error);
@@ -582,14 +586,14 @@ export default function AdminDashboard() {
     return true;
   });
 
-  const handleAddGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes') => {
+  const handleAddGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views') => {
     setPricing((prev) => ({
       ...prev,
       [platform]: [...prev[platform], { followers: '', price: '' }],
     }));
   };
 
-  const handleRemoveGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes', index: number) => {
+  const handleRemoveGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views', index: number) => {
     const goal = pricing[platform][index];
     setDeleteConfirmation({
       isOpen: true,
@@ -652,7 +656,7 @@ export default function AdminDashboard() {
   };
 
   const handleUpdateGoal = (
-    platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes',
+    platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views',
     index: number,
     field: 'followers' | 'price',
     value: string
@@ -683,6 +687,7 @@ export default function AdminDashboard() {
           popularPackTiktok,
           popularPackTwitter,
           popularPackInstagramLikes,
+          popularPackTiktokViews,
         }),
       });
 
@@ -1324,6 +1329,118 @@ export default function AdminDashboard() {
                       {pricing.instagram_likes.map((goal) => (
                         <option key={goal.followers} value={goal.followers}>
                           {parseInt(goal.followers).toLocaleString()} likes — {goal.price}€
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700/30">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-cyan-500 to-teal-600 rounded-xl shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      TikTok Views Pricing
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                      {pricing.tiktok_views.length} option{pricing.tiktok_views.length !== 1 ? 's' : ''} available
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleAddGoal('tiktok_views')}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-teal-600 rounded-xl hover:from-cyan-600 hover:to-teal-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Goal
+                </button>
+              </div>
+
+              <div className="grid gap-4">
+                {pricing.tiktok_views.map((goal, index) => (
+                  <div
+                    key={index}
+                    className="group relative bg-gradient-to-br from-cyan-50 to-teal-50/30 dark:from-cyan-900/20 dark:to-teal-900/10 rounded-xl p-5 border border-cyan-200 dark:border-cyan-800/30 hover:shadow-lg transition-all"
+                  >
+                    <div className="flex gap-4 items-end">
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Views
+                        </label>
+                        <input
+                          type="text"
+                          value={goal.followers}
+                          onChange={(e) =>
+                            handleUpdateGoal('tiktok_views', index, 'followers', e.target.value)
+                          }
+                          placeholder="e.g., 1000"
+                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
+                        />
+                      </div>
+
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Price (€)
+                        </label>
+                        <input
+                          type="text"
+                          value={goal.price}
+                          onChange={(e) =>
+                            handleUpdateGoal('tiktok_views', index, 'price', e.target.value)
+                          }
+                          placeholder="e.g., 0.99"
+                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => handleRemoveGoal('tiktok_views', index)}
+                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        title="Delete this pricing option"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {pricing.tiktok_views.length === 0 && (
+                  <div className="text-center py-12 px-4 bg-cyan-50 dark:bg-cyan-900/10 rounded-xl border-2 border-dashed border-cyan-300 dark:border-cyan-800/30">
+                    <svg className="w-12 h-12 text-cyan-400 dark:text-cyan-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                      No pricing goals yet. Click &quot;Add Goal&quot; to create one.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Popular Pack Selector - TikTok Views */}
+              {pricing.tiktok_views.length > 0 && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-cyan-900/10 dark:to-teal-900/10 rounded-xl border border-cyan-200 dark:border-cyan-800/30">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      &quot;Most Popular&quot; badge on:
+                    </span>
+                    <select
+                      value={popularPackTiktokViews}
+                      onChange={(e) => setPopularPackTiktokViews(e.target.value)}
+                      className="flex-1 px-4 py-2.5 border-2 border-cyan-300 dark:border-cyan-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all text-sm font-medium"
+                    >
+                      <option value="">None</option>
+                      {pricing.tiktok_views.map((goal) => (
+                        <option key={goal.followers} value={goal.followers}>
+                          {parseInt(goal.followers).toLocaleString()} views — {goal.price}€
                         </option>
                       ))}
                     </select>
