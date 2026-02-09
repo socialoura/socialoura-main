@@ -2,6 +2,7 @@
 
 import { Language } from '@/i18n/config';
 import Link from 'next/link';
+import TrustpilotBadge from '@/components/TrustpilotBadge';
 
 interface PageProps {
   params: { lang: string };
@@ -12,19 +13,19 @@ export default function TikTokViewsLandingPage({ params }: PageProps) {
 
   const content = {
     en: {
-      title: 'Boost Your TikTok Views',
-      subtitle: 'Get real, high-quality views to increase reach and trigger the algorithm.',
-      cta: 'Get TikTok Views',
+      title: 'TikTok Visibility Campaign',
+      subtitle: 'Designed to support promotion, improve reach, and increase credibility for your content.',
+      cta: 'Start a Campaign',
     },
     fr: {
-      title: 'Boostez vos vues TikTok',
-      subtitle: 'Obtenez des vues réelles et de qualité pour augmenter la portée et déclencher l\'algorithme.',
-      cta: 'Obtenir des vues TikTok',
+      title: 'Campagne de visibilité TikTok',
+      subtitle: "Pensée pour la promotion, améliorer la portée et renforcer la crédibilité de votre contenu.",
+      cta: 'Démarrer une campagne',
     },
     de: {
-      title: 'Boosten Sie Ihre TikTok Views',
-      subtitle: 'Erhalten Sie echte, hochwertige Views, um Ihre Reichweite zu steigern und den Algorithmus auszulösen.',
-      cta: 'TikTok Views erhalten',
+      title: 'TikTok Sichtbarkeitskampagne',
+      subtitle: 'Für Promotion, bessere Reichweite und mehr Glaubwürdigkeit deines Contents.',
+      cta: 'Kampagne starten',
     },
   };
 
@@ -53,6 +54,16 @@ export default function TikTokViewsLandingPage({ params }: PageProps) {
         <p className="text-lg sm:text-xl text-gray-400 mb-12 leading-relaxed">
           {t.subtitle}
         </p>
+
+        <div className="flex items-center justify-center gap-3 mb-10 flex-wrap">
+          <div className="inline-flex items-center gap-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+            <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M16.5 6.7c.3 2 1.4 3.5 3.4 4v2.3c-1.4-.1-2.7-.6-3.8-1.4v6.1a5.7 5.7 0 1 1-5.5-5.7c.4 0 .8 0 1.2.1v2.7a2.9 2.9 0 1 0 1.6 2.6V2h3.1c0 .5 0 1 .1 1.5z" />
+            </svg>
+            <span className="text-sm font-extrabold text-white">TikTok</span>
+          </div>
+          <TrustpilotBadge />
+        </div>
 
         <div className="flex items-center justify-center">
           <Link href={`/${lang}/tv`} className="group relative">

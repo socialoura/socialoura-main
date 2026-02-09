@@ -2,6 +2,7 @@
 
 import { Language } from '@/i18n/config';
 import Link from 'next/link';
+import TrustpilotBadge from '@/components/TrustpilotBadge';
 
 interface PageProps {
   params: { lang: string };
@@ -12,16 +13,16 @@ export default function InstagramLikesSelectPage({ params }: PageProps) {
 
   const content = {
     en: {
-      title: 'Choose Your Platform',
-      likes: 'Instagram Likes',
+      title: 'Instagram Engagement Campaign',
+      likes: 'Instagram Engagement',
     },
     fr: {
-      title: 'Choisissez Votre Plateforme',
-      likes: 'Likes Instagram',
+      title: "Campagne d'engagement Instagram",
+      likes: 'Engagement Instagram',
     },
     de: {
-      title: 'Wählen Sie Ihre Plattform',
-      likes: 'Instagram Likes',
+      title: 'Instagram Engagement Kampagne',
+      likes: 'Instagram Engagement',
     },
   };
 
@@ -40,9 +41,19 @@ export default function InstagramLikesSelectPage({ params }: PageProps) {
 
       <div className="relative z-10 text-center px-6">
         {/* Title */}
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-16">
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-6">
           {t.title}
         </h1>
+
+        <div className="flex items-center justify-center gap-3 mb-12 flex-wrap">
+          <div className="inline-flex items-center gap-3 rounded-2xl bg-white/5 border border-white/10 px-4 py-3">
+            <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M7.8 2h8.4A5.8 5.8 0 0 1 22 7.8v8.4A5.8 5.8 0 0 1 16.2 22H7.8A5.8 5.8 0 0 1 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2zm8.9 3.5a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6zM12 7.2a4.8 4.8 0 1 0 0 9.6 4.8 4.8 0 0 0 0-9.6zm0 2a2.8 2.8 0 1 1 0 5.6 2.8 2.8 0 0 1 0-5.6z" />
+            </svg>
+            <span className="text-sm font-extrabold text-white">Instagram</span>
+          </div>
+          <TrustpilotBadge />
+        </div>
 
         {/* Platform Card */}
         <div className="flex items-center justify-center">
