@@ -214,7 +214,7 @@ export default function Header({ lang }: HeaderProps) {
 
       <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center h-24 sm:h-28">
+          <div className="flex items-center h-14 sm:h-20 md:h-24">
             {/* Logo - Left */}
             <div className="flex items-center">
               <Link
@@ -222,14 +222,14 @@ export default function Header({ lang }: HeaderProps) {
                 className="flex items-center transition-all group"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                <div className="relative w-24 h-24 sm:w-32 sm:h-32">
+                <div className="relative w-12 h-12 sm:w-20 sm:h-20 md:w-24 md:h-24">
                   <Image
                     src="/img/a-modern-flat-vector-logo-design-featuri_ZEbfVp__QiK-0wr5MrgGJg_ZFPYEbSKRM6a11TOK-IQCQ-removebg-preview.png"
                     alt="Socialoura"
                     width={128}
                     height={128}
                     priority
-                    sizes="(min-width: 640px) 128px, 96px"
+                    sizes="(min-width: 768px) 96px, (min-width: 640px) 80px, 48px"
                     className="group-hover:scale-105 transition-transform"
                   />
                 </div>

@@ -289,30 +289,30 @@ export default function TikTokViewsPage({ params }: PageProps) {
   return (
     <div className="bg-gray-950">
       {/* Hero Section */}
-      <section className="relative overflow-hidden min-h-[70vh] flex items-center">
+      <section className="relative overflow-hidden min-h-[auto] sm:min-h-[70vh] flex items-center">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-900/20 via-gray-950 to-teal-900/20" />
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl" />
         <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-teal-600/20 rounded-full blur-3xl" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-cyan-600/5 to-teal-600/5 rounded-full blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
         
-        <div className="relative mx-auto max-w-5xl px-6 py-20 lg:px-8 w-full">
+        <div className="relative mx-auto max-w-5xl px-6 py-8 sm:py-20 lg:px-8 w-full">
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-600 mb-8 shadow-lg shadow-cyan-500/30">
+            <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-cyan-500 to-teal-600 mb-4 sm:mb-8 shadow-lg shadow-cyan-500/30">
               <Play className="w-8 h-8 text-white fill-white" />
             </div>
             
-            <h1 className="text-4xl font-black tracking-tight text-white sm:text-5xl md:text-6xl mb-4 leading-tight">
+            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white md:text-6xl mb-2 sm:mb-4 leading-tight">
               {t.hero.title}
             </h1>
-            <h1 className="text-4xl font-black tracking-tight sm:text-5xl md:text-6xl mb-8 leading-tight bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl sm:text-4xl font-black tracking-tight md:text-6xl mb-4 sm:mb-8 leading-tight bg-gradient-to-r from-cyan-400 via-teal-400 to-cyan-400 bg-clip-text text-transparent">
               {t.hero.highlight}
             </h1>
-            <p className="text-lg leading-relaxed text-gray-400 max-w-2xl mx-auto mb-10">
+            <p className="text-sm sm:text-lg leading-relaxed text-gray-400 max-w-2xl mx-auto mb-5 sm:mb-10">
               {t.hero.subtitle}
             </p>
             
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+            <div className="hidden sm:flex flex-wrap items-center justify-center gap-3 mb-12">
               {t.hero.badges.map((badge, index) => (
                 <div key={index} className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300">
                   <svg className="w-4 h-4 mr-2 text-cyan-400" fill="currentColor" viewBox="0 0 20 20">
