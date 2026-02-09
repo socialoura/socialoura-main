@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Language } from '@/i18n/config';
 import Link from 'next/link';
 import { Plus, Minus, Camera, Music, BarChart3, Calendar, MessageCircle, HeadphonesIcon, Instagram } from 'lucide-react';
-import ChatWidget from '@/components/ChatWidget';
-import ReviewsSection from '@/components/ReviewsSection';
-import TrustedBrands from '@/components/TrustedBrands';
+
+const ChatWidget = dynamic(() => import('@/components/ChatWidget'), { ssr: false });
+const ReviewsSection = dynamic(() => import('@/components/ReviewsSection'));
+const TrustedBrands = dynamic(() => import('@/components/TrustedBrands'));
 
 interface PageProps {
   params: { lang: string };

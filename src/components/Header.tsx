@@ -87,7 +87,7 @@ export default function Header({ lang }: HeaderProps) {
 
     const load = async () => {
       try {
-        const res = await fetch('/api/promo-bar', { cache: 'no-store' });
+        const res = await fetch('/api/promo-bar', { next: { revalidate: 60 } });
         if (!res.ok) return;
         const data = await res.json();
         if (cancelled) return;
