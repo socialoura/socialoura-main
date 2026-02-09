@@ -81,32 +81,32 @@ export default function TikTokViewsPage({ params }: PageProps) {
     en: {
       hero: {
         title: 'BOOST YOUR',
-        highlight: 'TIKTOK VIEWS',
-        subtitle: 'Get real, high-quality views on your TikTok videos to boost visibility, trigger the algorithm, and land on the For You Page.',
+        highlight: 'TIKTOK REACH',
+        subtitle: 'Launch a visibility campaign for your TikTok videos to increase reach, strengthen social proof, and support your promotion efforts.',
         badges: [
-          { text: 'Real & organic views' },
+          { text: 'Visibility campaign' },
           { text: 'Instant delivery' },
           { text: 'No password required' },
         ],
-        cta: 'GET VIEWS NOW',
+        cta: 'START NOW',
         placeholder: 'https://www.tiktok.com/@user/video/...',
       },
       why: {
-        title: 'Why buy TikTok Views?',
+        title: 'Why run a TikTok visibility campaign?',
         cards: [
           {
             title: 'Trigger the Algorithm',
-            description: 'More views signal TikTok that your content is engaging, pushing it to the For You Page and reaching millions of new viewers.',
+            description: 'More engagement signals help TikTok understand your content is resonating, increasing the chances of broader distribution in the For You feed.',
             icon: 'TrendingUp',
           },
           {
-            title: 'Build Credibility',
-            description: 'Videos with high view counts attract more organic engagement. People are more likely to watch and share popular content.',
+            title: 'Build Social Proof',
+            description: 'Higher activity on a video can increase trust and improve how new viewers perceive your content.',
             icon: 'Eye',
           },
           {
             title: 'Instant Results',
-            description: 'See views start appearing within minutes of your order. Fast, reliable delivery to give your videos the boost they need.',
+            description: 'Get started in minutes with a fast, reliable activation to support your launch or promotion window.',
             icon: 'Zap',
           },
         ],
@@ -115,26 +115,26 @@ export default function TikTokViewsPage({ params }: PageProps) {
         title: 'How it works',
         steps: [
           {
-            title: 'PASTE YOUR VIDEO LINK',
-            description: 'Copy the URL of the TikTok video you want to boost and paste it above. No login or password needed.',
+            title: 'PASTE YOUR LINK',
+            description: 'Copy the TikTok video URL you want to promote and paste it above. No login or password required.',
           },
           {
             title: 'CHOOSE YOUR PACKAGE',
-            description: 'Select the number of views that fits your goals. We offer flexible packages from 500 to 100,000+ views.',
+            description: 'Choose the campaign size that fits your goals. We offer flexible packages from 500 to 100,000+.',
           },
           {
-            title: 'WATCH YOUR VIEWS GROW',
-            description: 'Sit back and watch as real views are delivered to your video, increasing your visibility and reach.',
+            title: 'TRACK YOUR VISIBILITY',
+            description: 'Your campaign begins shortly after checkout and supports your video visibility during your promotion window.',
           },
         ],
         cta: 'START NOW',
       },
       benefits: {
-        title: 'Why choose SocialOura for views?',
+        title: 'Why choose SocialOura for visibility?',
         items: [
-          { title: 'High-quality views', desc: 'From real accounts, boosting your video authentically.' },
+          { title: 'High-quality activity', desc: 'Designed to support visibility with a realistic, promotion-friendly approach.' },
           { title: 'Safe & secure', desc: 'Fully compliant with TikTok guidelines. Zero risk.' },
-          { title: 'Fast delivery', desc: 'Views start appearing within minutes of your purchase.' },
+          { title: 'Fast activation', desc: 'Campaign activation begins within minutes.' },
           { title: 'No password needed', desc: 'We only need your video URL. Your account stays safe.' },
           { title: '24/7 Support', desc: 'Our team is always available to help with any questions.' },
           { title: 'Money-back guarantee', desc: 'Not satisfied? Get a full refund, no questions asked.' },
@@ -147,32 +147,32 @@ export default function TikTokViewsPage({ params }: PageProps) {
     fr: {
       hero: {
         title: 'BOOSTEZ VOS',
-        highlight: 'VUES TIKTOK',
-        subtitle: 'Obtenez des vues réelles et de qualité sur vos vidéos TikTok pour booster la visibilité, déclencher l\'algorithme et atterrir sur la page Pour Toi.',
+        highlight: 'PORTÉE TIKTOK',
+        subtitle: 'Lancez une campagne de visibilité pour vos vidéos TikTok afin d\'augmenter la portée, renforcer la preuve sociale et soutenir votre promotion.',
         badges: [
-          { text: 'Vues réelles et organiques' },
+          { text: 'Campagne de visibilité' },
           { text: 'Livraison instantanée' },
           { text: 'Aucun mot de passe requis' },
         ],
-        cta: 'OBTENIR DES VUES',
+        cta: 'COMMENCER',
         placeholder: 'https://www.tiktok.com/@user/video/...',
       },
       why: {
-        title: 'Pourquoi acheter des Vues TikTok ?',
+        title: 'Pourquoi lancer une campagne de visibilité TikTok ?',
         cards: [
           {
             title: 'Déclencher l\'algorithme',
-            description: 'Plus de vues signalent à TikTok que votre contenu est engageant, le poussant vers la page Pour Toi et touchant des millions de nouveaux spectateurs.',
+            description: 'Des signaux d\'engagement supplémentaires aident TikTok à mieux diffuser votre contenu et à toucher plus de personnes.',
             icon: 'TrendingUp',
           },
           {
-            title: 'Renforcer la crédibilité',
-            description: 'Les vidéos avec beaucoup de vues attirent plus d\'engagement organique. Les gens regardent et partagent davantage le contenu populaire.',
+            title: 'Preuve sociale',
+            description: 'Une activité plus visible peut renforcer la confiance et améliorer la perception de votre contenu.',
             icon: 'Eye',
           },
           {
-            title: 'Résultats instantanés',
-            description: 'Voyez les vues apparaître en quelques minutes. Une livraison rapide et fiable pour booster vos vidéos.',
+            title: 'Résultats rapides',
+            description: 'Démarrage rapide, idéal pour accompagner un lancement ou une période de promotion.',
             icon: 'Zap',
           },
         ],
@@ -181,27 +181,27 @@ export default function TikTokViewsPage({ params }: PageProps) {
         title: 'Comment ça marche',
         steps: [
           {
-            title: 'COLLEZ VOTRE LIEN VIDÉO',
-            description: 'Copiez l\'URL de la vidéo TikTok que vous souhaitez booster et collez-la ci-dessus. Aucune connexion ni mot de passe nécessaire.',
+            title: 'COLLEZ VOTRE LIEN',
+            description: 'Copiez l\'URL de la vidéo TikTok que vous souhaitez promouvoir et collez-la ci-dessus. Aucun login ou mot de passe requis.',
           },
           {
             title: 'CHOISISSEZ VOTRE FORFAIT',
-            description: 'Sélectionnez le nombre de vues qui correspond à vos objectifs. Nous proposons des forfaits flexibles de 500 à 100 000+ vues.',
+            description: 'Choisissez la taille de campagne qui correspond à vos objectifs. Forfaits flexibles de 500 à 100 000+.',
           },
           {
-            title: 'REGARDEZ VOS VUES AUGMENTER',
-            description: 'Détendez-vous et regardez les vraies vues arriver sur votre vidéo, augmentant votre visibilité et votre portée.',
+            title: 'SUIVEZ VOTRE VISIBILITÉ',
+            description: 'La campagne démarre peu après le paiement et accompagne votre vidéo pendant votre fenêtre de promotion.',
           },
         ],
         cta: 'COMMENCER MAINTENANT',
       },
       benefits: {
-        title: 'Pourquoi choisir SocialOura pour les vues ?',
+        title: 'Pourquoi choisir SocialOura pour la visibilité ?',
         items: [
-          { title: 'Vues de qualité', desc: 'De vrais comptes qui boostent votre vidéo authentiquement.' },
+          { title: 'Activité de qualité', desc: 'Pensée pour accompagner une promotion de manière réaliste et cohérente.' },
           { title: 'Sûr et sécurisé', desc: 'Entièrement conforme aux directives TikTok. Zéro risque.' },
-          { title: 'Livraison rapide', desc: 'Les vues commencent à apparaître en quelques minutes.' },
-          { title: 'Aucun mot de passe', desc: 'Nous avons seulement besoin de l\'URL de votre vidéo.' },
+          { title: 'Activation rapide', desc: 'La campagne démarre en quelques minutes.' },
+          { title: 'Aucun mot de passe', desc: 'Nous avons seulement besoin de l\'URL de votre vidéo. Votre compte reste sécurisé.' },
           { title: 'Support 24/7', desc: 'Notre équipe est toujours disponible pour vous aider.' },
           { title: 'Garantie remboursement', desc: 'Pas satisfait ? Remboursement complet, sans questions.' },
         ],
@@ -213,32 +213,32 @@ export default function TikTokViewsPage({ params }: PageProps) {
     de: {
       hero: {
         title: 'BOOSTEN SIE IHRE',
-        highlight: 'TIKTOK VIEWS',
-        subtitle: 'Erhalten Sie echte, hochwertige Views auf Ihren TikTok-Videos, um die Sichtbarkeit zu steigern, den Algorithmus auszulösen und auf der Für-Dich-Seite zu landen.',
+        highlight: 'TIKTOK REICHWEITE',
+        subtitle: 'Starten Sie eine Sichtbarkeitskampagne für Ihre TikTok-Videos, um Reichweite zu erhöhen, Social Proof zu stärken und Ihre Promotion zu unterstützen.',
         badges: [
-          { text: 'Echte & organische Views' },
+          { text: 'Sichtbarkeitskampagne' },
           { text: 'Sofortige Lieferung' },
           { text: 'Kein Passwort nötig' },
         ],
-        cta: 'VIEWS ERHALTEN',
+        cta: 'JETZT STARTEN',
         placeholder: 'https://www.tiktok.com/@user/video/...',
       },
       why: {
-        title: 'Warum TikTok Views kaufen?',
+        title: 'Warum eine TikTok Sichtbarkeitskampagne starten?',
         cards: [
           {
             title: 'Algorithmus auslösen',
-            description: 'Mehr Views signalisieren TikTok, dass Ihr Content ansprechend ist, und pushen ihn auf die Für-Dich-Seite zu Millionen neuer Zuschauer.',
+            description: 'Zusätzliche Engagement-Signale helfen TikTok, Ihren Content besser zu verteilen und mehr Menschen zu erreichen.',
             icon: 'TrendingUp',
           },
           {
-            title: 'Glaubwürdigkeit aufbauen',
-            description: 'Videos mit hohen Aufrufzahlen ziehen mehr organisches Engagement an. Menschen schauen und teilen eher beliebte Inhalte.',
+            title: 'Social Proof aufbauen',
+            description: 'Mehr sichtbare Aktivität kann Vertrauen stärken und die Wahrnehmung Ihres Contents verbessern.',
             icon: 'Eye',
           },
           {
             title: 'Sofortige Ergebnisse',
-            description: 'Sehen Sie, wie Views innerhalb von Minuten erscheinen. Schnelle, zuverlässige Lieferung für den Boost Ihrer Videos.',
+            description: 'Schneller Start, ideal zur Unterstützung von Launches oder Promo-Phasen.',
             icon: 'Zap',
           },
         ],
@@ -247,26 +247,26 @@ export default function TikTokViewsPage({ params }: PageProps) {
         title: 'So funktioniert es',
         steps: [
           {
-            title: 'VIDEO-LINK EINFÜGEN',
-            description: 'Kopieren Sie die URL des TikTok-Videos, das Sie boosten möchten, und fügen Sie sie oben ein. Kein Login oder Passwort nötig.',
+            title: 'LINK EINFÜGEN',
+            description: 'Kopieren Sie die TikTok-Video-URL, die Sie promoten möchten, und fügen Sie sie oben ein. Kein Login oder Passwort nötig.',
           },
           {
             title: 'PAKET WÄHLEN',
-            description: 'Wählen Sie die Anzahl der Views, die zu Ihren Zielen passt. Wir bieten flexible Pakete von 500 bis 100.000+ Views.',
+            description: 'Wählen Sie die Kampagnengröße passend zu Ihren Zielen. Flexible Pakete von 500 bis 100.000+.',
           },
           {
-            title: 'VIEWS WACHSEN SEHEN',
-            description: 'Lehnen Sie sich zurück und sehen Sie zu, wie echte Views auf Ihrem Video erscheinen und Ihre Reichweite steigern.',
+            title: 'SICHTBARKEIT VERFOLGEN',
+            description: 'Die Kampagne startet kurz nach dem Checkout und unterstützt die Sichtbarkeit Ihres Videos während Ihrer Promo-Phase.',
           },
         ],
         cta: 'JETZT STARTEN',
       },
       benefits: {
-        title: 'Warum SocialOura für Views wählen?',
+        title: 'Warum SocialOura für Sichtbarkeit wählen?',
         items: [
-          { title: 'Hochwertige Views', desc: 'Von echten Konten, die Ihr Video authentisch boosten.' },
+          { title: 'Hochwertige Aktivität', desc: 'Für Promotion mit einem realistischen, nachhaltigen Ansatz.' },
           { title: 'Sicher & geschützt', desc: 'Vollständig konform mit TikTok-Richtlinien. Null Risiko.' },
-          { title: 'Schnelle Lieferung', desc: 'Views erscheinen innerhalb von Minuten nach dem Kauf.' },
+          { title: 'Schnelle Aktivierung', desc: 'Aktivierung innerhalb weniger Minuten.' },
           { title: 'Kein Passwort nötig', desc: 'Wir brauchen nur Ihre Video-URL. Ihr Konto bleibt sicher.' },
           { title: '24/7 Support', desc: 'Unser Team ist immer bereit zu helfen.' },
           { title: 'Geld-zurück-Garantie', desc: 'Nicht zufrieden? Volle Rückerstattung, ohne Fragen.' },
@@ -536,14 +536,14 @@ export default function TikTokViewsPage({ params }: PageProps) {
         language={lang}
       />
 
-      {selectedGoal && (
+      {isPaymentModalOpen && selectedGoal && (
         <PaymentModal
           isOpen={isPaymentModalOpen}
-          amount={Math.round(selectedGoal.price * 100)}
+          amount={selectedGoal.price * 100}
           currency={getCurrency()}
           onClose={() => setIsPaymentModalOpen(false)}
           onSuccess={handlePaymentSuccess}
-          productName={`+${selectedGoal.followers.toLocaleString()} TikTok views`}
+          productName={`TikTok visibility package (${selectedGoal.followers.toLocaleString()})`}
           language={lang}
           email={email}
           orderDetails={{

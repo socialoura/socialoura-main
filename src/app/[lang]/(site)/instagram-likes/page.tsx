@@ -97,32 +97,32 @@ export default function InstagramLikesPage({ params }: PageProps) {
     en: {
       hero: {
         title: 'BOOST YOUR',
-        highlight: 'INSTAGRAM LIKES',
-        subtitle: 'Get real, high-quality likes on your Instagram posts to increase engagement, build social proof, and grow your audience organically.',
+        highlight: 'POST ENGAGEMENT',
+        subtitle: 'Launch an engagement campaign for your Instagram post to improve visibility, strengthen social proof, and support your promotion efforts.',
         badges: [
-          { text: 'Real & active likes' },
+          { text: 'Engagement campaign' },
           { text: 'Instant delivery' },
           { text: 'No password required' },
         ],
-        cta: 'GET LIKES NOW',
+        cta: 'START NOW',
         placeholder: 'Paste your Instagram post URL',
       },
       why: {
-        title: 'Why buy Instagram Likes?',
+        title: 'Why run an Instagram engagement campaign?',
         cards: [
           {
             title: 'Boost Engagement',
-            description: 'More likes signal to the Instagram algorithm that your content is valuable, pushing it to more users via Explore and Reels.',
+            description: 'Stronger engagement signals help Instagram understand your content is resonating, improving distribution in Explore and Reels.',
             icon: 'TrendingUp',
           },
           {
             title: 'Build Social Proof',
-            description: 'Posts with more likes attract even more organic engagement. People are more likely to interact with popular content.',
+            description: 'Higher visible activity can increase trust and improve how new visitors perceive your content.',
             icon: 'Eye',
           },
           {
             title: 'Instant Results',
-            description: 'See likes start appearing within minutes of your order. No waiting, no hassle — just fast, reliable delivery.',
+            description: 'Get started in minutes with a fast activation that supports your launch or promotion window.',
             icon: 'Zap',
           },
         ],
@@ -131,26 +131,26 @@ export default function InstagramLikesPage({ params }: PageProps) {
         title: 'How it works',
         steps: [
           {
-            title: 'PASTE YOUR POST LINK',
-            description: 'Copy the URL of the Instagram post you want to boost and paste it above. No login or password needed.',
+            title: 'PASTE YOUR LINK',
+            description: 'Copy the URL of the Instagram post you want to promote and paste it above. No login or password required.',
           },
           {
             title: 'CHOOSE YOUR PACKAGE',
-            description: 'Select the number of likes that fits your goals. We offer flexible packages from 50 to 10,000+ likes.',
+            description: 'Choose the campaign size that fits your goals. We offer flexible packages from 50 to 10,000+.',
           },
           {
-            title: 'WATCH YOUR LIKES GROW',
-            description: 'Sit back and watch as real likes are delivered to your post, increasing your visibility and credibility.',
+            title: 'TRACK YOUR ENGAGEMENT',
+            description: 'Your campaign begins shortly after checkout and supports your post during your promotion window.',
           },
         ],
         cta: 'START NOW',
       },
       benefits: {
-        title: 'Why choose SocialOura for likes?',
+        title: 'Why choose SocialOura for engagement?',
         items: [
-          { title: 'High-quality likes', desc: 'From real accounts with profile pictures and activity.' },
+          { title: 'High-quality activity', desc: 'Designed to support visibility with a realistic, promotion-friendly approach.' },
           { title: 'Safe & secure', desc: 'Fully compliant with Instagram guidelines. Zero risk.' },
-          { title: 'Fast delivery', desc: 'Likes start appearing within minutes of your purchase.' },
+          { title: 'Fast activation', desc: 'Campaign activation begins within minutes.' },
           { title: 'No password needed', desc: 'We only need your post URL. Your account stays safe.' },
           { title: '24/7 Support', desc: 'Our team is always available to help with any questions.' },
           { title: 'Money-back guarantee', desc: 'Not satisfied? Get a full refund, no questions asked.' },
@@ -163,32 +163,32 @@ export default function InstagramLikesPage({ params }: PageProps) {
     fr: {
       hero: {
         title: 'BOOSTEZ VOS',
-        highlight: 'LIKES INSTAGRAM',
-        subtitle: 'Obtenez des likes réels et de qualité sur vos posts Instagram pour augmenter l\'engagement, renforcer la preuve sociale et développer votre audience.',
+        highlight: 'ENGAGEMENT',
+        subtitle: 'Lancez une campagne d\'engagement pour votre post Instagram afin d\'améliorer la visibilité, renforcer la preuve sociale et soutenir votre promotion.',
         badges: [
-          { text: 'Likes réels et actifs' },
+          { text: 'Campagne d\'engagement' },
           { text: 'Livraison instantanée' },
           { text: 'Aucun mot de passe requis' },
         ],
-        cta: 'OBTENIR DES LIKES',
+        cta: 'COMMENCER',
         placeholder: 'Collez l\'URL de votre post Instagram',
       },
       why: {
-        title: 'Pourquoi acheter des Likes Instagram ?',
+        title: 'Pourquoi lancer une campagne d\'engagement Instagram ?',
         cards: [
           {
             title: 'Booster l\'engagement',
-            description: 'Plus de likes signalent à l\'algorithme Instagram que votre contenu est précieux, le poussant vers plus d\'utilisateurs via Explorer et Reels.',
+            description: 'Des signaux d\'engagement plus forts aident Instagram à mieux diffuser votre contenu via Explorer et Reels.',
             icon: 'TrendingUp',
           },
           {
             title: 'Preuve sociale',
-            description: 'Les posts avec plus de likes attirent encore plus d\'engagement organique. Les gens interagissent davantage avec du contenu populaire.',
+            description: 'Une activité plus visible peut renforcer la confiance et améliorer la perception de votre contenu.',
             icon: 'Eye',
           },
           {
             title: 'Résultats instantanés',
-            description: 'Voyez les likes apparaître en quelques minutes. Pas d\'attente, pas de tracas — une livraison rapide et fiable.',
+            description: 'Démarrage rapide, idéal pour accompagner un lancement ou une période de promotion.',
             icon: 'Zap',
           },
         ],
@@ -198,25 +198,25 @@ export default function InstagramLikesPage({ params }: PageProps) {
         steps: [
           {
             title: 'COLLEZ VOTRE LIEN',
-            description: 'Copiez l\'URL du post Instagram que vous souhaitez booster et collez-la ci-dessus. Aucune connexion ni mot de passe nécessaire.',
+            description: 'Copiez l\'URL du post Instagram que vous souhaitez promouvoir et collez-la ci-dessus. Aucun login ou mot de passe requis.',
           },
           {
             title: 'CHOISISSEZ VOTRE FORFAIT',
-            description: 'Sélectionnez le nombre de likes qui correspond à vos objectifs. Nous proposons des forfaits flexibles de 50 à 10 000+ likes.',
+            description: 'Choisissez la taille de campagne qui correspond à vos objectifs. Forfaits flexibles de 50 à 10 000+.',
           },
           {
-            title: 'REGARDEZ VOS LIKES AUGMENTER',
-            description: 'Détendez-vous et regardez les vrais likes arriver sur votre post, augmentant votre visibilité et crédibilité.',
+            title: 'SUIVEZ VOTRE ENGAGEMENT',
+            description: 'La campagne démarre peu après le paiement et accompagne votre post pendant votre fenêtre de promotion.',
           },
         ],
         cta: 'COMMENCER MAINTENANT',
       },
       benefits: {
-        title: 'Pourquoi choisir SocialOura pour les likes ?',
+        title: 'Pourquoi choisir SocialOura pour l\'engagement ?',
         items: [
-          { title: 'Likes de qualité', desc: 'De vrais comptes avec photos de profil et activité.' },
+          { title: 'Activité de qualité', desc: 'Pensée pour accompagner une promotion de manière réaliste et cohérente.' },
           { title: 'Sûr et sécurisé', desc: 'Entièrement conforme aux directives Instagram. Zéro risque.' },
-          { title: 'Livraison rapide', desc: 'Les likes commencent à apparaître en quelques minutes.' },
+          { title: 'Activation rapide', desc: 'La campagne démarre en quelques minutes.' },
           { title: 'Aucun mot de passe', desc: 'Nous avons seulement besoin de l\'URL de votre post.' },
           { title: 'Support 24/7', desc: 'Notre équipe est toujours disponible pour vous aider.' },
           { title: 'Garantie remboursement', desc: 'Pas satisfait ? Remboursement complet, sans questions.' },
@@ -229,32 +229,32 @@ export default function InstagramLikesPage({ params }: PageProps) {
     de: {
       hero: {
         title: 'BOOSTEN SIE IHRE',
-        highlight: 'INSTAGRAM LIKES',
-        subtitle: 'Erhalten Sie echte, hochwertige Likes auf Ihren Instagram-Posts, um das Engagement zu steigern, Social Proof aufzubauen und Ihr Publikum organisch zu vergrößern.',
+        highlight: 'ENGAGEMENT',
+        subtitle: 'Starten Sie eine Engagement-Kampagne für Ihren Instagram-Post, um Sichtbarkeit zu verbessern, Social Proof zu stärken und Ihre Promotion zu unterstützen.',
         badges: [
-          { text: 'Echte & aktive Likes' },
+          { text: 'Engagement-Kampagne' },
           { text: 'Sofortige Lieferung' },
           { text: 'Kein Passwort nötig' },
         ],
-        cta: 'LIKES ERHALTEN',
+        cta: 'JETZT STARTEN',
         placeholder: 'Instagram-Post-URL einfügen',
       },
       why: {
-        title: 'Warum Instagram Likes kaufen?',
+        title: 'Warum eine Instagram Engagement-Kampagne starten?',
         cards: [
           {
             title: 'Engagement steigern',
-            description: 'Mehr Likes signalisieren dem Instagram-Algorithmus, dass Ihr Content wertvoll ist, und pushen ihn zu mehr Nutzern über Explore und Reels.',
+            description: 'Stärkere Engagement-Signale helfen Instagram, Ihren Content besser zu verteilen (Explore, Reels).',
             icon: 'TrendingUp',
           },
           {
             title: 'Social Proof aufbauen',
-            description: 'Posts mit mehr Likes ziehen noch mehr organisches Engagement an. Menschen interagieren eher mit beliebten Inhalten.',
+            description: 'Mehr sichtbare Aktivität kann Vertrauen stärken und die Wahrnehmung Ihres Contents verbessern.',
             icon: 'Eye',
           },
           {
             title: 'Sofortige Ergebnisse',
-            description: 'Sehen Sie, wie Likes innerhalb von Minuten erscheinen. Kein Warten, kein Aufwand — schnelle, zuverlässige Lieferung.',
+            description: 'Schneller Start, ideal zur Unterstützung von Launches oder Promo-Phasen.',
             icon: 'Zap',
           },
         ],
@@ -264,25 +264,25 @@ export default function InstagramLikesPage({ params }: PageProps) {
         steps: [
           {
             title: 'LINK EINFÜGEN',
-            description: 'Kopieren Sie die URL des Instagram-Posts, den Sie boosten möchten, und fügen Sie sie oben ein. Kein Login oder Passwort nötig.',
+            description: 'Kopieren Sie die URL des Instagram-Posts, den Sie promoten möchten, und fügen Sie sie oben ein. Kein Login oder Passwort nötig.',
           },
           {
             title: 'PAKET WÄHLEN',
-            description: 'Wählen Sie die Anzahl der Likes, die zu Ihren Zielen passt. Wir bieten flexible Pakete von 50 bis 10.000+ Likes.',
+            description: 'Wählen Sie die Kampagnengröße passend zu Ihren Zielen. Flexible Pakete von 50 bis 10.000+.',
           },
           {
-            title: 'LIKES WACHSEN SEHEN',
-            description: 'Lehnen Sie sich zurück und sehen Sie zu, wie echte Likes auf Ihrem Post erscheinen und Ihre Sichtbarkeit steigern.',
+            title: 'ENGAGEMENT VERFOLGEN',
+            description: 'Die Kampagne startet kurz nach dem Checkout und unterstützt Ihren Post während Ihrer Promo-Phase.',
           },
         ],
         cta: 'JETZT STARTEN',
       },
       benefits: {
-        title: 'Warum SocialOura für Likes wählen?',
+        title: 'Warum SocialOura für Engagement wählen?',
         items: [
-          { title: 'Hochwertige Likes', desc: 'Von echten Konten mit Profilbildern und Aktivität.' },
+          { title: 'Hochwertige Aktivität', desc: 'Für Promotion mit einem realistischen, nachhaltigen Ansatz.' },
           { title: 'Sicher & geschützt', desc: 'Vollständig konform mit Instagram-Richtlinien. Null Risiko.' },
-          { title: 'Schnelle Lieferung', desc: 'Likes erscheinen innerhalb von Minuten nach dem Kauf.' },
+          { title: 'Schnelle Aktivierung', desc: 'Aktivierung innerhalb weniger Minuten.' },
           { title: 'Kein Passwort nötig', desc: 'Wir brauchen nur Ihre Post-URL. Ihr Konto bleibt sicher.' },
           { title: '24/7 Support', desc: 'Unser Team ist immer bereit zu helfen.' },
           { title: 'Geld-zurück-Garantie', desc: 'Nicht zufrieden? Volle Rückerstattung, ohne Fragen.' },
@@ -575,15 +575,14 @@ export default function InstagramLikesPage({ params }: PageProps) {
         language={lang}
       />
 
-      {/* Payment Modal */}
-      {selectedGoal && (
+      {isPaymentModalOpen && selectedGoal && (
         <PaymentModal
           isOpen={isPaymentModalOpen}
-          amount={Math.round(selectedGoal.price * 100)}
+          amount={selectedGoal.price * 100}
           currency={getCurrency()}
-          onClose={handleClosePaymentModal}
+          onClose={() => setIsPaymentModalOpen(false)}
           onSuccess={handlePaymentSuccess}
-          productName={`+${selectedGoal.followers} Instagram likes`}
+          productName={`Instagram engagement package (${selectedGoal.followers.toLocaleString()})`}
           language={lang}
           email={email}
           orderDetails={{
@@ -594,13 +593,12 @@ export default function InstagramLikesPage({ params }: PageProps) {
         />
       )}
 
-      {/* Order Success Modal */}
-      {selectedGoal && (
+      {isSuccessModalOpen && selectedGoal && (
         <OrderSuccessModal
           isOpen={isSuccessModalOpen}
-          onClose={handleCloseSuccessModal}
+          onClose={() => setIsSuccessModalOpen(false)}
           paymentIntentId={paymentIntentId}
-          productName={`+${selectedGoal.followers} Instagram likes`}
+          productName={`Instagram engagement package (${selectedGoal.followers.toLocaleString()})`}
           amount={Math.round(selectedGoal.price * 100)}
           currency={getCurrency()}
           username={postUrl}
