@@ -9,6 +9,7 @@ import { Eye, Zap, Shield, TrendingUp, Clock, Star, Play } from 'lucide-react';
 import ChatWidget from '@/components/ChatWidget';
 import ReviewsSection from '@/components/ReviewsSection';
 import TrustedBrands from '@/components/TrustedBrands';
+import TrustpilotBadge from '@/components/TrustpilotBadge';
 
 interface PageProps {
   params: { lang: string };
@@ -353,6 +354,7 @@ export default function TikTokViewsPage({ params }: PageProps) {
               </div>
               
               <div className="flex items-center justify-center gap-6 mt-6 text-xs text-gray-500">
+                <TrustpilotBadge />
                 <div className="flex items-center gap-1">
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />

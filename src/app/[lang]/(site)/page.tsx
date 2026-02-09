@@ -334,6 +334,26 @@ export default function HomePage({ params }: PageProps) {
             
             {/* Trust indicators */}
             <div className="flex items-center justify-center lg:justify-start gap-6 mt-10 text-xs text-gray-500">
+              <div
+                className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-3 py-2"
+                aria-label="Trustpilot rating 4.8 out of 5"
+              >
+                <span className="text-sm font-black text-white">4.8</span>
+                <span className="h-4 w-px bg-white/20" />
+                <span className="inline-flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <span
+                      key={i}
+                      className="inline-flex items-center justify-center w-5 h-5 rounded-[3px]"
+                      style={{ backgroundColor: '#00b67a' }}
+                    >
+                      <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white" aria-hidden="true">
+                        <path d="M12 17.27l-5.18 3.05 1.4-5.95L3.5 9.24l6.06-.52L12 3l2.44 5.72 6.06.52-4.72 5.13 1.4 5.95z" />
+                      </svg>
+                    </span>
+                  ))}
+                </span>
+              </div>
               <div className="flex items-center gap-1">
                 <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
