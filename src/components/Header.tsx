@@ -114,14 +114,10 @@ export default function Header({ lang }: HeaderProps) {
     if (!showPromo) return;
     if (!promoConfig?.showCountdown) return;
 
-    const key = `promo-countdown-end:${promoConfig.code || 'default'}`;
-    const existing = typeof window !== 'undefined' ? window.localStorage.getItem(key) : null;
-    let endTs = existing ? Number(existing) : 0;
-    if (!endTs || Number.isNaN(endTs) || endTs < Date.now()) {
-      const duration = Math.max(1, Number(promoConfig.durationHours) || 6);
-      endTs = Date.now() + duration * 60 * 60 * 1000;
-      window.localStorage.setItem(key, String(endTs));
-    }
+    const now = new Date();
+    const endOfDay = new Date(now);
+    endOfDay.setHours(23, 59, 59, 999);
+    const endTs = endOfDay.getTime();
 
     const tick = () => {
       const diff = Math.max(0, endTs - Date.now());
