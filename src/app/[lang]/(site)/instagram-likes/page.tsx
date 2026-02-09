@@ -81,14 +81,6 @@ export default function InstagramLikesPage({ params }: PageProps) {
     }, 5000);
   };
 
-  const handleClosePaymentModal = () => {
-    setIsPaymentModalOpen(false);
-  };
-
-  const handleCloseSuccessModal = () => {
-    setIsSuccessModalOpen(false);
-  };
-
   const handleCloseGoalModal = () => {
     setIsGoalModalOpen(false);
   };

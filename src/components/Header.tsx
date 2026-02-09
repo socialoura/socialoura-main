@@ -134,7 +134,7 @@ export default function Header({ lang }: HeaderProps) {
     tick();
     const id = window.setInterval(tick, 1000);
     return () => window.clearInterval(id);
-  }, [pathWithoutLang, promoConfig]);
+  }, [pathWithoutLang, promoConfig, showPromo]);
   
   // Get the path for a different language
   const getPathForLanguage = (targetLang: Language) => {

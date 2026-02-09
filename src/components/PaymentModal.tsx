@@ -662,7 +662,7 @@ export default function PaymentModal({
       }, 300);
       return () => clearTimeout(timer);
     }
-  }, [isOpen]);
+  }, [isOpen, amount]);
 
   // Handle animations
   useEffect(() => {
