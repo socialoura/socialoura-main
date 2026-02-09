@@ -39,7 +39,6 @@ export default function ProduitPage() {
           <ApplePayButton
             amount={9.99}
             currency="eur"
-            label="SocialOura — Example"
             language={lang}
             onSuccess={handleSuccess}
             onError={handleError}
@@ -47,10 +46,10 @@ export default function ProduitPage() {
 
           <p className="text-xs text-gray-500">
             {lang === 'fr'
-              ? 'Le bouton n\'apparaît que si Apple Pay ou Google Pay est disponible sur votre appareil.'
+              ? 'Apple Pay, Google Pay ou Link s\'affichera automatiquement selon votre appareil.'
               : lang === 'de'
-                ? 'Die Schaltfläche wird nur angezeigt, wenn Apple Pay oder Google Pay auf Ihrem Gerät verfügbar ist.'
-                : 'The button only appears if Apple Pay or Google Pay is available on your device.'}
+                ? 'Apple Pay, Google Pay oder Link wird je nach Gerät automatisch angezeigt.'
+                : 'Apple Pay, Google Pay, or Link will appear automatically based on your device.'}
           </p>
         </div>
       </div>
