@@ -260,6 +260,92 @@ export async function setPromoEnabled(enabled: boolean): Promise<void> {
   }
 }
 
+export type PromoBarConfig = {
+  enabled: boolean;
+  code: string;
+  percentOff: number;
+  durationHours: number;
+  showCountdown: boolean;
+  badgeText: Record<'en' | 'fr' | 'de', string>;
+  messageText: Record<'en' | 'fr' | 'de', string>;
+  excludePaths: string[];
+  includePaths: string[];
+  bgColor: string;
+  textColor: string;
+  accentColor: string;
+  size: 'sm' | 'md' | 'lg';
+};
+
+const DEFAULT_PROMO_BAR_CONFIG: PromoBarConfig = {
+  enabled: true,
+  code: 'SOCIALOURA5',
+  percentOff: 5,
+  durationHours: 6,
+  showCountdown: true,
+  badgeText: {
+    en: 'Limited offer',
+    fr: 'Offre limitée',
+    de: 'Zeitlich begrenzt',
+  },
+  messageText: {
+    en: 'Get 5% OFF with code',
+    fr: 'Profite de -5% avec le code',
+    de: 'Erhalte 5% Rabatt mit Code',
+  },
+  excludePaths: ['/ins-l', '/tik-v'],
+  includePaths: [],
+  bgColor: '#0a0a1a',
+  textColor: '#e2e8f0',
+  accentColor: '#a855f7',
+  size: 'sm',
+};
+
+export async function getPromoBarConfig(): Promise<PromoBarConfig> {
+  try {
+    const result = await sql`
+      SELECT value FROM settings WHERE key = 'promo_bar_config'
+    `;
+    if (result.rows.length === 0) return DEFAULT_PROMO_BAR_CONFIG;
+
+    const raw = result.rows[0].value;
+    const parsed = JSON.parse(raw);
+
+    return {
+      ...DEFAULT_PROMO_BAR_CONFIG,
+      ...parsed,
+      badgeText: { ...DEFAULT_PROMO_BAR_CONFIG.badgeText, ...(parsed.badgeText || {}) },
+      messageText: { ...DEFAULT_PROMO_BAR_CONFIG.messageText, ...(parsed.messageText || {}) },
+      excludePaths: Array.isArray(parsed.excludePaths)
+        ? parsed.excludePaths.filter((p: unknown) => typeof p === 'string')
+        : DEFAULT_PROMO_BAR_CONFIG.excludePaths,
+      includePaths: Array.isArray(parsed.includePaths)
+        ? parsed.includePaths.filter((p: unknown) => typeof p === 'string')
+        : DEFAULT_PROMO_BAR_CONFIG.includePaths,
+      bgColor: typeof parsed.bgColor === 'string' ? parsed.bgColor : DEFAULT_PROMO_BAR_CONFIG.bgColor,
+      textColor: typeof parsed.textColor === 'string' ? parsed.textColor : DEFAULT_PROMO_BAR_CONFIG.textColor,
+      accentColor: typeof parsed.accentColor === 'string' ? parsed.accentColor : DEFAULT_PROMO_BAR_CONFIG.accentColor,
+      size: ['sm', 'md', 'lg'].includes(parsed.size) ? parsed.size : DEFAULT_PROMO_BAR_CONFIG.size,
+    } as PromoBarConfig;
+  } catch (error) {
+    console.error('Error fetching promo bar config:', error);
+    return DEFAULT_PROMO_BAR_CONFIG;
+  }
+}
+
+export async function setPromoBarConfig(config: PromoBarConfig): Promise<void> {
+  try {
+    await sql`
+      INSERT INTO settings (key, value)
+      VALUES ('promo_bar_config', ${JSON.stringify(config)})
+      ON CONFLICT (key)
+      DO UPDATE SET value = ${JSON.stringify(config)}, updated_at = CURRENT_TIMESTAMP
+    `;
+  } catch (error) {
+    console.error('Error setting promo bar config:', error);
+    throw error;
+  }
+}
+
 export async function updateStripeSettings(secretKey: string, publishableKey: string) {
   try {
     // Update or insert secret key

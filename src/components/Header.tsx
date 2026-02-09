@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Language, languages } from '@/i18n/config';
@@ -13,12 +13,31 @@ interface HeaderProps {
   lang: Language;
 }
 
+type PromoBarConfig = {
+  enabled: boolean;
+  code: string;
+  percentOff: number;
+  durationHours: number;
+  showCountdown: boolean;
+  badgeText: Record<'en' | 'fr' | 'de', string>;
+  messageText: Record<'en' | 'fr' | 'de', string>;
+  excludePaths: string[];
+  includePaths: string[];
+  bgColor: string;
+  textColor: string;
+  accentColor: string;
+  size: 'sm' | 'md' | 'lg';
+};
+
 export default function Header({ lang }: HeaderProps) {
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isInstagramMenuOpen, setIsInstagramMenuOpen] = useState(false);
   const [isTiktokMenuOpen, setIsTiktokMenuOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
+  const [promoConfig, setPromoConfig] = useState<PromoBarConfig | null>(null);
  
   const navText = {
     en: {
@@ -45,8 +64,7 @@ export default function Header({ lang }: HeaderProps) {
   };
 
   const nt = navText[lang];
-  
-  // Get the current path without the language prefix
+
   const getPathWithoutLang = () => {
     const segments = pathname.split('/').filter(Boolean);
     if (segments.length > 0 && languages.includes(segments[0] as Language)) {
@@ -55,9 +73,71 @@ export default function Header({ lang }: HeaderProps) {
     return '/';
   };
 
+  const pathWithoutLang = getPathWithoutLang();
+  const promoUiText = {
+    en: { copied: 'Copied', copy: 'Copy', endsIn: 'Ends in' },
+    fr: { copied: 'Copié', copy: 'Copier', endsIn: 'Se termine dans' },
+    de: { copied: 'Kopiert', copy: 'Kopieren', endsIn: 'Endet in' },
+  };
+
+  const put = promoUiText[lang];
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const res = await fetch('/api/promo-bar', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        setPromoConfig(data?.config || null);
+      } catch {
+        // ignore
+      }
+    };
+
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const showPromo = (() => {
+    if (!promoConfig?.enabled) return false;
+    if (promoConfig.excludePaths?.length && promoConfig.excludePaths.includes(pathWithoutLang)) return false;
+    if (promoConfig.includePaths?.length && !promoConfig.includePaths.includes(pathWithoutLang)) return false;
+    return true;
+  })();
+
+  useEffect(() => {
+    if (!showPromo) return;
+    if (!promoConfig?.showCountdown) return;
+
+    const key = `promo-countdown-end:${promoConfig.code || 'default'}`;
+    const existing = typeof window !== 'undefined' ? window.localStorage.getItem(key) : null;
+    let endTs = existing ? Number(existing) : 0;
+    if (!endTs || Number.isNaN(endTs) || endTs < Date.now()) {
+      const duration = Math.max(1, Number(promoConfig.durationHours) || 6);
+      endTs = Date.now() + duration * 60 * 60 * 1000;
+      window.localStorage.setItem(key, String(endTs));
+    }
+
+    const tick = () => {
+      const diff = Math.max(0, endTs - Date.now());
+      const h = Math.floor(diff / (1000 * 60 * 60));
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const s = Math.floor((diff % (1000 * 60)) / 1000);
+      setTimeLeft({ h, m, s });
+    };
+
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [pathWithoutLang, promoConfig]);
+  
   // Get the path for a different language
   const getPathForLanguage = (targetLang: Language) => {
-    const pathWithoutLang = getPathWithoutLang();
     return `/${targetLang}${pathWithoutLang === '/' ? '' : pathWithoutLang}`;
   };
 
@@ -69,30 +149,92 @@ export default function Header({ lang }: HeaderProps) {
 
   const currentLanguage = languageMeta[lang];
 
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const promoCode = promoConfig?.code || 'SOCIALOURA5';
+
+  const handleCopyPromo = async () => {
+    try {
+      await navigator.clipboard.writeText(promoCode);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1400);
+    } catch {
+      setCopied(false);
+    }
+  };
+
+  const sizePy = promoConfig?.size === 'lg' ? 'py-3' : promoConfig?.size === 'md' ? 'py-2' : 'py-1.5';
+  const sizeText = promoConfig?.size === 'lg' ? 'text-sm' : promoConfig?.size === 'md' ? 'text-[13px]' : 'text-xs';
+
   return (
-    <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center h-24 sm:h-28">
-          {/* Logo - Left */}
-          <div className="flex items-center">
-            <Link 
-              href={`/${lang}`}
-              className="flex items-center transition-all group"
-              onClick={() => setIsMobileMenuOpen(false)}
+    <div className="sticky top-0 z-50">
+      {showPromo && promoConfig && (
+        <div
+          className={`w-full ${sizePy}`}
+          style={{ backgroundColor: promoConfig.bgColor || '#0a0a1a', color: promoConfig.textColor || '#e2e8f0' }}
+        >
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-center gap-3 sm:gap-4 flex-wrap">
+            <span
+              className={`${sizeText} font-bold uppercase tracking-wider px-2 py-0.5 rounded`}
+              style={{ backgroundColor: `${promoConfig.accentColor || '#a855f7'}30`, color: promoConfig.accentColor || '#a855f7' }}
             >
-              <div className="relative w-24 h-24 sm:w-32 sm:h-32">
-                <Image
-                  src="/img/a-modern-flat-vector-logo-design-featuri_ZEbfVp__QiK-0wr5MrgGJg_ZFPYEbSKRM6a11TOK-IQCQ-removebg-preview.png"
-                  alt="Socialoura"
-                  width={128}
-                  height={128}
-                  priority
-                  sizes="(min-width: 640px) 128px, 96px"
-                  className="group-hover:scale-105 transition-transform"
-                />
-              </div>
-            </Link>
+              {promoConfig.badgeText?.[lang] || ''}
+            </span>
+
+            <span className={`${sizeText} font-medium opacity-90`}>
+              {promoConfig.messageText?.[lang] || ''}
+            </span>
+
+            <button
+              type="button"
+              onClick={handleCopyPromo}
+              className={`${sizeText} inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded font-black tracking-wider transition-opacity hover:opacity-80`}
+              style={{ backgroundColor: promoConfig.accentColor || '#a855f7', color: promoConfig.bgColor || '#0a0a1a' }}
+              aria-label={`Copy ${promoCode}`}
+            >
+              {promoCode}
+              <span className="text-[10px] font-bold opacity-80">
+                {copied ? put.copied : put.copy}
+              </span>
+            </button>
+
+            {promoConfig.showCountdown && (
+              <span className={`${sizeText} font-semibold opacity-70 flex items-center gap-1.5`}>
+                {put.endsIn}
+                <span
+                  className="font-black tabular-nums px-1.5 py-0.5 rounded"
+                  style={{ backgroundColor: `${promoConfig.textColor || '#e2e8f0'}15` }}
+                >
+                  {pad(timeLeft.h)}:{pad(timeLeft.m)}:{pad(timeLeft.s)}
+                </span>
+              </span>
+            )}
           </div>
+        </div>
+      )}
+
+      <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center h-24 sm:h-28">
+            {/* Logo - Left */}
+            <div className="flex items-center">
+              <Link
+                href={`/${lang}`}
+                className="flex items-center transition-all group"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <div className="relative w-24 h-24 sm:w-32 sm:h-32">
+                  <Image
+                    src="/img/a-modern-flat-vector-logo-design-featuri_ZEbfVp__QiK-0wr5MrgGJg_ZFPYEbSKRM6a11TOK-IQCQ-removebg-preview.png"
+                    alt="Socialoura"
+                    width={128}
+                    height={128}
+                    priority
+                    sizes="(min-width: 640px) 128px, 96px"
+                    className="group-hover:scale-105 transition-transform"
+                  />
+                </div>
+              </Link>
+            </div>
           
           {/* Desktop Navigation - Centered */}
           <nav className="hidden md:flex items-center gap-8 flex-1 justify-center">
@@ -282,10 +424,10 @@ export default function Header({ lang }: HeaderProps) {
           </div>
         </div>
 
-        {/* Mobile Navigation */}
-        {isMobileMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-800">
-            <nav className="flex flex-col space-y-4">
+          {/* Mobile Navigation */}
+          {isMobileMenuOpen && (
+            <div className="md:hidden py-4 border-t border-gray-200 dark:border-gray-800">
+              <nav className="flex flex-col space-y-4">
               <div>
                 <span className="text-base font-medium text-gray-700 dark:text-gray-300">{nt.instagram}</span>
                 <div className="flex flex-col ml-4 mt-2 space-y-2">
@@ -404,10 +546,11 @@ export default function Header({ lang }: HeaderProps) {
                   })}
                 </div>
               </div>
-            </nav>
-          </div>
-        )}
-      </div>
-    </header>
+              </nav>
+            </div>
+          )}
+        </div>
+      </header>
+    </div>
   );
 }

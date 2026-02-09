@@ -67,6 +67,22 @@ interface GoogleAdsExpense {
   updated_at?: string;
 }
 
+type PromoBarConfig = {
+  enabled: boolean;
+  code: string;
+  percentOff: number;
+  durationHours: number;
+  showCountdown: boolean;
+  badgeText: Record<'en' | 'fr' | 'de', string>;
+  messageText: Record<'en' | 'fr' | 'de', string>;
+  excludePaths: string[];
+  includePaths: string[];
+  bgColor: string;
+  textColor: string;
+  accentColor: string;
+  size: 'sm' | 'md' | 'lg';
+};
+
 type TabType = 'pricing' | 'settings' | 'orders' | 'analytics' | 'promo';
 
 export default function AdminDashboard() {
@@ -139,6 +155,29 @@ export default function AdminDashboard() {
     code: '',
   });
   const [promoFieldEnabled, setPromoFieldEnabled] = useState(true);
+  const [promoBarConfig, setPromoBarConfig] = useState<PromoBarConfig>({
+    enabled: true,
+    code: 'SOCIALOURA5',
+    percentOff: 5,
+    durationHours: 6,
+    showCountdown: true,
+    badgeText: {
+      en: 'Limited offer',
+      fr: 'Offre limitée',
+      de: 'Zeitlich begrenzt',
+    },
+    messageText: {
+      en: 'Get 5% OFF with code',
+      fr: 'Profite de -5% avec le code',
+      de: 'Erhalte 5% Rabatt mit Code',
+    },
+    excludePaths: ['/ins-l', '/tik-v'],
+    includePaths: [],
+    bgColor: '#0a0a1a',
+    textColor: '#e2e8f0',
+    accentColor: '#a855f7',
+    size: 'sm',
+  });
 
   const [popularPackInstagram, setPopularPackInstagram] = useState<string>('');
   const [popularPackTiktok, setPopularPackTiktok] = useState<string>('');
@@ -169,6 +208,7 @@ export default function AdminDashboard() {
     } else if (activeTab === 'promo') {
       fetchPromoCodes();
       fetchPromoFieldEnabled();
+      fetchPromoBarConfig();
     } else {
       setIsLoading(false);
     }
@@ -336,6 +376,54 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error('Error fetching promo field setting:', error);
+    }
+  };
+
+  const fetchPromoBarConfig = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/promo-bar-settings', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data?.config) {
+          setPromoBarConfig(data.config);
+        }
+      }
+    } catch (error) {
+      console.error('Error fetching promo bar config:', error);
+    }
+  };
+
+  const handleSavePromoBarConfig = async () => {
+    setIsSaving(true);
+    setMessage('');
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/promo-bar-settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ config: promoBarConfig }),
+      });
+
+      if (response.ok) {
+        setMessage('Promo bar updated successfully!');
+        setTimeout(() => setMessage(''), 3000);
+      } else {
+        const data = await response.json();
+        setMessage(data.error || 'Failed to update promo bar');
+      }
+    } catch (error) {
+      console.error('Error updating promo bar config:', error);
+      setMessage('An error occurred while saving');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -2055,6 +2143,280 @@ export default function AdminDashboard() {
                     }`}
                   />
                 </button>
+              </div>
+            </div>
+
+            {/* Promo Bar Settings */}
+            <div className="mb-6 p-6 bg-gray-50 dark:bg-gray-700/50 rounded-xl border border-gray-200 dark:border-gray-600">
+              <div className="flex items-center justify-between gap-4 mb-4">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Promo Bar</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                    Configure the banner shown at the top of the site header
+                  </p>
+                </div>
+                <button
+                  onClick={handleSavePromoBarConfig}
+                  disabled={isSaving}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <Save className="w-4 h-4" />
+                  Save
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex items-center justify-between p-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white/60 dark:bg-gray-800/40">
+                  <div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">Enabled</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Show promo bar in header</div>
+                  </div>
+                  <button
+                    onClick={() => setPromoBarConfig((p) => ({ ...p, enabled: !p.enabled }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      promoBarConfig.enabled ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        promoBarConfig.enabled ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-between p-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-white/60 dark:bg-gray-800/40">
+                  <div>
+                    <div className="text-sm font-semibold text-gray-900 dark:text-white">Show countdown</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400">Display timer on the right</div>
+                  </div>
+                  <button
+                    onClick={() => setPromoBarConfig((p) => ({ ...p, showCountdown: !p.showCountdown }))}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      promoBarConfig.showCountdown ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        promoBarConfig.showCountdown ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Promo Code</label>
+                  <input
+                    value={promoBarConfig.code}
+                    onChange={(e) => setPromoBarConfig((p) => ({ ...p, code: e.target.value.toUpperCase() }))}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Percent off</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={promoBarConfig.percentOff}
+                    onChange={(e) => setPromoBarConfig((p) => ({ ...p, percentOff: Number(e.target.value) || 0 }))}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Countdown duration (hours)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    step={1}
+                    value={promoBarConfig.durationHours}
+                    onChange={(e) => setPromoBarConfig((p) => ({ ...p, durationHours: Math.max(1, Number(e.target.value) || 1) }))}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Exclude paths (one per line)</label>
+                  <textarea
+                    value={promoBarConfig.excludePaths.join('\n')}
+                    onChange={(e) =>
+                      setPromoBarConfig((p) => ({
+                        ...p,
+                        excludePaths: e.target.value
+                          .split(/\r?\n/)
+                          .map((s) => s.trim())
+                          .filter(Boolean),
+                      }))
+                    }
+                    rows={3}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Include paths only (one per line, leave empty = all pages)</label>
+                  <textarea
+                    value={promoBarConfig.includePaths.join('\n')}
+                    onChange={(e) =>
+                      setPromoBarConfig((p) => ({
+                        ...p,
+                        includePaths: e.target.value
+                          .split(/\r?\n/)
+                          .map((s) => s.trim())
+                          .filter(Boolean),
+                      }))
+                    }
+                    rows={3}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Size</label>
+                  <select
+                    value={promoBarConfig.size}
+                    onChange={(e) => setPromoBarConfig((p) => ({ ...p, size: e.target.value as 'sm' | 'md' | 'lg' }))}
+                    className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  >
+                    <option value="sm">Small</option>
+                    <option value="md">Medium</option>
+                    <option value="lg">Large</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Background color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={promoBarConfig.bgColor}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, bgColor: e.target.value }))}
+                      className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      value={promoBarConfig.bgColor}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, bgColor: e.target.value }))}
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-mono text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Text color</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={promoBarConfig.textColor}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, textColor: e.target.value }))}
+                      className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      value={promoBarConfig.textColor}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, textColor: e.target.value }))}
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-mono text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Accent color (badge & button)</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="color"
+                      value={promoBarConfig.accentColor}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, accentColor: e.target.value }))}
+                      className="w-10 h-10 rounded-lg border border-gray-300 dark:border-gray-600 cursor-pointer"
+                    />
+                    <input
+                      value={promoBarConfig.accentColor}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, accentColor: e.target.value }))}
+                      className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-mono text-sm"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Live preview</div>
+                <div
+                  className={`w-full rounded-xl overflow-hidden ${promoBarConfig.size === 'lg' ? 'py-3' : promoBarConfig.size === 'md' ? 'py-2' : 'py-1.5'}`}
+                  style={{ backgroundColor: promoBarConfig.bgColor, color: promoBarConfig.textColor }}
+                >
+                  <div className="flex items-center justify-center gap-3 flex-wrap px-4">
+                    <span
+                      className={`${promoBarConfig.size === 'lg' ? 'text-sm' : promoBarConfig.size === 'md' ? 'text-[13px]' : 'text-xs'} font-bold uppercase tracking-wider px-2 py-0.5 rounded`}
+                      style={{ backgroundColor: `${promoBarConfig.accentColor}30`, color: promoBarConfig.accentColor }}
+                    >
+                      {promoBarConfig.badgeText.en}
+                    </span>
+                    <span className={`${promoBarConfig.size === 'lg' ? 'text-sm' : promoBarConfig.size === 'md' ? 'text-[13px]' : 'text-xs'} font-medium opacity-90`}>
+                      {promoBarConfig.messageText.en}
+                    </span>
+                    <span
+                      className={`${promoBarConfig.size === 'lg' ? 'text-sm' : promoBarConfig.size === 'md' ? 'text-[13px]' : 'text-xs'} px-2.5 py-0.5 rounded font-black tracking-wider`}
+                      style={{ backgroundColor: promoBarConfig.accentColor, color: promoBarConfig.bgColor }}
+                    >
+                      {promoBarConfig.code}
+                    </span>
+                    {promoBarConfig.showCountdown && (
+                      <span className={`${promoBarConfig.size === 'lg' ? 'text-sm' : promoBarConfig.size === 'md' ? 'text-[13px]' : 'text-xs'} font-semibold opacity-70`}>
+                        Ends in <span className="font-black tabular-nums px-1.5 py-0.5 rounded" style={{ backgroundColor: `${promoBarConfig.textColor}15` }}>05:59:42</span>
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Badge text</div>
+                  <div className="grid grid-cols-1 gap-3">
+                    <input
+                      value={promoBarConfig.badgeText.en}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, badgeText: { ...p.badgeText, en: e.target.value } }))}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      placeholder="English"
+                    />
+                    <input
+                      value={promoBarConfig.badgeText.fr}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, badgeText: { ...p.badgeText, fr: e.target.value } }))}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      placeholder="Français"
+                    />
+                    <input
+                      value={promoBarConfig.badgeText.de}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, badgeText: { ...p.badgeText, de: e.target.value } }))}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      placeholder="Deutsch"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <div className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Message text</div>
+                  <div className="grid grid-cols-1 gap-3">
+                    <input
+                      value={promoBarConfig.messageText.en}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, messageText: { ...p.messageText, en: e.target.value } }))}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      placeholder="English"
+                    />
+                    <input
+                      value={promoBarConfig.messageText.fr}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, messageText: { ...p.messageText, fr: e.target.value } }))}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      placeholder="Français"
+                    />
+                    <input
+                      value={promoBarConfig.messageText.de}
+                      onChange={(e) => setPromoBarConfig((p) => ({ ...p, messageText: { ...p.messageText, de: e.target.value } }))}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                      placeholder="Deutsch"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
