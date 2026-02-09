@@ -36,10 +36,20 @@ const DEFAULT_PRICING = {
     { followers: '10000', price: '79.90' },
     { followers: '25000', price: '110.00' },
   ],
+  instagram_likes: [
+    { followers: '50', price: '0.99' },
+    { followers: '100', price: '1.49' },
+    { followers: '250', price: '2.90' },
+    { followers: '500', price: '4.90' },
+    { followers: '1000', price: '7.90' },
+    { followers: '2500', price: '14.90' },
+    { followers: '5000', price: '24.90' },
+    { followers: '10000', price: '44.90' },
+  ],
 };
 
 // In-memory fallback for development without database
-let memoryStore: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }> } | null = null;
+let memoryStore: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }>; instagram_likes?: Array<{ followers: string; price: string }> } | null = null;
 
 // Check if database is configured
 const isDBConfigured = () => {
@@ -62,7 +72,7 @@ const storage = {
     }
   },
   
-  async set(_key: string, value: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }> }) {
+  async set(_key: string, value: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }>; instagram_likes?: Array<{ followers: string; price: string }> }) {
     if (isDBConfigured()) {
       try {
         await setPricing(value);
@@ -104,11 +114,13 @@ export async function GET() {
     let popularPackInstagram: string | null = null;
     let popularPackTiktok: string | null = null;
     let popularPackTwitter: string | null = null;
+    let popularPackInstagramLikes: string | null = null;
     if (isDBConfigured()) {
       try {
         popularPackInstagram = await getPopularPack('instagram');
         popularPackTiktok = await getPopularPack('tiktok');
         popularPackTwitter = await getPopularPack('twitter');
+        popularPackInstagramLikes = await getPopularPack('instagram_likes');
       } catch (e) {
         console.error('Error fetching popular packs:', e);
       }
@@ -119,9 +131,11 @@ export async function GET() {
       instagram: data.instagram,
       tiktok: data.tiktok,
       twitter: ('twitter' in data && data.twitter) ? data.twitter : DEFAULT_PRICING.twitter,
+      instagram_likes: ('instagram_likes' in data && data.instagram_likes) ? data.instagram_likes : DEFAULT_PRICING.instagram_likes,
       popularPackInstagram: popularPackInstagram || null,
       popularPackTiktok: popularPackTiktok || null,
       popularPackTwitter: popularPackTwitter || null,
+      popularPackInstagramLikes: popularPackInstagramLikes || null,
     };
     
     return NextResponse.json(responseData);
@@ -146,7 +160,7 @@ async function updatePricing(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { instagram, tiktok, twitter, popularPackInstagram, popularPackTiktok, popularPackTwitter } = body;
+    const { instagram, tiktok, twitter, instagram_likes, popularPackInstagram, popularPackTiktok, popularPackTwitter, popularPackInstagramLikes } = body;
 
     // Validate data
     if (!instagram || !tiktok || !Array.isArray(instagram) || !Array.isArray(tiktok)) {
@@ -157,7 +171,7 @@ async function updatePricing(request: NextRequest) {
     }
 
     // Save pricing to storage
-    await storage.set('pricing-data', { instagram, tiktok, twitter: twitter || [] });
+    await storage.set('pricing-data', { instagram, tiktok, twitter: twitter || [], instagram_likes: instagram_likes || [] });
 
     // Save popular pack settings if provided
     if (isDBConfigured()) {
@@ -170,6 +184,9 @@ async function updatePricing(request: NextRequest) {
         }
         if (popularPackTwitter !== undefined) {
           await setPopularPack('twitter', popularPackTwitter || '');
+        }
+        if (popularPackInstagramLikes !== undefined) {
+          await setPopularPack('instagram_likes', popularPackInstagramLikes || '');
         }
       } catch (e) {
         console.error('Error saving popular packs:', e);

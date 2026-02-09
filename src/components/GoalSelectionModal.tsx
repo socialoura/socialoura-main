@@ -17,6 +17,7 @@ interface GoalSelectionModalProps {
   onSelectGoal: (goal: FollowerGoal, email: string) => void;
   username: string;
   platform: 'instagram' | 'tiktok' | 'twitter';
+  serviceType?: 'followers' | 'likes';
   language?: 'en' | 'fr' | 'de';
 }
 
@@ -26,6 +27,7 @@ export default function GoalSelectionModal({
   onSelectGoal,
   username,
   platform,
+  serviceType = 'followers',
   language = 'en',
 }: GoalSelectionModalProps) {
   const [email, setEmail] = useState('');
@@ -39,7 +41,7 @@ export default function GoalSelectionModal({
 
   const text = {
     en: {
-      title: 'Choose your visibility package',
+      title: serviceType === 'likes' ? 'Choose your likes package' : 'Choose your visibility package',
       emailLabel: 'Email address',
       emailPlaceholder: 'your@email.com',
       continue: 'Continue',
@@ -52,7 +54,7 @@ export default function GoalSelectionModal({
       selectCustomAmount: 'Select your desired exposure level',
     },
     fr: {
-      title: 'Choisissez votre forfait de visibilité',
+      title: serviceType === 'likes' ? 'Choisissez votre forfait de likes' : 'Choisissez votre forfait de visibilité',
       emailLabel: 'Adresse e-mail',
       emailPlaceholder: 'votre@email.com',
       continue: 'Continuer',
@@ -65,7 +67,7 @@ export default function GoalSelectionModal({
       selectCustomAmount: 'Sélectionnez votre niveau d\'exposition souhaité',
     },
     de: {
-      title: 'Wählen Sie Ihr Sichtbarkeitspaket',
+      title: serviceType === 'likes' ? 'Wählen Sie Ihr Likes-Paket' : 'Wählen Sie Ihr Sichtbarkeitspaket',
       emailLabel: 'E-Mail-Adresse',
       emailPlaceholder: 'ihre@email.com',
       continue: 'Weiter',
@@ -144,8 +146,12 @@ export default function GoalSelectionModal({
         const response = await fetch('/api/admin/pricing');
         if (response.ok) {
           const data = await response.json();
-          const platformGoals = platform === 'instagram' ? data.instagram : platform === 'tiktok' ? data.tiktok : data.twitter;
-          const popularPack = platform === 'instagram' ? data.popularPackInstagram : platform === 'tiktok' ? data.popularPackTiktok : data.popularPackTwitter;
+          const platformGoals = serviceType === 'likes' 
+            ? data.instagram_likes 
+            : platform === 'instagram' ? data.instagram : platform === 'tiktok' ? data.tiktok : data.twitter;
+          const popularPack = serviceType === 'likes'
+            ? data.popularPackInstagramLikes
+            : platform === 'instagram' ? data.popularPackInstagram : platform === 'tiktok' ? data.popularPackTiktok : data.popularPackTwitter;
           
           // Convert API data to FollowerGoal format
           const formattedGoals: FollowerGoal[] = platformGoals.map((goal: { followers: string; price: string }, index: number) => {
@@ -177,7 +183,7 @@ export default function GoalSelectionModal({
     if (isOpen) {
       fetchPricing();
     }
-  }, [isOpen, platform]);
+  }, [isOpen, platform, serviceType]);
 
   // Handle animations
   useEffect(() => {
@@ -364,7 +370,7 @@ export default function GoalSelectionModal({
                       <span>-{goal.discount}%</span>
                     </div>
                     <div className="text-2xl font-black text-white mb-1 group-hover:text-purple-300 transition-colors">
-                      +{goal.followers.toLocaleString()} {language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
+                      +{goal.followers.toLocaleString()} {serviceType === 'likes' ? 'likes' : language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
                     </div>
                     <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                       {language === 'fr' || language === 'de' ? `${goal.price.toFixed(2)}€` : `$${goal.price.toFixed(2)}`}
@@ -415,7 +421,7 @@ export default function GoalSelectionModal({
                     <h3 className="text-xl font-bold text-white">
                       {customFollowers.toLocaleString()}
                     </h3>
-                    <p className="text-sm text-gray-400">followers</p>
+                    <p className="text-sm text-gray-400">{serviceType === 'likes' ? 'likes' : 'followers'}</p>
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
