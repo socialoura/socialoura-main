@@ -19,7 +19,7 @@ export default function HomePage({ params }: PageProps) {
   
   return (
     <div className="bg-white">
-      {/* Hero Section with Interactive Switcher */}
+      {/* Hero Section with Interactive Service Switcher */}
       <HeroSection lang={lang} />
 
       {/* Trust Badges & Payment Methods */}

@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Language } from '@/i18n/config';
-import { Bot, Clock, Shield, Package, Megaphone, BarChart3 } from 'lucide-react';
+import { Bot, Clock, Shield, Package, Megaphone, BarChart3, Zap, Users } from 'lucide-react';
 import Image from 'next/image';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
+import UserSearchInput from '@/components/UserSearchInput';
 
 const GoalSelectionModal = dynamic(() => import('@/components/GoalSelectionModal'), { ssr: false });
 const PaymentModal = dynamic(() => import('@/components/PaymentModal'), { ssr: false });
@@ -42,18 +43,6 @@ export default function InstagramPage({ params }: PageProps) {
 
   const getCurrency = () => (lang === 'fr' || lang === 'de' ? 'eur' : 'usd');
 
-  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value;
-    // Remove any @ symbols from the input
-    value = value.replace(/@/g, '');
-    setUsername(value);
-  };
-
-  const handleContinue = () => {
-    if (username.trim().length > 0) {
-      setIsGoalModalOpen(true);
-    }
-  };
 
   const handleGoalSelected = (goal: FollowerGoal, emailParam: string) => {
     setSelectedGoal(goal);
@@ -109,15 +98,17 @@ export default function InstagramPage({ params }: PageProps) {
   const content = {
     en: {
       hero: {
-        title: 'ELEVATE YOUR PRESENCE ON',
-        platform: 'INSTAGRAM',
-        subtitle: 'Professional marketing solutions through our exclusive partner network — designed to expand your reach authentically.',
+        title: 'Buy Instagram Followers',
+        subtitle: 'Instant Delivery',
+        description: 'Boost your Instagram presence with real, high-quality followers. Start growing today with our premium service.',
         badges: [
-          { text: '100% Authentic approach' },
-          { text: 'Safe & Private' },
-          { text: 'Customer-approved' },
+          { text: 'Instant Delivery' },
+          { text: '100% Safe & Secure' },
+          { text: 'No Password Required' },
+          { text: '24/7 Support' },
         ],
-        cta: 'CONTINUE',
+        cta: 'GET STARTED NOW',
+        priceStart: 'Starting at $2.99',
       },
       difference: {
         title: 'What makes Socialoura different?',
@@ -199,15 +190,17 @@ export default function InstagramPage({ params }: PageProps) {
     },
     fr: {
       hero: {
-        title: 'ÉLEVEZ VOTRE PRÉSENCE SUR',
-        platform: 'INSTAGRAM',
-        subtitle: 'Solutions marketing professionnelles via notre réseau de partenaires exclusif — conçues pour étendre votre portée de manière authentique.',
+        title: 'Acheter des Abonnés Instagram',
+        subtitle: 'Livraison Instantanée',
+        description: 'Boostez votre présence Instagram avec de vrais abonnés de haute qualité. Commencez à grandir dès aujourd\'hui avec notre service premium.',
         badges: [
-          { text: 'Approche 100% authentique' },
-          { text: 'Sûr et Privé' },
-          { text: 'Approuvé par les clients' },
+          { text: 'Livraison Instantanée' },
+          { text: '100% Sûr et Sécurisé' },
+          { text: 'Aucun Mot de Passe Requis' },
+          { text: 'Support 24/7' },
         ],
-        cta: 'CONTINUER',
+        cta: 'COMMENCER MAINTENANT',
+        priceStart: 'À partir de 2,99€',
       },
       difference: {
         title: 'Qu\'est-ce qui rend Socialoura différent ?',
@@ -289,15 +282,17 @@ export default function InstagramPage({ params }: PageProps) {
     },
     de: {
       hero: {
-        title: 'STEIGERN SIE IHRE PRÄSENZ AUF',
-        platform: 'INSTAGRAM',
-        subtitle: 'Professionelle Marketinglösungen über unser exklusives Partnernetzwerk — entwickelt, um Ihre Reichweite authentisch zu erweitern.',
+        title: 'Instagram Follower Kaufen',
+        subtitle: 'Sofortige Lieferung',
+        description: 'Steigern Sie Ihre Instagram-Präsenz mit echten, hochwertigen Followern. Starten Sie noch heute mit unserem Premium-Service.',
         badges: [
-          { text: '100% Authentischer Ansatz' },
-          { text: 'Sicher & Privat' },
-          { text: 'Von Kunden bestätigt' },
+          { text: 'Sofortige Lieferung' },
+          { text: '100% Sicher & Geschützt' },
+          { text: 'Kein Passwort Erforderlich' },
+          { text: '24/7 Support' },
         ],
-        cta: 'WEITER',
+        cta: 'JETZT STARTEN',
+        priceStart: 'Ab 2,99€',
       },
       difference: {
         title: 'Was macht Socialoura anders?',
@@ -397,27 +392,30 @@ export default function InstagramPage({ params }: PageProps) {
         <div className="relative mx-auto max-w-5xl px-6 py-8 sm:py-20 lg:px-8 w-full">
           <div className="text-center">
             {/* Platform Badge */}
-            <div className="inline-flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 mb-4 sm:mb-8 shadow-lg shadow-purple-500/30">
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <div className="inline-flex items-center justify-center w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 mb-4 sm:mb-6 shadow-lg shadow-purple-500/30">
+              <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
               </svg>
             </div>
             
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight text-white md:text-6xl mb-2 sm:mb-4 leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-white md:text-7xl mb-3 sm:mb-4 leading-tight">
               {t.hero.title}
             </h1>
-            <h1 className="text-2xl sm:text-4xl font-black tracking-tight md:text-6xl mb-4 sm:mb-8 leading-tight bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
-              {t.hero.platform}
-            </h1>
-            <p className="text-sm sm:text-lg leading-relaxed text-gray-400 max-w-2xl mx-auto mb-5 sm:mb-10">
-              {t.hero.subtitle}
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <Zap className="w-5 h-5 text-orange-500" />
+              <p className="text-lg sm:text-xl font-bold text-orange-500">
+                {t.hero.subtitle}
+              </p>
+            </div>
+            <p className="text-base sm:text-lg leading-relaxed text-gray-300 max-w-2xl mx-auto mb-6 sm:mb-8">
+              {t.hero.description}
             </p>
             
             {/* Badges */}
-            <div className="hidden sm:flex flex-wrap items-center justify-center gap-3 mb-12">
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-8 sm:mb-10 px-4">
               {t.hero.badges.map((badge, index) => (
-                <div key={index} className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300">
-                  <svg className="w-4 h-4 mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <div key={index} className="inline-flex items-center px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium bg-gray-800/50 backdrop-blur-sm border border-gray-700/50 text-gray-300">
+                  <svg className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   {badge.text}
@@ -425,51 +423,37 @@ export default function InstagramPage({ params }: PageProps) {
               ))}
             </div>
 
-            {/* Username Input & CTA Button */}
-            <div className="max-w-xl mx-auto">
-              <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50">
-                <div className="flex-1 relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg font-medium">
-                    @
-                  </span>
-                  <input
-                    type="text"
-                    value={username}
-                    onChange={handleUsernameChange}
-                    placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : 'username'}
-                    className="w-full pl-10 pr-4 py-4 text-base bg-transparent border-0 focus:ring-0 text-white placeholder-gray-500"
-                    onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
-                  />
-                </div>
-                <button
-                  onClick={handleContinue}
-                  className="relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 px-8 py-4 text-base font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] transition-all duration-300 uppercase tracking-wide group"
-                >
-                  <span className="relative z-10 flex items-center gap-2">
-                    {t.hero.cta}
-                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
-                  </span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-pink-600 to-purple-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                </button>
-              </div>
+            {/* Username Search Input */}
+            <div className="max-w-2xl mx-auto mb-4">
+              <UserSearchInput
+                platform="instagram"
+                onUserConfirmed={(confirmedUsername) => {
+                  setUsername(confirmedUsername);
+                  setIsGoalModalOpen(true);
+                }}
+                placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : 'username'}
+                className="w-full"
+              />
               
-              {/* Trust indicators */}
-              <div className="flex items-center justify-center gap-6 mt-6 text-xs text-gray-500">
-                <TrustpilotBadge />
-                <div className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                  </svg>
-                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : 'Guaranteed results'}</span>
-                </div>
+              <p className="text-center text-sm text-gray-400 mt-3">
+                {t.hero.priceStart}
+              </p>
+            </div>
+              
+            {/* Trust indicators */}
+            <div className="flex items-center justify-center gap-6 mt-6 text-xs text-gray-500">
+              <TrustpilotBadge />
+              <div className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                </svg>
+                <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : 'Guaranteed results'}</span>
               </div>
             </div>
           </div>
