@@ -9,7 +9,7 @@ J'ai complètement refait le design de Socialura en suivant les directives "Prem
 ### 1. **HeroSection.tsx** - Interactive Service Switcher
 **Localisation:** `src/components/HeroSection.tsx`
 
-**Caractéristiques:**
+**Caractéristiques:** 
 - **Titre Gigantesque:** `text-6xl sm:text-7xl lg:text-8xl` - "Skyrocket Your Social Proof"
 - **Gradient Text:** Titre avec gradient violet/rose/orange sur "Social Proof"
 - **Trust Badge:** "Trusted by 50,000+ Creators" avec avatars superposés
