@@ -1,3 +1,4 @@
+import './env';
 import { sql } from '@vercel/postgres';
 
 export async function initDatabase() {
