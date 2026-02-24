@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { PaymentElement, ExpressCheckoutElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { X, Loader2, CheckCircle, AlertCircle, Tag } from 'lucide-react';
 import StripeProvider from './StripeProvider';
 
@@ -65,6 +65,7 @@ function PaymentForm({
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [elementsReady, setElementsReady] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [expressCheckoutReady, setExpressCheckoutReady] = useState(false);
 
   // Language strings
   const text = {
@@ -91,6 +92,7 @@ function PaymentForm({
       promoPlaceholder: 'Enter promo code',
       promoApply: 'Apply',
       promoApplied: 'applied!',
+      orSeparator: 'OR',
     },
     fr: {
       title: 'Finalisez Votre Paiement',
@@ -115,6 +117,7 @@ function PaymentForm({
       promoPlaceholder: 'Entrez un code promo',
       promoApply: 'Appliquer',
       promoApplied: 'appliqué !',
+      orSeparator: 'OU',
     },
     de: {
       title: 'Zahlung abschließen',
@@ -139,6 +142,7 @@ function PaymentForm({
       promoPlaceholder: 'Gutscheincode eingeben',
       promoApply: 'Anwenden',
       promoApplied: 'angewendet!',
+      orSeparator: 'ODER',
     },
   };
 
@@ -191,7 +195,7 @@ function PaymentForm({
         // Google Ads Conversion Tracking
         if (typeof window !== 'undefined' && (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag) {
           (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
-            'send_to': 'AW-17893452047/2aGpCOuW5PcbEI_SodRC',
+            'send_to': 'AW-17963974181/blwQCJrAm_0bEKX88fVC',
             'value': amount / 100,
             'currency': currency.toUpperCase(),
             'transaction_id': paymentIntent.id
@@ -355,7 +359,79 @@ function PaymentForm({
       {/* Payment Form */}
       {paymentStatus !== 'success' && (
         <form onSubmit={handleSubmit}>
-          {/* Payment Element Container */}
+          {/* Express Checkout (Apple Pay / Google Pay) */}
+          <div className={expressCheckoutReady ? 'mb-2' : 'hidden'}>
+            <div className="bg-white dark:bg-gray-800 rounded-2xl p-4 border border-gray-200 dark:border-gray-600 shadow-sm">
+              <ExpressCheckoutElement
+                onReady={({ availablePaymentMethods }) => {
+                  if (availablePaymentMethods) {
+                    setExpressCheckoutReady(true);
+                  }
+                }}
+                onConfirm={async () => {
+                  if (!stripe || !elements) return;
+                  setIsProcessing(true);
+                  setPaymentStatus('processing');
+                  setErrorMessage(null);
+                  try {
+                    const { error, paymentIntent } = await stripe.confirmPayment({
+                      elements,
+                      confirmParams: {
+                        return_url: `${window.location.origin}/payment-success`,
+                      },
+                      redirect: 'if_required',
+                    });
+                    if (error) {
+                      setErrorMessage(error.message || 'An error occurred during payment');
+                      setPaymentStatus('error');
+                      setIsProcessing(false);
+                    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+                      setPaymentIntentId(paymentIntent.id);
+                      setPaymentStatus('success');
+                      const orderId = paymentIntent.id.slice(-8).toUpperCase();
+                      const priceFormatted = formatAmount(amount, currency);
+                      const orderDate = new Date().toLocaleDateString(language === 'fr' ? 'fr-FR' : language === 'de' ? 'de-DE' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+                      // Google Ads Conversion Tracking
+                      if (typeof window !== 'undefined' && (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag) {
+                        (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
+                          'send_to': 'AW-17963974181/blwQCJrAm_0bEKX88fVC',
+                          'value': amount / 100,
+                          'currency': currency.toUpperCase(),
+                          'transaction_id': paymentIntent.id
+                        });
+                      }
+                      if (email && orderDetails) {
+                        const orderData = { orderId, platform: orderDetails.platform, followers: orderDetails.followers, price: priceFormatted, email, username: orderDetails.username, date: orderDate };
+                        sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
+                        try { await fetch('/api/send-confirmation-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, customerName: orderDetails.username, orderDetails: { platform: orderDetails.platform, followers: orderDetails.followers, username: orderDetails.username, price: priceFormatted, orderId, date: orderDate }, language }) }); } catch (e) { console.error('Failed to send confirmation email:', e); }
+                        try { await fetch('/api/discord-notification', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId, email, username: orderDetails.username, platform: orderDetails.platform, followers: orderDetails.followers, price: priceFormatted, promoCode: promoCode || undefined }) }); } catch (e) { console.error('Failed to send Discord notification:', e); }
+                        setTimeout(() => { window.location.href = `/${language}/order-confirmation`; }, 1500);
+                      }
+                      if (onSuccess) { onSuccess(paymentIntent.id, email); }
+                    }
+                  } catch {
+                    setErrorMessage('An unexpected error occurred');
+                    setPaymentStatus('error');
+                    setIsProcessing(false);
+                  }
+                }}
+                options={{
+                  buttonHeight: 56,
+                }}
+              />
+            </div>
+          </div>
+
+          {/* OR Separator — only visible when Express Checkout is available */}
+          {expressCheckoutReady && (
+            <div className="flex items-center gap-4 my-4">
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+              <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-widest">{t.orSeparator}</span>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+            </div>
+          )}
+
+          {/* Card Payment Element Container */}
           <div className="mb-6 relative min-h-[200px] bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-600 shadow-sm">
             {!elementsReady && (
               <div className="absolute inset-0 flex items-center justify-center">
@@ -375,8 +451,8 @@ function PaymentForm({
                 options={{
                   layout: 'tabs',
                   wallets: {
-                    applePay: 'auto',
-                    googlePay: 'auto',
+                    applePay: 'never',
+                    googlePay: 'never',
                   },
                 }}
               />

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Language } from '@/i18n/config';
-import { Bot, Clock, Shield, Package, Megaphone, BarChart3, Zap, Users } from 'lucide-react';
+import { Bot, Clock, Shield, Package, Megaphone, BarChart3, Zap } from 'lucide-react';
 import Image from 'next/image';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
 import UserSearchInput from '@/components/UserSearchInput';

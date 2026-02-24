@@ -109,68 +109,68 @@ export default function TikTokPage({ params }: PageProps) {
   const content = {
     en: {
       hero: {
-        title: 'ELEVATE YOUR PRESENCE ON',
-        platform: 'TIKTOK',
-        subtitle: 'Professional marketing solutions through our exclusive partner network — designed to expand your reach authentically.',
+        title: 'GET REAL TIKTOK',
+        platform: 'FOLLOWERS',
+        subtitle: 'AI-powered audience growth that delivers real, engaged followers to your TikTok profile — fast, safe, and fully compliant.',
         badges: [
-          { text: '100% Authentic approach' },
-          { text: 'Safe & Private' },
-          { text: 'Customer-approved' },
+          { text: 'AI-Driven Growth' },
+          { text: 'Real Followers Only' },
+          { text: '24/7 Smart Delivery' },
         ],
-        cta: 'CONTINUE',
+        cta: 'GET FOLLOWERS',
       },
       difference: {
-        title: 'What makes Socialoura different?',
+        title: 'Why creators trust Socialoura',
         cards: [
           {
-            title: 'Authentic Marketing Only',
-            description: 'We promote your content through real partnerships and strategic collaborations. Every interaction is genuine and compliant with platform guidelines.',
+            title: 'AI-Powered Targeting',
+            description: 'Our algorithm analyzes your niche, content style, and audience demographics to connect you with followers who genuinely care about your content.',
             icon: 'Bot'
           },
           {
-            title: 'Time-saving solutions',
-            description: 'Focus on creating great content while we handle the marketing strategy. Our professional approach saves you hours of networking time.',
+            title: 'Instant & Gradual Delivery',
+            description: 'Choose between a quick visibility boost or natural-looking gradual growth. Our smart delivery system adapts to keep your account safe.',
             icon: 'Clock'
           },
           {
-            title: 'Build credibility the right way',
-            description: 'Strategic promotion through trusted channels builds real authority and engagement with your target audience.',
+            title: 'Account Safety First',
+            description: 'We never ask for your password. Our growth methods are 100% compliant with TikTok guidelines — zero risk to your account.',
             icon: 'Shield'
           },
         ],
       },
       howItWorks: {
-        title: 'How it works',
+        title: 'Get followers in 3 steps',
         cards: [
           {
             number: '1',
-            title: 'CHOOSE YOUR PACKAGE',
-            description: 'Select the marketing support level that aligns with your goals. Our plans offer professional promotion through our exclusive partner network.',
+            title: 'ENTER YOUR USERNAME',
+            description: 'Just type your TikTok handle — no password, no login required. We only need your public username to start.',
             icon: 'Package'
           },
           {
             number: '2',
-            title: 'WE MARKET YOUR CONTENT',
-            description: 'We share your content through selected platforms, creators, and communities to reach people genuinely interested in your niche.',
+            title: 'PICK YOUR GROWTH PLAN',
+            description: 'Select the number of followers you want. From 100 to 100K+ — we have flexible plans for every budget and goal.',
             icon: 'Megaphone'
           },
           {
             number: '3',
-            title: 'TRACK THE IMPACT',
-            description: 'Monitor your results through your dashboard as your content reaches new audiences and builds stronger visibility.',
+            title: 'WATCH YOUR AUDIENCE GROW',
+            description: 'Followers start arriving within minutes. Track your growth in real time and see the impact on your engagement rate.',
             icon: 'BarChart3'
           },
         ],
-        cta: 'START NOW',
+        cta: 'GET STARTED',
       },
       benefits: {
-        title: '(Re)take the control now',
+        title: 'Unlock your TikTok potential',
         items: [
-          'Greater visibility for your content',
-          'Stronger presence across platforms',
-          'Earn audience trust through consistent exposure',
-          'Reach more people interested in your niche',
-          'Professional and safe process',
+          'More followers = more visibility on the For You Page',
+          'Higher social proof attracts organic followers',
+          'Brands notice accounts with strong follower counts',
+          'Break through the algorithm with momentum',
+          'Safe, private & fully encrypted process',
         ],
       },
       pricing: {
@@ -181,86 +181,86 @@ export default function TikTokPage({ params }: PageProps) {
           period: 'per month',
           features: [
             '24h trial to explore all features',
-            'Audience research and targeting',
-            'Content placement guidance',
-            'Professional promotional outreach',
-            'Strategic recommendations to improve reach',
+            'AI-powered audience targeting',
+            'Smart delivery optimization',
+            'Priority support & monitoring',
+            'Growth analytics dashboard',
           ],
           cta: 'SUBSCRIBE NOW',
         },
       },
       finalCta: {
-        title: 'Much more than just a solution. A true partner in your success.',
-        cta: 'START IT NOW',
+        title: 'Join 10,000+ creators already growing with AI-powered strategies.',
+        cta: 'GET MY FOLLOWERS',
       },
       compliance: {
-        text: 'Compliance Disclaimer: All our services are based on authentic marketing strategies and visibility solutions in accordance with platform policies and terms of service.',
+        text: 'Compliance: Socialoura uses AI-driven audience growth strategies that are fully compliant with TikTok\'s terms of service. We never use bots, fake accounts, or any method that could put your account at risk.',
       },
     },
     fr: {
       hero: {
-        title: 'ÉLEVEZ VOTRE PRÉSENCE SUR',
-        platform: 'TIKTOK',
-        subtitle: 'Solutions marketing professionnelles via notre réseau de partenaires exclusif — conçues pour étendre votre portée de manière authentique.',
+        title: 'OBTENEZ DE VRAIS',
+        platform: 'ABONNÉS TIKTOK',
+        subtitle: 'Croissance d\'audience propulsée par l\'IA qui livre de vrais abonnés engagés sur votre profil TikTok — rapide, sûr et 100% conforme.',
         badges: [
-          { text: 'Approche 100% authentique' },
-          { text: 'Sûr et Privé' },
-          { text: 'Approuvé par les clients' },
+          { text: 'Croissance par IA' },
+          { text: 'Vrais abonnés uniquement' },
+          { text: 'Livraison 24/7' },
         ],
-        cta: 'CONTINUER',
+        cta: 'OBTENIR MES ABONNÉS',
       },
       difference: {
-        title: 'Qu\'est-ce qui rend Socialoura différent ?',
+        title: 'Pourquoi les créateurs font confiance à Socialoura',
         cards: [
           {
-            title: 'Marketing authentique uniquement',
-            description: 'Nous promouvons votre contenu via de vrais partenariats et collaborations stratégiques. Chaque interaction est authentique et conforme aux directives de la plateforme.',
+            title: 'Ciblage propulsé par l\'IA',
+            description: 'Notre algorithme analyse votre niche, votre style de contenu et les données démographiques de votre audience pour vous connecter avec des abonnés réellement intéressés.',
             icon: 'Bot'
           },
           {
-            title: 'Solutions qui font gagner du temps',
-            description: 'Concentrez-vous sur la création de contenu de qualité pendant que nous gérons la stratégie marketing. Notre approche professionnelle vous fait gagner des heures.',
+            title: 'Livraison instantanée ou progressive',
+            description: 'Choisissez entre un boost de visibilité rapide ou une croissance progressive et naturelle. Notre système intelligent s\'adapte pour protéger votre compte.',
             icon: 'Clock'
           },
           {
-            title: 'Construisez votre crédibilité de la bonne manière',
-            description: 'Une promotion stratégique via des canaux de confiance construit une vraie autorité et un engagement avec votre audience cible.',
+            title: 'Sécurité du compte avant tout',
+            description: 'Nous ne demandons jamais votre mot de passe. Nos méthodes de croissance sont 100% conformes aux directives TikTok — zéro risque pour votre compte.',
             icon: 'Shield'
           },
         ],
       },
       howItWorks: {
-        title: 'Comment ça marche',
+        title: 'Obtenez des abonnés en 3 étapes',
         cards: [
           {
             number: '1',
-            title: 'CHOISISSEZ VOTRE FORFAIT',
-            description: 'Sélectionnez le niveau de support marketing qui correspond à vos objectifs. Nos plans offrent une promotion professionnelle via notre réseau partenaire exclusif.',
+            title: 'ENTREZ VOTRE NOM D\'UTILISATEUR',
+            description: 'Tapez simplement votre pseudo TikTok — pas de mot de passe, pas de connexion requise. On a juste besoin de votre nom d\'utilisateur public.',
             icon: 'Package'
           },
           {
             number: '2',
-            title: 'NOUS PROMOUVONS VOTRE CONTENU',
-            description: 'Nous partageons votre contenu via des plateformes, créateurs et communautés sélectionnés pour atteindre les personnes vraiment intéressées par votre niche.',
+            title: 'CHOISISSEZ VOTRE PLAN',
+            description: 'Sélectionnez le nombre d\'abonnés souhaité. De 100 à 100K+ — des plans flexibles pour chaque budget et objectif.',
             icon: 'Megaphone'
           },
           {
             number: '3',
-            title: 'SUIVEZ L\'IMPACT',
-            description: 'Surveillez vos résultats via votre tableau de bord pendant que votre contenu atteint de nouvelles audiences et construit une visibilité plus forte.',
+            title: 'REGARDEZ VOTRE AUDIENCE GRANDIR',
+            description: 'Les abonnés commencent à arriver en quelques minutes. Suivez votre croissance en temps réel et constatez l\'impact sur votre engagement.',
             icon: 'BarChart3'
           },
         ],
-        cta: 'COMMENCER MAINTENANT',
+        cta: 'COMMENCER',
       },
       benefits: {
-        title: '(Re)prenez le contrôle maintenant',
+        title: 'Débloquez votre potentiel TikTok',
         items: [
-          'Plus grande visibilité pour votre contenu',
-          'Présence plus forte sur les plateformes',
-          'Gagnez la confiance de votre audience par une exposition cohérente',
-          'Atteignez plus de personnes intéressées par votre niche',
-          'Processus professionnel et sécurisé',
+          'Plus d\'abonnés = plus de visibilité sur la page Pour Toi',
+          'Une preuve sociale forte attire des abonnés organiques',
+          'Les marques remarquent les comptes avec beaucoup d\'abonnés',
+          'Percez l\'algorithme grâce à l\'élan',
+          'Processus sûr, privé et entièrement chiffré',
         ],
       },
       pricing: {
@@ -271,86 +271,86 @@ export default function TikTokPage({ params }: PageProps) {
           period: 'par mois',
           features: [
             'Essai de 24h pour explorer toutes les fonctionnalités',
-            'Recherche et ciblage d\'audience',
-            'Conseils pour le placement de contenu',
-            'Promotion professionnelle',
-            'Recommandations stratégiques pour améliorer la portée',
+            'Ciblage d\'audience propulsé par l\'IA',
+            'Optimisation intelligente de la livraison',
+            'Support prioritaire et monitoring',
+            'Tableau de bord d\'analytics de croissance',
           ],
           cta: 'S\'ABONNER MAINTENANT',
         },
       },
       finalCta: {
-        title: 'Bien plus qu\'une simple solution. Un véritable partenaire dans votre succès.',
-        cta: 'COMMENCEZ DÈS MAINTENANT',
+        title: 'Rejoignez 10 000+ créateurs qui grandissent déjà grâce à l\'IA.',
+        cta: 'OBTENIR MES ABONNÉS',
       },
       compliance: {
-        text: 'Avertissement de conformité : Tous nos services sont basés sur des stratégies marketing authentiques et des solutions de visibilité conformes aux politiques et conditions de la plateforme.',
+        text: 'Conformité : Socialoura utilise des stratégies de croissance d\'audience propulsées par l\'IA, entièrement conformes aux conditions d\'utilisation de TikTok. Nous n\'utilisons jamais de bots, de faux comptes, ni aucune méthode pouvant mettre votre compte en danger.',
       },
     },
     de: {
       hero: {
-        title: 'STEIGERN SIE IHRE PRÄSENZ AUF',
-        platform: 'TIKTOK',
-        subtitle: 'Professionelle Marketinglösungen über unser exklusives Partnernetzwerk — entwickelt, um Ihre Reichweite authentisch zu erweitern.',
+        title: 'ECHTE TIKTOK',
+        platform: 'FOLLOWER ERHALTEN',
+        subtitle: 'KI-gesteuerte Zielgruppen-Wachstumsstrategie, die echte, engagierte Follower auf Ihr TikTok-Profil bringt — schnell, sicher und vollständig konform.',
         badges: [
-          { text: '100% Authentischer Ansatz' },
-          { text: 'Sicher & Privat' },
-          { text: 'Von Kunden bestätigt' },
+          { text: 'KI-gestütztes Wachstum' },
+          { text: 'Nur echte Follower' },
+          { text: '24/7 Smart Delivery' },
         ],
-        cta: 'WEITER',
+        cta: 'FOLLOWER ERHALTEN',
       },
       difference: {
-        title: 'Was macht Socialoura anders?',
+        title: 'Warum Creator Socialoura vertrauen',
         cards: [
           {
-            title: 'Nur authentisches Marketing',
-            description: 'Wir bewerben Ihre Inhalte durch echte Partnerschaften und strategische Kooperationen. Jede Interaktion ist echt und konform mit den Plattformrichtlinien.',
+            title: 'KI-gestütztes Targeting',
+            description: 'Unser Algorithmus analysiert Ihre Nische, Ihren Content-Stil und die Demografie Ihrer Zielgruppe, um Sie mit Followern zu verbinden, die sich wirklich für Ihre Inhalte interessieren.',
             icon: 'Bot'
           },
           {
-            title: 'Zeitsparende Lösungen',
-            description: 'Konzentrieren Sie sich auf die Erstellung großartiger Inhalte, während wir die Marketingstrategie übernehmen. Unser professioneller Ansatz spart Ihnen Stunden.',
+            title: 'Sofortige oder schrittweise Lieferung',
+            description: 'Wählen Sie zwischen einem schnellen Sichtbarkeitsboost oder natürlich aussehendem, schrittweisem Wachstum. Unser smartes System passt sich an, um Ihr Konto zu schützen.',
             icon: 'Clock'
           },
           {
-            title: 'Glaubwürdigkeit richtig aufbauen',
-            description: 'Strategische Promotion über vertrauenswürdige Kanäle baut echte Autorität und Engagement mit Ihrer Zielgruppe auf.',
+            title: 'Kontosicherheit an erster Stelle',
+            description: 'Wir fragen nie nach Ihrem Passwort. Unsere Wachstumsmethoden sind 100% konform mit den TikTok-Richtlinien — null Risiko für Ihr Konto.',
             icon: 'Shield'
           },
         ],
       },
       howItWorks: {
-        title: 'So funktioniert es',
+        title: 'Follower in 3 Schritten erhalten',
         cards: [
           {
             number: '1',
-            title: 'WÄHLEN SIE IHR PAKET',
-            description: 'Wählen Sie die Marketing-Unterstützungsstufe, die zu Ihren Zielen passt. Unsere Pläne bieten professionelle Promotion über unser exklusives Partnernetzwerk.',
+            title: 'BENUTZERNAME EINGEBEN',
+            description: 'Geben Sie einfach Ihren TikTok-Namen ein — kein Passwort, keine Anmeldung erforderlich. Wir brauchen nur Ihren öffentlichen Benutzernamen.',
             icon: 'Package'
           },
           {
             number: '2',
-            title: 'WIR BEWERBEN IHRE INHALTE',
-            description: 'Wir teilen Ihre Inhalte über ausgewählte Plattformen, Creator und Communities, um Menschen zu erreichen, die sich für Ihre Nische interessieren.',
+            title: 'WACHSTUMSPLAN WÄHLEN',
+            description: 'Wählen Sie die gewünschte Follower-Anzahl. Von 100 bis 100K+ — flexible Pläne für jedes Budget und Ziel.',
             icon: 'Megaphone'
           },
           {
             number: '3',
-            title: 'VERFOLGEN SIE DIE WIRKUNG',
-            description: 'Überwachen Sie Ihre Ergebnisse über Ihr Dashboard, während Ihre Inhalte neue Zielgruppen erreichen und stärkere Sichtbarkeit aufbauen.',
+            title: 'ZUSCHAUEN WIE SIE WACHSEN',
+            description: 'Follower kommen innerhalb von Minuten an. Verfolgen Sie Ihr Wachstum in Echtzeit und sehen Sie die Auswirkungen auf Ihre Engagement-Rate.',
             icon: 'BarChart3'
           },
         ],
         cta: 'JETZT STARTEN',
       },
       benefits: {
-        title: 'Übernehmen Sie jetzt (wieder) die Kontrolle',
+        title: 'Entfesseln Sie Ihr TikTok-Potenzial',
         items: [
-          'Größere Sichtbarkeit für Ihre Inhalte',
-          'Stärkere Präsenz auf allen Plattformen',
-          'Gewinnen Sie das Vertrauen Ihres Publikums durch konsistente Präsenz',
-          'Erreichen Sie mehr Menschen, die sich für Ihre Nische interessieren',
-          'Professioneller und sicherer Prozess',
+          'Mehr Follower = mehr Sichtbarkeit auf der For-You-Seite',
+          'Starker Social Proof zieht organische Follower an',
+          'Marken bemerken Konten mit starken Follower-Zahlen',
+          'Durchbrechen Sie den Algorithmus mit Schwung',
+          'Sicherer, privater und vollständig verschlüsselter Prozess',
         ],
       },
       pricing: {
@@ -361,20 +361,20 @@ export default function TikTokPage({ params }: PageProps) {
           period: 'pro Monat',
           features: [
             '24h Probezeit zum Entdecken aller Funktionen',
-            'Zielgruppenrecherche und Targeting',
-            'Content-Platzierungsberatung',
-            'Professionelle Promotion',
-            'Strategische Empfehlungen zur Reichweitensteigerung',
+            'KI-gestütztes Zielgruppen-Targeting',
+            'Intelligente Lieferoptimierung',
+            'Priority-Support und Monitoring',
+            'Wachstums-Analytics-Dashboard',
           ],
           cta: 'JETZT ABONNIEREN',
         },
       },
       finalCta: {
-        title: 'Viel mehr als nur eine Lösung. Ein echter Partner für Ihren Erfolg.',
-        cta: 'JETZT STARTEN',
+        title: 'Schließen Sie sich 10.000+ Creatorn an, die bereits mit KI-gestützten Strategien wachsen.',
+        cta: 'MEINE FOLLOWER ERHALTEN',
       },
       compliance: {
-        text: 'Konformitätshinweis: Alle unsere Dienstleistungen basieren auf authentischen Marketingstrategien und Sichtbarkeitslösungen in Übereinstimmung mit den Plattformrichtlinien und Nutzungsbedingungen.',
+        text: 'Konformität: Socialoura nutzt KI-gesteuerte Zielgruppen-Wachstumsstrategien, die vollständig konform mit den Nutzungsbedingungen von TikTok sind. Wir verwenden niemals Bots, Fake-Accounts oder Methoden, die Ihr Konto gefährden könnten.',
       },
     },
   };

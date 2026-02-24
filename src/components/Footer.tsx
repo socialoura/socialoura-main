@@ -1,6 +1,5 @@
 import { Language } from '@/i18n/config';
 import Image from 'next/image';
-import PaymentMethods from './PaymentMethods';
 
 interface FooterProps {
   lang: Language;

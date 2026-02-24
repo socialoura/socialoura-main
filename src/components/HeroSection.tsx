@@ -163,7 +163,7 @@ export default function HeroSection({ lang }: HeroSectionProps) {
             <div className="bg-white rounded-3xl shadow-2xl p-8 border border-gray-200">
               <UserSearchInput
                 platform={selectedPlatform}
-                onUserConfirmed={(username) => {
+                onUserConfirmed={() => {
                   window.location.href = selectedPlatformData?.href || `/${lang}/i`;
                 }}
                 placeholder="Enter your username"

@@ -88,7 +88,7 @@ export default function UserSearchInput({
         setShowDropdown(true);
         setError(null);
       }
-    } catch (err) {
+    } catch {
       setFoundProfile({
         username: username,
         fullName: username,
@@ -112,7 +112,7 @@ export default function UserSearchInput({
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/@/g, '');
+    const value = e.target.value.replace(/@/g, '');
     setInputValue(value);
   };
 
