@@ -416,7 +416,7 @@ function PaymentForm({
                   }
                 }}
                 options={{
-                  buttonHeight: 56,
+                  buttonHeight: 55,
                 }}
               />
             </div>
