@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-const locales = ['en', 'fr', 'de'];
+const locales = ['en', 'fr', 'de', 'es'];
 const defaultLocale = 'fr';
 
 // Country → currency mapping (lightweight, no imports from lib to keep middleware edge-compatible)

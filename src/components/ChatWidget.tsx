@@ -60,6 +60,20 @@ export default function ChatWidget({ lang }: ChatWidgetProps) {
       messageSent: 'Nachricht gesendet! Wir antworten bald auf Ihre E-Mail.',
       messageError: 'Fehler beim Senden. Bitte versuchen Sie es erneut.',
     },
+    es: {
+      title: 'Chatea con nosotros',
+      subtitle: '¡Estamos aquí para ayudarte!',
+      placeholder: 'Escribe tu mensaje...',
+      send: 'Enviar',
+      online: 'En línea',
+      typingIndicator: 'Soporte escribiendo...',
+      initialMessage: '¡Hola! ¿Cómo podemos ayudarte? Deja tu mensaje y correo electrónico, te responderemos pronto.',
+      closeChat: 'Cerrar chat',
+      minimizeChat: 'Minimizar chat',
+      emailPlaceholder: 'Tu correo electrónico',
+      messageSent: '¡Mensaje enviado! Responderemos a tu correo pronto.',
+      messageError: 'Error al enviar. Por favor, inténtalo de nuevo.',
+    },
   };
 
   const t = content[lang];

@@ -28,6 +28,11 @@ export default function SelectPlatformPage({ params }: PageProps) {
       instagram: 'Instagram',
       tiktok: 'TikTok',
     },
+    es: {
+      title: 'Elige Tu Plataforma',
+      instagram: 'Instagram',
+      tiktok: 'TikTok',
+    },
   };
 
   const t = content[lang];

@@ -12,15 +12,17 @@ export default function Footer({ lang }: FooterProps) {
     ? `© ${currentYear} Socialoura. Tous droits réservés.`
     : lang === 'de'
     ? `© ${currentYear} Socialoura. Alle Rechte vorbehalten.`
+    : lang === 'es'
+    ? `© ${currentYear} Socialoura. Todos los derechos reservados.`
     : `© ${currentYear} Socialoura. All rights reserved.`;
     
-  const linksTitle = lang === 'fr' ? 'Liens rapides' : lang === 'de' ? 'Schnelllinks' : 'Quick Links';
-  const aboutText = lang === 'fr' ? 'À propos' : lang === 'de' ? 'Über uns' : 'About';
-  const contactText = lang === 'fr' ? 'Contact' : lang === 'de' ? 'Kontakt' : 'Contact';
-  const privacyText = lang === 'fr' ? 'Confidentialité' : lang === 'de' ? 'Datenschutz' : 'Privacy';
+  const linksTitle = lang === 'fr' ? 'Liens rapides' : lang === 'de' ? 'Schnelllinks' : lang === 'es' ? 'Enlaces rápidos' : 'Quick Links';
+  const aboutText = lang === 'fr' ? 'À propos' : lang === 'de' ? 'Über uns' : lang === 'es' ? 'Acerca de' : 'About';
+  const contactText = lang === 'fr' ? 'Contact' : lang === 'de' ? 'Kontakt' : lang === 'es' ? 'Contacto' : 'Contact';
+  const privacyText = lang === 'fr' ? 'Confidentialité' : lang === 'de' ? 'Datenschutz' : lang === 'es' ? 'Privacidad' : 'Privacy';
   const faqText = 'FAQ';
-  const instagramText = lang === 'en' ? 'Instagram' : 'Instagram';
-  const tiktokText = lang === 'en' ? 'TikTok' : 'TikTok';
+  const instagramText = 'Instagram';
+  const tiktokText = 'TikTok';
 
   return (
     <footer className="w-full border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
@@ -102,7 +104,7 @@ export default function Footer({ lang }: FooterProps) {
           
           <div>
             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
-              {lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure Payment'}
+              {lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : lang === 'es' ? 'Pago seguro' : 'Secure Payment'}
             </h4>
             <div className="flex flex-wrap gap-2">
               <Image src="/images/visa.svg" alt="Visa" width={40} height={16} className="h-6 w-auto opacity-70" />

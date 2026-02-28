@@ -13,7 +13,7 @@ interface PaymentModalProps {
   onClose: () => void;
   onSuccess?: (paymentIntentId: string, email?: string) => void;
   productName?: string;
-  language?: 'en' | 'fr' | 'de';
+  language?: 'en' | 'fr' | 'de' | 'es';
   email?: string;
   onPromoApplied?: (discount: number, finalAmount: number, promoCode: string) => void;
   orderDetails?: {
@@ -144,6 +144,31 @@ function PaymentForm({
       promoApply: 'Anwenden',
       promoApplied: 'angewendet!',
       orSeparator: 'ODER',
+    },
+    es: {
+      title: 'Completa tu pago',
+      titleSuccess: '¡Pago exitoso!',
+      processing: 'Procesando...',
+      loadingForm: 'Cargando formulario de pago...',
+      paymentComplete: '¡Pago completado!',
+      paymentSuccessDesc: 'Tu pago ha sido procesado correctamente.',
+      paymentId: 'ID de pago:',
+      payButton: 'Pagar',
+      cancel: 'Cancelar',
+      close: 'Cerrar',
+      securePayment: 'Pago seguro con Stripe',
+      paymentFailed: 'Pago fallido',
+      initializingPayment: 'Inicializando pago seguro...',
+      paymentSetupFailed: 'Error de configuración',
+      termsLabel: 'He leído y acepto los',
+      termsLink: 'términos y condiciones',
+      safeTransaction: 'Transacción segura',
+      secureEncryption: 'Cifrado SSL seguro',
+      serviceGuaranteed: 'Servicio garantizado',
+      promoPlaceholder: 'Introduce código promocional',
+      promoApply: 'Aplicar',
+      promoApplied: '¡aplicado!',
+      orSeparator: 'O',
     },
   };
 
@@ -633,6 +658,11 @@ export default function PaymentModal({
       initializingPayment: 'Sichere Zahlung wird initialisiert...',
       paymentSetupFailed: 'Einrichtung fehlgeschlagen',
       close: 'Schließen',
+    },
+    es: {
+      initializingPayment: 'Inicializando pago seguro...',
+      paymentSetupFailed: 'Error de configuración',
+      close: 'Cerrar',
     },
   };
 

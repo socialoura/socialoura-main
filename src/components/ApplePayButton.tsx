@@ -15,7 +15,7 @@ interface ApplePayButtonProps {
   forceDisplay?: boolean;
   onSuccess?: (paymentIntentId: string) => void;
   onError?: (error: string) => void;
-  language?: 'en' | 'fr' | 'de';
+  language?: 'en' | 'fr' | 'de' | 'es';
 }
 
 // ---------------------------------------------------------------------------

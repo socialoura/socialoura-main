@@ -26,6 +26,10 @@ export default function InstagramLikesSelectPage({ params }: PageProps) {
       title: 'Instagram Engagement Kampagne',
       likes: 'Instagram Engagement',
     },
+    es: {
+      title: 'Campaña de Engagement Instagram',
+      likes: 'Engagement Instagram',
+    },
   };
 
   const t = content[lang];

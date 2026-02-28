@@ -378,6 +378,96 @@ export default function TikTokPage({ params }: PageProps) {
         text: 'Konformität: Socialoura nutzt KI-gesteuerte Zielgruppen-Wachstumsstrategien, die vollständig konform mit den Nutzungsbedingungen von TikTok sind. Wir verwenden niemals Bots, Fake-Accounts oder Methoden, die Ihr Konto gefährden könnten.',
       },
     },
+    es: {
+      hero: {
+        title: 'CONSIGUE SEGUIDORES',
+        platform: 'REALES EN TIKTOK',
+        subtitle: 'Crecimiento de audiencia impulsado por IA que entrega seguidores reales y comprometidos a tu perfil de TikTok — rápido, seguro y totalmente conforme.',
+        badges: [
+          { text: 'Crecimiento con IA' },
+          { text: 'Solo seguidores reales' },
+          { text: 'Entrega inteligente 24/7' },
+        ],
+        cta: 'OBTENER SEGUIDORES',
+      },
+      difference: {
+        title: 'Por qué los creadores confían en Socialoura',
+        cards: [
+          {
+            title: 'Segmentación con IA',
+            description: 'Nuestro algoritmo analiza tu nicho, estilo de contenido y demografía de audiencia para conectarte con seguidores que realmente se interesan por tu contenido.',
+            icon: 'Bot'
+          },
+          {
+            title: 'Entrega instantánea o gradual',
+            description: 'Elige entre un impulso rápido de visibilidad o un crecimiento gradual y natural. Nuestro sistema inteligente se adapta para mantener tu cuenta segura.',
+            icon: 'Clock'
+          },
+          {
+            title: 'Seguridad de la cuenta primero',
+            description: 'Nunca pedimos tu contraseña. Nuestros métodos de crecimiento son 100% conformes con las directrices de TikTok — cero riesgo para tu cuenta.',
+            icon: 'Shield'
+          },
+        ],
+      },
+      howItWorks: {
+        title: 'Consigue seguidores en 3 pasos',
+        cards: [
+          {
+            number: '1',
+            title: 'INTRODUCE TU NOMBRE DE USUARIO',
+            description: 'Solo escribe tu nombre de usuario de TikTok — sin contraseña, sin inicio de sesión. Solo necesitamos tu nombre de usuario público.',
+            icon: 'Package'
+          },
+          {
+            number: '2',
+            title: 'ELIGE TU PLAN DE CRECIMIENTO',
+            description: 'Selecciona el número de seguidores que quieres. De 100 a 100K+ — planes flexibles para cada presupuesto y objetivo.',
+            icon: 'Megaphone'
+          },
+          {
+            number: '3',
+            title: 'MIRA CRECER TU AUDIENCIA',
+            description: 'Los seguidores empiezan a llegar en minutos. Rastrea tu crecimiento en tiempo real y observa el impacto en tu tasa de engagement.',
+            icon: 'BarChart3'
+          },
+        ],
+        cta: 'EMPEZAR',
+      },
+      benefits: {
+        title: 'Desbloquea tu potencial en TikTok',
+        items: [
+          'Más seguidores = más visibilidad en la página Para Ti',
+          'Mayor prueba social atrae seguidores orgánicos',
+          'Las marcas notan cuentas con muchos seguidores',
+          'Rompe el algoritmo con impulso',
+          'Proceso seguro, privado y totalmente cifrado',
+        ],
+      },
+      pricing: {
+        title: 'Prueba nuestra suscripción con nuestra oferta de prueba',
+        plan: {
+          name: 'PREMIUM',
+          price: '39,90€',
+          period: 'al mes',
+          features: [
+            'Prueba de 24h para explorar todas las funciones',
+            'Segmentación de audiencia con IA',
+            'Optimización inteligente de entrega',
+            'Soporte prioritario y monitorización',
+            'Panel de analíticas de crecimiento',
+          ],
+          cta: 'SUSCRIBIRSE AHORA',
+        },
+      },
+      finalCta: {
+        title: 'Únete a más de 10.000 creadores que ya crecen con estrategias impulsadas por IA.',
+        cta: 'OBTENER MIS SEGUIDORES',
+      },
+      compliance: {
+        text: 'Conformidad: Socialoura utiliza estrategias de crecimiento de audiencia impulsadas por IA, totalmente conformes con los términos de servicio de TikTok. Nunca usamos bots, cuentas falsas ni ningún método que pueda poner en riesgo tu cuenta.',
+      },
+    },
   };
 
   const t = content[lang];
@@ -437,7 +527,7 @@ export default function TikTokPage({ params }: PageProps) {
                     type="text"
                     value={username}
                     onChange={handleUsernameChange}
-                    placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : 'username'}
+                    placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : lang === 'es' ? 'nombreusuario' : 'username'}
                     className="w-full pl-10 pr-4 py-4 text-base bg-transparent border-0 focus:ring-0 text-white placeholder-gray-500"
                     onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
                   />
@@ -463,13 +553,13 @@ export default function TikTokPage({ params }: PageProps) {
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
+                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : lang === 'es' ? 'Pago seguro' : 'Secure payment'}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : 'Guaranteed results'}</span>
+                  <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : lang === 'es' ? 'Resultados garantizados' : 'Guaranteed results'}</span>
                 </div>
               </div>
             </div>
@@ -662,10 +752,10 @@ export default function TikTokPage({ params }: PageProps) {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">
-                  {lang === 'fr' ? 'Paiement Réussi !' : lang === 'de' ? 'Zahlung erfolgreich!' : 'Payment Successful!'}
+                  {lang === 'fr' ? 'Paiement Réussi !' : lang === 'de' ? 'Zahlung erfolgreich!' : lang === 'es' ? '¡Pago exitoso!' : 'Payment Successful!'}
                 </p>
                 <p className="text-xs text-green-50">
-                  {lang === 'fr' ? 'Votre commande a été confirmée' : lang === 'de' ? 'Ihre Bestellung wurde bestätigt' : 'Your order has been confirmed'}
+                  {lang === 'fr' ? 'Votre commande a été confirmée' : lang === 'de' ? 'Ihre Bestellung wurde bestätigt' : lang === 'es' ? 'Tu pedido ha sido confirmado' : 'Your order has been confirmed'}
                 </p>
               </div>
             </div>

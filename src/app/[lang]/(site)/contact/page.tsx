@@ -147,6 +147,48 @@ export default function ContactPage({ params }: PageProps) {
       success: 'Nachricht erfolgreich gesendet! Wir melden uns bald bei Ihnen.',
       error: 'Nachricht konnte nicht gesendet werden. Bitte versuchen Sie es erneut.',
     },
+    es: {
+      title: 'Contáctanos',
+      subtitle: '¿Tienes alguna pregunta o necesitas ayuda? Estamos aquí para ti.',
+      form: {
+        name: 'Tu Nombre',
+        namePlaceholder: 'Juan García',
+        email: 'Correo Electrónico',
+        emailPlaceholder: 'juan@ejemplo.com',
+        subject: 'Asunto',
+        subjectPlaceholder: '¿Cómo podemos ayudarte?',
+        message: 'Mensaje',
+        messagePlaceholder: 'Cuéntanos más sobre tu consulta...',
+        submit: 'Enviar Mensaje',
+        submitting: 'Enviando...',
+      },
+      contactInfo: {
+        title: 'Ponte en Contacto',
+        description: 'Contáctanos a través de cualquiera de estos canales',
+        email: {
+          label: 'Correo',
+          value: 'support@socialoura.com',
+        },
+        phone: {
+          label: 'Teléfono',
+          value: '+33 1 84 80 00 00',
+        },
+        address: {
+          label: 'Dirección',
+          value: '128 Rue La Boétie, 75008 París, Francia',
+        },
+      },
+      responseTime: {
+        title: 'Respuesta Rápida',
+        description: 'Normalmente respondemos en menos de 24 horas',
+      },
+      support: {
+        title: 'Soporte 24/7',
+        description: 'Nuestro equipo siempre está disponible para ayudarte',
+      },
+      success: '¡Mensaje enviado con éxito! Te responderemos pronto.',
+      error: 'Error al enviar el mensaje. Por favor, inténtalo de nuevo.',
+    },
   };
 
   const t = content[lang];

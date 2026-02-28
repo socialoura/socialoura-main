@@ -279,6 +279,72 @@ export default function TikTokViewsPage({ params }: PageProps) {
         text: 'Konformitätshinweis: Alle unsere Dienstleistungen basieren auf authentischen Marketingstrategien und Sichtbarkeitslösungen in Übereinstimmung mit den Plattformrichtlinien und Nutzungsbedingungen.',
       },
     },
+    es: {
+      hero: {
+        title: 'IMPULSA TU',
+        highlight: 'ALCANCE EN TIKTOK',
+        subtitle: 'Lanza una campaña de visibilidad para tus vídeos de TikTok para aumentar el alcance, reforzar la prueba social y apoyar tu promoción.',
+        badges: [
+          { text: 'Campaña de visibilidad' },
+          { text: 'Entrega instantánea' },
+          { text: 'Sin contraseña' },
+        ],
+        cta: 'EMPEZAR',
+        placeholder: 'https://www.tiktok.com/@user/video/...',
+      },
+      why: {
+        title: '¿Por qué lanzar una campaña de visibilidad en TikTok?',
+        cards: [
+          {
+            title: 'Activar el algoritmo',
+            description: 'Señales de engagement adicionales ayudan a TikTok a distribuir mejor tu contenido y llegar a más personas.',
+            icon: 'TrendingUp',
+          },
+          {
+            title: 'Prueba social',
+            description: 'Una mayor actividad visible puede reforzar la confianza y mejorar la percepción de tu contenido.',
+            icon: 'Eye',
+          },
+          {
+            title: 'Resultados rápidos',
+            description: 'Inicio rápido, ideal para acompañar un lanzamiento o período de promoción.',
+            icon: 'Zap',
+          },
+        ],
+      },
+      howItWorks: {
+        title: 'Cómo funciona',
+        steps: [
+          {
+            title: 'PEGA TU ENLACE',
+            description: 'Copia la URL del vídeo de TikTok que quieres promocionar y pégala arriba. Sin login ni contraseña.',
+          },
+          {
+            title: 'ELIGE TU PAQUETE',
+            description: 'Elige el tamaño de campaña que se ajuste a tus objetivos. Paquetes flexibles de 500 a 100.000+.',
+          },
+          {
+            title: 'RASTREA TU VISIBILIDAD',
+            description: 'La campaña comienza poco después del pago y apoya la visibilidad de tu vídeo durante tu período de promoción.',
+          },
+        ],
+        cta: 'EMPEZAR AHORA',
+      },
+      benefits: {
+        title: '¿Por qué elegir SocialOura para la visibilidad?',
+        items: [
+          { title: 'Actividad de calidad', desc: 'Diseñada para apoyar la promoción con un enfoque realista y coherente.' },
+          { title: 'Seguro y protegido', desc: 'Totalmente conforme con las directrices de TikTok. Cero riesgo.' },
+          { title: 'Activación rápida', desc: 'La campaña se activa en pocos minutos.' },
+          { title: 'Sin contraseña', desc: 'Solo necesitamos la URL de tu vídeo. Tu cuenta sigue segura.' },
+          { title: 'Soporte 24/7', desc: 'Nuestro equipo siempre está disponible para ayudarte.' },
+          { title: 'Garantía de reembolso', desc: '¿No satisfecho? Reembolso completo, sin preguntas.' },
+        ],
+      },
+      compliance: {
+        text: 'Aviso de conformidad: Todos nuestros servicios se basan en estrategias de marketing auténticas y soluciones de visibilidad conforme a las políticas y condiciones de servicio de las plataformas.',
+      },
+    },
   };
 
   const t = content[lang];
@@ -363,13 +429,13 @@ export default function TikTokViewsPage({ params }: PageProps) {
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
+                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : lang === 'es' ? 'Pago seguro' : 'Secure payment'}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Livraison rapide' : lang === 'de' ? 'Schnelle Lieferung' : 'Fast delivery'}</span>
+                  <span>{lang === 'fr' ? 'Livraison rapide' : lang === 'de' ? 'Schnelle Lieferung' : lang === 'es' ? 'Entrega rápida' : 'Fast delivery'}</span>
                 </div>
               </div>
             </div>

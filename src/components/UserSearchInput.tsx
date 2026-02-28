@@ -16,6 +16,7 @@ interface UserSearchInputProps {
   onUserConfirmed: (username: string) => void;
   placeholder?: string;
   className?: string;
+  language?: 'en' | 'fr' | 'de' | 'es';
 }
 
 export default function UserSearchInput({
@@ -23,6 +24,7 @@ export default function UserSearchInput({
   onUserConfirmed,
   placeholder = 'username',
   className = '',
+  language = 'en',
 }: UserSearchInputProps) {
   const [inputValue, setInputValue] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -210,16 +212,19 @@ export default function UserSearchInput({
 
             <button
               onClick={handleConfirmUser}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 group"
+              className="relative overflow-hidden w-full rounded-xl bg-gradient-to-r from-purple-500 via-pink-600 to-orange-500 py-4 px-6 text-base font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] transition-all duration-300 uppercase tracking-wide group"
             >
-              <span>Confirm & Continue</span>
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                {language === 'fr' ? 'Confirmer et continuer' : language === 'de' ? 'Bestätigen & weiter' : language === 'es' ? 'Confirmar y continuar' : 'Confirm & Continue'}
+                <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </span>
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-pink-600 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </button>
 
             <p className="text-xs text-gray-500 text-center mt-3">
-              Is this your account? Click to continue
+              {language === 'fr' ? 'C\'est votre compte ? Cliquez pour continuer' : language === 'de' ? 'Ist das Ihr Konto? Klicken Sie zum Fortfahren' : language === 'es' ? '¿Es tu cuenta? Haz clic para continuar' : 'Is this your account? Click to continue'}
             </p>
           </div>
         </div>

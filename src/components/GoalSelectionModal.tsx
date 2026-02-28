@@ -20,7 +20,7 @@ interface GoalSelectionModalProps {
   username: string;
   platform: 'instagram' | 'tiktok' | 'twitter';
   serviceType?: 'followers' | 'likes' | 'views';
-  language?: 'en' | 'fr' | 'de';
+  language?: 'en' | 'fr' | 'de' | 'es';
   currency?: SupportedCurrency;
 }
 
@@ -85,6 +85,19 @@ export default function GoalSelectionModal({
       custom: 'Individuell',
       customFollowers: 'Individuelles Paket',
       selectCustomAmount: 'Wählen Sie Ihr gewünschtes Reichweiten-Level',
+    },
+    es: {
+      title: serviceType === 'views' ? 'Elige tu paquete de visualizaciones' : serviceType === 'likes' ? 'Elige tu paquete de me gusta' : 'Elige tu paquete de visibilidad',
+      emailLabel: 'Correo electrónico',
+      emailPlaceholder: 'tu@email.com',
+      continue: 'Continuar',
+      disclaimer: `**Socialoura cumple plenamente con los términos de servicio de ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : 'X (Twitter)'} y Google Ads. Nuestro enfoque se basa en estrategias de marketing auténticas y asociaciones profesionales.**`,
+      disclaimerPart2: 'Mejoramos la visibilidad de tu perfil compartiendo tu contenido a través de nuestra red global de socios, incluyendo creadores reales, plataformas móviles, grupos de influencers y comunidades de nicho. El paquete que selecciones define el nivel de exposición proporcionado por estas asociaciones.',
+      disclaimerPart3: '**Aviso:** Los resultados de visibilidad dependen de la calidad de tu contenido, la relevancia de tu nicho y tu consistencia. Aunque Socialoura proporciona herramientas de exposición, no prometemos métricas de rendimiento específicas.',
+      mostPopular: 'Más popular',
+      custom: 'Personalizado',
+      customFollowers: 'Paquete personalizado',
+      selectCustomAmount: 'Selecciona tu nivel de exposición deseado',
     },
   };
 

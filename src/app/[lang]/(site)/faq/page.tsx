@@ -249,6 +249,83 @@ export default function FAQPage({ params }: PageProps) {
       contactEmail: 'E-Mail senden',
       responseTime: 'Wir antworten innerhalb von 24 Stunden',
     },
+    es: {
+      title: 'Preguntas Frecuentes',
+      subtitle: 'Encuentra respuestas a las preguntas más comunes sobre nuestros servicios',
+      categories: {
+        general: 'General',
+        orders: 'Pedidos y Entrega',
+        payment: 'Pago y Seguridad',
+        support: 'Soporte',
+      },
+      faqs: [
+        {
+          category: 'general',
+          question: '¿Qué es SocialOura?',
+          answer: 'SocialOura es una plataforma de marketing profesional que te ayuda a hacer crecer tu presencia en redes sociales en Instagram y TikTok a través de nuestra red exclusiva de socios. Proporcionamos engagement auténtico para ampliar tu alcance.',
+        },
+        {
+          category: 'general',
+          question: '¿Es seguro usar vuestros servicios?',
+          answer: '¡Sí, por supuesto! Usamos métodos seguros y conformes que respetan las directrices de las plataformas. La seguridad de tu cuenta es nuestra máxima prioridad, y nunca pedimos tu contraseña.',
+        },
+        {
+          category: 'general',
+          question: '¿Mi cuenta puede ser baneada?',
+          answer: 'No. Usamos métodos de entrega gradual que imitan los patrones de crecimiento orgánico. Esto asegura que tu cuenta se mantenga segura y en buen estado con la plataforma.',
+        },
+        {
+          category: 'orders',
+          question: '¿Cuánto tarda la entrega?',
+          answer: 'La entrega normalmente comienza en las 0-24 horas tras la confirmación de tu pedido. La entrega completa se realiza gradualmente en 24-72 horas para asegurar un crecimiento natural.',
+        },
+        {
+          category: 'orders',
+          question: '¿Necesito proporcionar mi contraseña?',
+          answer: '¡No, nunca! Solo necesitamos tu nombre de usuario público. Nunca pediremos tu contraseña ni ninguna información sensible de tu cuenta.',
+        },
+        {
+          category: 'orders',
+          question: '¿Qué pasa si no recibo mi pedido?',
+          answer: 'Si tienes algún problema con tu pedido, contacta con nuestro equipo de soporte. Ofrecemos reembolso completo o nueva entrega si no conseguimos entregar tu pedido.',
+        },
+        {
+          category: 'orders',
+          question: '¿Puedo hacer pedidos para varias cuentas?',
+          answer: '¡Sí! Puedes hacer pedidos separados para diferentes cuentas. Cada pedido se procesa de forma independiente.',
+        },
+        {
+          category: 'payment',
+          question: '¿Qué métodos de pago aceptáis?',
+          answer: 'Aceptamos todas las tarjetas principales (Visa, Mastercard, American Express), Apple Pay y Google Pay a través de nuestro procesador de pago seguro Stripe.',
+        },
+        {
+          category: 'payment',
+          question: '¿Mi información de pago está segura?',
+          answer: 'Sí, al 100%. Usamos Stripe, un procesador de pago conforme con PCI. Tus datos de pago están cifrados y nunca se almacenan en nuestros servidores.',
+        },
+        {
+          category: 'payment',
+          question: '¿Ofrecéis reembolsos?',
+          answer: 'Sí, ofrecemos reembolsos si no podemos entregar tu pedido. Contacta con nuestro equipo de soporte en los 7 días siguientes a tu compra si tienes algún problema.',
+        },
+        {
+          category: 'support',
+          question: '¿Cómo puedo contactar con soporte?',
+          answer: 'Puedes contactarnos a través del widget de chat en nuestra web, o enviarnos un correo a support@socialoura.com. Normalmente respondemos en menos de 24 horas.',
+        },
+        {
+          category: 'support',
+          question: '¿Cuáles son vuestros horarios de soporte?',
+          answer: 'Nuestro equipo de soporte está disponible de lunes a viernes, de 9:00 a 18:00 (CET). Para asuntos urgentes, usa el widget de chat para una respuesta más rápida.',
+        },
+      ],
+      contactTitle: '¿Aún tienes preguntas?',
+      contactSubtitle: 'Nuestro equipo de soporte está aquí para ayudarte',
+      contactChat: 'Chatea con nosotros',
+      contactEmail: 'Envíanos un correo',
+      responseTime: 'Respondemos en menos de 24 horas',
+    },
   };
 
   const t = content[lang];

@@ -29,6 +29,11 @@ export default function TikTokViewsLandingPage({ params }: PageProps) {
       subtitle: 'Für Promotion, bessere Reichweite und mehr Glaubwürdigkeit deines Contents.',
       cta: 'Kampagne starten',
     },
+    es: {
+      title: 'Campaña de Visibilidad TikTok',
+      subtitle: 'Diseñada para apoyar la promoción, mejorar el alcance y aumentar la credibilidad de tu contenido.',
+      cta: 'Iniciar una campaña',
+    },
   };
 
   const t = content[lang];

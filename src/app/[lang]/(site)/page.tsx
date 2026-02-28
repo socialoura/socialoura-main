@@ -263,6 +263,86 @@ export default function HomePage({ params }: PageProps) {
         ],
       },
     },
+    es: {
+      hero: {
+        headline: 'Eleva Tu Presencia En Redes Sociales',
+        subheadline: 'Soluciones de marketing profesionales para ayudar a tus cuentas de Instagram, TikTok y X (Twitter) a alcanzar su máximo potencial',
+        instagramCta: 'Instagram',
+        tiktokCta: 'TikTok',
+        twitterCta: 'X (Twitter)',
+      },
+      services: {
+        title: 'Nuestros Servicios',
+        subtitle: 'Todo lo que necesitas para triunfar en redes sociales',
+        items: [
+          {
+            title: 'Marketing en Instagram',
+            description: 'Campañas de marketing estratégicas para ampliar tu alcance en Instagram y conectar con tu audiencia ideal.',
+            icon: Camera,
+          },
+          {
+            title: 'Promoción en TikTok',
+            description: 'Estrategias de promoción profesionales para aumentar tu visibilidad en TikTok y el engagement de tu audiencia.',
+            icon: Music,
+          },
+          {
+            title: 'Crecimiento en X (Twitter)',
+            description: 'Estrategias dirigidas para hacer crecer tu presencia en X y construir una comunidad comprometida en tu nicho.',
+            icon: MessageCircle,
+          },
+          {
+            title: 'Panel de Analíticas',
+            description: 'Rastrea tu progreso con analíticas detalladas e información para optimizar tu estrategia en redes sociales.',
+            icon: BarChart3,
+          },
+          {
+            title: 'Estrategia de Contenido',
+            description: 'Planifica y organiza tu contenido con antelación para mantener una presencia constante en tus canales.',
+            icon: Calendar,
+          },
+          {
+            title: 'Desarrollo de Audiencia',
+            description: 'Construye conexiones significativas con tu audiencia objetivo para aumentar tu visibilidad y alcance.',
+            icon: MessageCircle,
+          },
+          {
+            title: 'Soporte 24/7',
+            description: 'Nuestro equipo de soporte dedicado siempre está listo para ayudarte a maximizar tus resultados.',
+            icon: HeadphonesIcon,
+          },
+        ],
+      },
+      faq: {
+        title: 'Preguntas Frecuentes',
+        subtitle: 'Todo lo que necesitas saber sobre nuestros servicios',
+        items: [
+          {
+            question: '¿Es seguro vuestro servicio para mi cuenta?',
+            answer: 'Sí, nuestras estrategias de marketing están diseñadas para cumplir con las directrices de las plataformas y las mejores prácticas para mantener tu cuenta segura.',
+          },
+          {
+            question: '¿Qué tan rápido veré resultados?',
+            answer: 'La mayoría de los clientes ven mejoras notables en las primeras 2-4 semanas, con un progreso constante a lo largo del tiempo.',
+          },
+          {
+            question: '¿Puedo cancelar mi suscripción en cualquier momento?',
+            answer: '¡Por supuesto! Puedes cancelar tu suscripción en cualquier momento sin preguntas. Sin costes ocultos ni compromisos.',
+          },
+          {
+            question: '¿Ofrecéis una prueba gratuita?',
+            answer: 'Sí, ofrecemos una prueba gratuita de 7 días en todos nuestros planes para que puedas probar nuestros servicios sin riesgo.',
+          },
+          {
+            question: '¿Qué os diferencia de la competencia?',
+            answer: 'Nos enfocamos en el desarrollo auténtico de audiencia con segmentación estratégica, ofrecemos un soporte al cliente superior y precios transparentes sin costes ocultos.',
+          },
+          {
+            question: '¿Qué plataformas soportáis?',
+            answer: 'Soportamos Instagram, TikTok y X (Twitter) para ayudarte a crecer en múltiples plataformas.',
+          },
+        ],
+      },
+    },
   };
 
   const t = content[lang];
@@ -360,13 +440,13 @@ export default function HomePage({ params }: PageProps) {
                 <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
-                <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
+                <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : lang === 'es' ? 'Pago seguro' : 'Secure payment'}</span>
               </div>
               <div className="flex items-center gap-1">
                 <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                 </svg>
-                <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : 'Guaranteed results'}</span>
+                <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : lang === 'es' ? 'Resultados garantizados' : 'Guaranteed results'}</span>
               </div>
             </div>
           </div>

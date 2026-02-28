@@ -377,6 +377,96 @@ export default function TwitterPage({ params }: PageProps) {
         text: 'Konformitätshinweis: Alle unsere Dienstleistungen basieren auf authentischen Marketingstrategien und Sichtbarkeitslösungen in Übereinstimmung mit den Plattformrichtlinien und Nutzungsbedingungen.',
       },
     },
+    es: {
+      hero: {
+        title: 'ELEVA TU PRESENCIA EN',
+        platform: 'X (TWITTER)',
+        subtitle: 'Soluciones de marketing profesionales a través de nuestra red exclusiva de socios — diseñadas para ampliar tu alcance de forma auténtica en X.',
+        badges: [
+          { text: 'Enfoque 100% auténtico' },
+          { text: 'Seguro y privado' },
+          { text: 'Aprobado por clientes' },
+        ],
+        cta: 'CONTINUAR',
+      },
+      difference: {
+        title: '¿Qué hace diferente a Socialoura?',
+        cards: [
+          {
+            title: 'Solo marketing auténtico',
+            description: 'Promocionamos tu perfil a través de colaboraciones reales y asociaciones estratégicas. Cada interacción es genuina y conforme con las directrices de la plataforma.',
+            icon: 'Bot'
+          },
+          {
+            title: 'Soluciones que ahorran tiempo',
+            description: 'Concéntrate en crear tweets de calidad mientras nosotros gestionamos la estrategia de marketing. Nuestro enfoque profesional te ahorra horas.',
+            icon: 'Clock'
+          },
+          {
+            title: 'Construye credibilidad de la forma correcta',
+            description: 'La promoción estratégica a través de canales de confianza construye autoridad real y engagement con tu audiencia objetivo en X.',
+            icon: 'Shield'
+          },
+        ],
+      },
+      howItWorks: {
+        title: 'Cómo funciona',
+        cards: [
+          {
+            number: '1',
+            title: 'ELIGE TU PAQUETE',
+            description: 'Selecciona el nivel de soporte de marketing que se alinee con tus objetivos. Nuestros planes ofrecen promoción profesional a través de nuestra red exclusiva de socios.',
+            icon: 'Package'
+          },
+          {
+            number: '2',
+            title: 'PROMOCIONAMOS TU PERFIL',
+            description: 'Compartimos tu perfil a través de plataformas, creadores y comunidades seleccionadas para llegar a personas genuinamente interesadas en tu nicho.',
+            icon: 'Megaphone'
+          },
+          {
+            number: '3',
+            title: 'RASTREA EL IMPACTO',
+            description: 'Monitoriza tus resultados mientras tu perfil alcanza nuevas audiencias y construye mayor visibilidad en X.',
+            icon: 'BarChart3'
+          },
+        ],
+        cta: 'EMPEZAR AHORA',
+      },
+      benefits: {
+        title: '(Re)toma el control ahora',
+        items: [
+          'Mayor visibilidad para tus tweets',
+          'Presencia más fuerte en X',
+          'Gana la confianza de tu audiencia con exposición constante',
+          'Llega a más personas interesadas en tu nicho',
+          'Proceso profesional y seguro',
+        ],
+      },
+      pricing: {
+        title: 'Prueba nuestra suscripción con nuestra oferta de prueba',
+        plan: {
+          name: 'PREMIUM',
+          price: '39,90€',
+          period: 'al mes',
+          features: [
+            'Prueba de 24h para explorar todas las funciones',
+            'Investigación y segmentación de audiencia',
+            'Guía de colocación de contenido',
+            'Promoción profesional',
+            'Recomendaciones estratégicas para mejorar el alcance',
+          ],
+          cta: 'SUSCRIBIRSE AHORA',
+        },
+      },
+      finalCta: {
+        title: 'Mucho más que una simple solución. Un verdadero socio en tu éxito.',
+        cta: 'EMPIEZA YA',
+      },
+      compliance: {
+        text: 'Aviso de conformidad: Todos nuestros servicios se basan en estrategias de marketing auténticas y soluciones de visibilidad conforme a las políticas y condiciones de servicio de las plataformas.',
+      },
+    },
   };
 
   const t = content[lang];
@@ -436,7 +526,7 @@ export default function TwitterPage({ params }: PageProps) {
                     type="text"
                     value={username}
                     onChange={handleUsernameChange}
-                    placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : 'username'}
+                    placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : lang === 'es' ? 'nombreusuario' : 'username'}
                     className="w-full pl-10 pr-4 py-4 text-base bg-transparent border-0 focus:ring-0 text-white placeholder-gray-500"
                     onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
                   />
@@ -462,13 +552,13 @@ export default function TwitterPage({ params }: PageProps) {
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
+                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : lang === 'es' ? 'Pago seguro' : 'Secure payment'}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : 'Guaranteed results'}</span>
+                  <span>{lang === 'fr' ? 'Résultats garantis' : lang === 'de' ? 'Garantierte Ergebnisse' : lang === 'es' ? 'Resultados garantizados' : 'Guaranteed results'}</span>
                 </div>
               </div>
             </div>
@@ -661,10 +751,10 @@ export default function TwitterPage({ params }: PageProps) {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">
-                  {lang === 'fr' ? 'Paiement Réussi !' : lang === 'de' ? 'Zahlung erfolgreich!' : 'Payment Successful!'}
+                  {lang === 'fr' ? 'Paiement Réussi !' : lang === 'de' ? 'Zahlung erfolgreich!' : lang === 'es' ? '¡Pago exitoso!' : 'Payment Successful!'}
                 </p>
                 <p className="text-xs text-green-50">
-                  {lang === 'fr' ? 'Votre commande a été confirmée' : lang === 'de' ? 'Ihre Bestellung wurde bestätigt' : 'Your order has been confirmed'}
+                  {lang === 'fr' ? 'Votre commande a été confirmée' : lang === 'de' ? 'Ihre Bestellung wurde bestätigt' : lang === 'es' ? 'Tu pedido ha sido confirmado' : 'Your order has been confirmed'}
                 </p>
               </div>
             </div>

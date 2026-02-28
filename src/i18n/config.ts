@@ -1,4 +1,4 @@
-export const languages = ['en', 'fr', 'de'] as const;
+export const languages = ['en', 'fr', 'de', 'es'] as const;
 export type Language = typeof languages[number];
 
 export const defaultLanguage: Language = 'en';
@@ -11,4 +11,5 @@ export const languageNames: Record<Language, string> = {
   en: 'English',
   fr: 'Français',
   de: 'Deutsch',
+  es: 'Español',
 };

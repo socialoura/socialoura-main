@@ -41,6 +41,16 @@ const EVENTS: Record<Language, SocialProofEvent[]> = {
     { quantity: 750, service: 'Follower geliefert', timeAgo: 'vor 4 Min', icon: '👤' },
     { quantity: 3000, service: 'Likes geliefert', timeAgo: 'vor 7 Min', icon: '❤️' },
   ],
+  es: [
+    { quantity: 250, service: 'likes entregados', timeAgo: 'hace 2 min', icon: '❤️' },
+    { quantity: 1000, service: 'seguidores entregados', timeAgo: 'hace 5 min', icon: '👤' },
+    { quantity: 500, service: 'visualizaciones entregadas', timeAgo: 'hace 1 min', icon: '👁️' },
+    { quantity: 2500, service: 'likes entregados', timeAgo: 'hace 8 min', icon: '❤️' },
+    { quantity: 5000, service: 'seguidores entregados', timeAgo: 'hace 3 min', icon: '👤' },
+    { quantity: 10000, service: 'visualizaciones entregadas', timeAgo: 'hace 6 min', icon: '👁️' },
+    { quantity: 750, service: 'seguidores entregados', timeAgo: 'hace 4 min', icon: '👤' },
+    { quantity: 3000, service: 'likes entregados', timeAgo: 'hace 7 min', icon: '❤️' },
+  ],
 };
 
 interface SocialProofToastProps {

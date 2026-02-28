@@ -54,6 +54,8 @@ export default function TrustedBrands({ lang }: TrustedBrandsProps) {
     ? 'La confiance des marques de toutes tailles' 
     : lang === 'de'
     ? 'Vertraut von Marken jeder Größe'
+    : lang === 'es'
+    ? 'La confianza de marcas de todos los tamaños'
     : 'Trusted by brands of all sizes';
 
   const renderBrands = (keyPrefix: string) => (

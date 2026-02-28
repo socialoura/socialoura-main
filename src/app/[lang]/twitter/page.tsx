@@ -25,6 +25,10 @@ export default function TwitterSelectPage({ params }: PageProps) {
       title: 'Wählen Sie Ihre Plattform',
       twitter: 'X (Twitter)',
     },
+    es: {
+      title: 'Elige Tu Plataforma',
+      twitter: 'X (Twitter)',
+    },
   };
 
   const t = content[lang];

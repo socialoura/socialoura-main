@@ -63,6 +63,23 @@ export default function PricingPage({ params }: PageProps) {
         cta: 'JETZT ABONNIEREN',
       },
     },
+    es: {
+      title: 'Prueba nuestra suscripción con nuestra oferta de prueba',
+      subtitle: 'Empieza a hacer crecer tu presencia en redes sociales hoy',
+      plan: {
+        name: 'PREMIUM',
+        price: '39,90€',
+        period: 'al mes',
+        features: [
+          'Prueba de 24h para explorar todas las funciones',
+          'Investigación y segmentación de audiencia',
+          'Recomendaciones de colocación de contenido',
+          'Promoción manual dirigida por personas',
+          'Recomendaciones estratégicas para mejorar el alcance',
+        ],
+        cta: 'SUSCRIBIRSE AHORA',
+      },
+    },
   };
 
   const t = content[lang];

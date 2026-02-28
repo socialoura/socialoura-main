@@ -19,8 +19,8 @@ type PromoBarConfig = {
   percentOff: number;
   durationHours: number;
   showCountdown: boolean;
-  badgeText: Record<'en' | 'fr' | 'de', string>;
-  messageText: Record<'en' | 'fr' | 'de', string>;
+  badgeText: Record<'en' | 'fr' | 'de' | 'es', string>;
+  messageText: Record<'en' | 'fr' | 'de' | 'es', string>;
   excludePaths: string[];
   includePaths: string[];
   bgColor: string;
@@ -61,6 +61,13 @@ export default function Header({ lang }: HeaderProps) {
       instagram: 'Instagram',
       tiktok: 'TikTok',
     },
+    es: {
+      followers: 'Seguidores',
+      likes: 'Me gusta',
+      views: 'Visualizaciones',
+      instagram: 'Instagram',
+      tiktok: 'TikTok',
+    },
   };
 
   const nt = navText[lang];
@@ -78,6 +85,7 @@ export default function Header({ lang }: HeaderProps) {
     en: { copied: 'Copied', copy: 'Copy', endsIn: 'Ends in' },
     fr: { copied: 'Copié', copy: 'Copier', endsIn: 'Se termine dans' },
     de: { copied: 'Kopiert', copy: 'Kopieren', endsIn: 'Endet in' },
+    es: { copied: 'Copiado', copy: 'Copiar', endsIn: 'Termina en' },
   };
 
   const put = promoUiText[lang];
@@ -141,6 +149,7 @@ export default function Header({ lang }: HeaderProps) {
     en: { flag: 'GB', label: 'English' },
     fr: { flag: 'FR', label: 'Français' },
     de: { flag: 'DE', label: 'Deutsch' },
+    es: { flag: 'ES', label: 'Español' },
   };
 
   const currentLanguage = languageMeta[lang];
@@ -323,13 +332,13 @@ export default function Header({ lang }: HeaderProps) {
               href={`/${lang}/pricing`}
               className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              {lang === 'fr' ? 'Tarifs' : lang === 'de' ? 'Preise' : 'Pricing'}
+              {lang === 'fr' ? 'Tarifs' : lang === 'de' ? 'Preise' : lang === 'es' ? 'Precios' : 'Pricing'}
             </Link>
             <Link
               href={`/${lang}/contact`}
               className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
-              {lang === 'en' ? 'Contact' : 'Contact'}
+              {lang === 'es' ? 'Contacto' : 'Contact'}
             </Link>
             <Link
               href={`/${lang}/faq`}
@@ -493,14 +502,14 @@ export default function Header({ lang }: HeaderProps) {
                 className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {lang === 'fr' ? 'Tarifs' : lang === 'de' ? 'Preise' : 'Pricing'}
+                {lang === 'fr' ? 'Tarifs' : lang === 'de' ? 'Preise' : lang === 'es' ? 'Precios' : 'Pricing'}
               </Link>
               <Link
                 href={`/${lang}/contact`}
                 className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
-                {lang === 'en' ? 'Contact' : 'Contact'}
+                {lang === 'es' ? 'Contacto' : 'Contact'}
               </Link>
               <Link
                 href={`/${lang}/faq`}

@@ -295,6 +295,72 @@ export default function InstagramLikesPage({ params }: PageProps) {
         text: 'Konformitätshinweis: Alle unsere Dienstleistungen basieren auf authentischen Marketingstrategien und Sichtbarkeitslösungen in Übereinstimmung mit den Plattformrichtlinien und Nutzungsbedingungen.',
       },
     },
+    es: {
+      hero: {
+        title: 'IMPULSA TUS',
+        highlight: 'LIKES DE INSTAGRAM',
+        subtitle: 'Consigue me gusta reales y de alta calidad en tus publicaciones de Instagram para aumentar el engagement, construir prueba social y hacer crecer tu audiencia.',
+        badges: [
+          { text: 'Me gusta reales y activos' },
+          { text: 'Entrega instantánea' },
+          { text: 'Sin contraseña' },
+        ],
+        cta: 'OBTENER LIKES AHORA',
+        placeholder: 'https://www.instagram.com/p/...',
+      },
+      why: {
+        title: '¿Por qué comprar likes de Instagram?',
+        cards: [
+          {
+            title: 'Aumentar el engagement',
+            description: 'Más likes señalan al algoritmo de Instagram que tu contenido es valioso, empujándolo a más usuarios a través de Explorar y Reels.',
+            icon: 'TrendingUp',
+          },
+          {
+            title: 'Prueba social',
+            description: 'Las publicaciones con más likes atraen aún más engagement orgánico. La gente interactúa más con contenido popular.',
+            icon: 'Eye',
+          },
+          {
+            title: 'Resultados instantáneos',
+            description: 'Los likes empiezan a aparecer en minutos. Sin esperas — entrega rápida y fiable.',
+            icon: 'Zap',
+          },
+        ],
+      },
+      howItWorks: {
+        title: 'Cómo funciona',
+        steps: [
+          {
+            title: 'PEGA TU ENLACE',
+            description: 'Copia la URL de la publicación de Instagram que quieres impulsar y pégala arriba. Sin login ni contraseña.',
+          },
+          {
+            title: 'ELIGE TU PAQUETE',
+            description: 'Selecciona el número de likes que se ajuste a tus objetivos. Paquetes flexibles de 50 a 10.000+ likes.',
+          },
+          {
+            title: 'MIRA CRECER TUS LIKES',
+            description: 'Relájate y observa cómo los likes reales llegan a tu publicación, aumentando tu visibilidad y credibilidad.',
+          },
+        ],
+        cta: 'EMPEZAR AHORA',
+      },
+      benefits: {
+        title: '¿Por qué elegir SocialOura para likes?',
+        items: [
+          { title: 'Likes de calidad', desc: 'De cuentas reales con fotos de perfil y actividad.' },
+          { title: 'Seguro y protegido', desc: 'Totalmente conforme con las directrices de Instagram. Cero riesgo.' },
+          { title: 'Entrega rápida', desc: 'Los likes empiezan a aparecer en minutos.' },
+          { title: 'Sin contraseña', desc: 'Solo necesitamos la URL de tu publicación.' },
+          { title: 'Soporte 24/7', desc: 'Nuestro equipo siempre está disponible para ayudarte.' },
+          { title: 'Garantía de reembolso', desc: '¿No satisfecho? Reembolso completo, sin preguntas.' },
+        ],
+      },
+      compliance: {
+        text: 'Aviso de conformidad: Todos nuestros servicios se basan en estrategias de marketing auténticas y soluciones de visibilidad conforme a las políticas y condiciones de servicio de las plataformas.',
+      },
+    },
   };
 
   const t = content[lang];
@@ -385,13 +451,13 @@ export default function InstagramLikesPage({ params }: PageProps) {
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : 'Secure payment'}</span>
+                  <span>{lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : lang === 'es' ? 'Pago seguro' : 'Secure payment'}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  <span>{lang === 'fr' ? 'Livraison rapide' : lang === 'de' ? 'Schnelle Lieferung' : 'Fast delivery'}</span>
+                  <span>{lang === 'fr' ? 'Livraison rapide' : lang === 'de' ? 'Schnelle Lieferung' : lang === 'es' ? 'Entrega rápida' : 'Fast delivery'}</span>
                 </div>
               </div>
             </div>
@@ -557,10 +623,10 @@ export default function InstagramLikesPage({ params }: PageProps) {
               </div>
               <div className="flex-1">
                 <p className="text-sm font-semibold text-white">
-                  {lang === 'fr' ? 'Paiement Réussi !' : lang === 'de' ? 'Zahlung erfolgreich!' : 'Payment Successful!'}
+                  {lang === 'fr' ? 'Paiement Réussi !' : lang === 'de' ? 'Zahlung erfolgreich!' : lang === 'es' ? '¡Pago exitoso!' : 'Payment Successful!'}
                 </p>
                 <p className="text-xs text-green-50">
-                  {lang === 'fr' ? 'Votre commande a été confirmée' : lang === 'de' ? 'Ihre Bestellung wurde bestätigt' : 'Your order has been confirmed'}
+                  {lang === 'fr' ? 'Votre commande a été confirmée' : lang === 'de' ? 'Ihre Bestellung wurde bestätigt' : lang === 'es' ? 'Tu pedido ha sido confirmado' : 'Your order has been confirmed'}
                 </p>
               </div>
             </div>
