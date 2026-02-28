@@ -16,6 +16,7 @@ interface PricingData {
   twitter: Goal[];
   instagram_likes: Goal[];
   tiktok_views: Goal[];
+  tiktok_likes: Goal[];
 }
 
 interface Order {
@@ -38,7 +39,7 @@ type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
 
 interface DeleteConfirmation {
   isOpen: boolean;
-  platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | null;
+  platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes' | null;
   index: number | null;
   followers: string;
 }
@@ -96,6 +97,7 @@ export default function AdminDashboard() {
     twitter: [],
     instagram_likes: [],
     tiktok_views: [],
+    tiktok_likes: [],
   });
   const [orders, setOrders] = useState<Order[]>([]);
   const [passwordData, setPasswordData] = useState({
@@ -184,6 +186,7 @@ export default function AdminDashboard() {
   const [popularPackTwitter, setPopularPackTwitter] = useState<string>('');
   const [popularPackInstagramLikes, setPopularPackInstagramLikes] = useState<string>('');
   const [popularPackTiktokViews, setPopularPackTiktokViews] = useState<string>('');
+  const [popularPackTiktokLikes, setPopularPackTiktokLikes] = useState<string>('');
   const [googleAdsExpenses, setGoogleAdsExpenses] = useState<GoogleAdsExpense[]>([]);
   const [googleAdsMonth, setGoogleAdsMonth] = useState('');
   const [googleAdsAmount, setGoogleAdsAmount] = useState('');
@@ -263,12 +266,13 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/pricing');
       if (response.ok) {
         const data = await response.json();
-        setPricing({ instagram: data.instagram, tiktok: data.tiktok, twitter: data.twitter || [], instagram_likes: data.instagram_likes || [], tiktok_views: data.tiktok_views || [] });
+        setPricing({ instagram: data.instagram, tiktok: data.tiktok, twitter: data.twitter || [], instagram_likes: data.instagram_likes || [], tiktok_views: data.tiktok_views || [], tiktok_likes: data.tiktok_likes || [] });
         if (data.popularPackInstagram) setPopularPackInstagram(data.popularPackInstagram);
         if (data.popularPackTiktok) setPopularPackTiktok(data.popularPackTiktok);
         if (data.popularPackTwitter) setPopularPackTwitter(data.popularPackTwitter);
         if (data.popularPackInstagramLikes) setPopularPackInstagramLikes(data.popularPackInstagramLikes);
         if (data.popularPackTiktokViews) setPopularPackTiktokViews(data.popularPackTiktokViews);
+        if (data.popularPackTiktokLikes) setPopularPackTiktokLikes(data.popularPackTiktokLikes);
       }
     } catch (error) {
       console.error('Error fetching pricing:', error);
@@ -674,14 +678,14 @@ export default function AdminDashboard() {
     return true;
   });
 
-  const handleAddGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views') => {
+  const handleAddGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes') => {
     setPricing((prev) => ({
       ...prev,
       [platform]: [...prev[platform], { followers: '', price: '' }],
     }));
   };
 
-  const handleRemoveGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views', index: number) => {
+  const handleRemoveGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes', index: number) => {
     const goal = pricing[platform][index];
     setDeleteConfirmation({
       isOpen: true,
@@ -744,7 +748,7 @@ export default function AdminDashboard() {
   };
 
   const handleUpdateGoal = (
-    platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views',
+    platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes',
     index: number,
     field: 'followers' | 'price',
     value: string
@@ -776,6 +780,7 @@ export default function AdminDashboard() {
           popularPackTwitter,
           popularPackInstagramLikes,
           popularPackTiktokViews,
+          popularPackTiktokLikes,
         }),
       });
 
@@ -1529,6 +1534,117 @@ export default function AdminDashboard() {
                       {pricing.tiktok_views.map((goal) => (
                         <option key={goal.followers} value={goal.followers}>
                           {parseInt(goal.followers).toLocaleString()} views — {goal.price}€
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* TikTok Likes Pricing Section */}
+            <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-rose-100 dark:border-rose-900/30">
+              <div className="flex justify-between items-center mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-rose-500 to-pink-600 rounded-xl shadow-lg">
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      TikTok Likes Pricing
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                      {pricing.tiktok_likes.length} option{pricing.tiktok_likes.length !== 1 ? 's' : ''} available
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleAddGoal('tiktok_likes')}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-white bg-gradient-to-r from-rose-500 to-pink-600 rounded-xl hover:from-rose-600 hover:to-pink-700 transition-all shadow-lg hover:shadow-xl hover:scale-105"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Goal
+                </button>
+              </div>
+
+              <div className="grid gap-4">
+                {pricing.tiktok_likes.map((goal, index) => (
+                  <div
+                    key={index}
+                    className="group relative bg-gradient-to-br from-rose-50 to-pink-50/30 dark:from-rose-900/20 dark:to-pink-900/10 rounded-xl p-5 border border-rose-200 dark:border-rose-800/30 hover:shadow-lg transition-all"
+                  >
+                    <div className="flex gap-4 items-end">
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Likes
+                        </label>
+                        <input
+                          type="text"
+                          value={goal.followers}
+                          onChange={(e) =>
+                            handleUpdateGoal('tiktok_likes', index, 'followers', e.target.value)
+                          }
+                          placeholder="e.g., 50"
+                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all"
+                        />
+                      </div>
+
+                      <div className="flex-1">
+                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                          Price (€)
+                        </label>
+                        <input
+                          type="text"
+                          value={goal.price}
+                          onChange={(e) =>
+                            handleUpdateGoal('tiktok_likes', index, 'price', e.target.value)
+                          }
+                          placeholder="e.g., 1.49"
+                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all"
+                        />
+                      </div>
+
+                      <button
+                        onClick={() => handleRemoveGoal('tiktok_likes', index)}
+                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        title="Delete this pricing option"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+
+                {pricing.tiktok_likes.length === 0 && (
+                  <div className="text-center py-12 px-4 bg-rose-50 dark:bg-rose-900/10 rounded-xl border-2 border-dashed border-rose-300 dark:border-rose-800/30">
+                    <svg className="w-12 h-12 text-rose-400 dark:text-rose-500 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                    </svg>
+                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                      No pricing goals yet. Click &quot;Add Goal&quot; to create one.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Popular Pack Selector - TikTok Likes */}
+              {pricing.tiktok_likes.length > 0 && (
+                <div className="mt-6 p-4 bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/10 dark:to-pink-900/10 rounded-xl border border-rose-200 dark:border-rose-800/30">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      &quot;Most Popular&quot; badge on:
+                    </span>
+                    <select
+                      value={popularPackTiktokLikes}
+                      onChange={(e) => setPopularPackTiktokLikes(e.target.value)}
+                      className="flex-1 px-4 py-2.5 border-2 border-rose-300 dark:border-rose-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-rose-500 focus:border-rose-500 transition-all text-sm font-medium"
+                    >
+                      <option value="">None</option>
+                      {pricing.tiktok_likes.map((goal) => (
+                        <option key={goal.followers} value={goal.followers}>
+                          {parseInt(goal.followers).toLocaleString()} likes — {goal.price}€
                         </option>
                       ))}
                     </select>
