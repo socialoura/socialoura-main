@@ -23,6 +23,7 @@ export default function Footer({ lang }: FooterProps) {
   const faqText = 'FAQ';
   const instagramText = 'Instagram';
   const tiktokText = 'TikTok';
+  const tiktokLikesText = lang === 'fr' ? 'Boost Likes TikTok' : lang === 'de' ? 'TikTok Likes Boost' : lang === 'es' ? 'Boost Likes TikTok' : 'TikTok Likes Boost';
 
   return (
     <footer className="w-full border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
@@ -65,6 +66,14 @@ export default function Footer({ lang }: FooterProps) {
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 >
                   {tiktokText}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={`/${lang}/tiktok-l`}
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                >
+                  {tiktokLikesText}
                 </a>
               </li>
               <li>

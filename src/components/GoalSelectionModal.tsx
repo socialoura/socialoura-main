@@ -105,8 +105,18 @@ export default function GoalSelectionModal({
 
   // Calculate custom price based on followers using real pricing data
   const calculateCustomPrice = (followers: number): number => {
-    // Price points based on actual pricing (Instagram)
-    const pricePoints = platform === 'instagram' 
+    const pricePoints = serviceType === 'likes' && platform === 'tiktok'
+      ? [
+          { followers: 50, price: 1.49 },
+          { followers: 100, price: 2.49 },
+          { followers: 250, price: 4.90 },
+          { followers: 500, price: 7.90 },
+          { followers: 1000, price: 12.90 },
+          { followers: 2500, price: 22.90 },
+          { followers: 5000, price: 39.90 },
+          { followers: 10000, price: 69.90 },
+        ]
+      : platform === 'instagram' 
       ? [
           { followers: 100, price: 1.90 },
           { followers: 250, price: 3.90 },
@@ -169,12 +179,12 @@ export default function GoalSelectionModal({
           const platformGoals = serviceType === 'views' 
             ? data.tiktok_views 
             : serviceType === 'likes' 
-            ? data.instagram_likes 
+            ? (platform === 'tiktok' ? data.tiktok_likes : data.instagram_likes) 
             : platform === 'instagram' ? data.instagram : platform === 'tiktok' ? data.tiktok : data.twitter;
           const popularPack = serviceType === 'views'
             ? data.popularPackTiktokViews
             : serviceType === 'likes'
-            ? data.popularPackInstagramLikes
+            ? (platform === 'tiktok' ? data.popularPackTiktokLikes : data.popularPackInstagramLikes)
             : platform === 'instagram' ? data.popularPackInstagram : platform === 'tiktok' ? data.popularPackTiktok : data.popularPackTwitter;
           
           // Convert API data to FollowerGoal format

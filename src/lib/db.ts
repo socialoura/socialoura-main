@@ -616,7 +616,7 @@ export function calculateDiscount(price: number, promoCode: PromoCode): number {
   }
 }
 
-export async function getPopularPack(platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views'): Promise<string | null> {
+export async function getPopularPack(platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes'): Promise<string | null> {
   try {
     const result = await sql`
       SELECT value FROM settings WHERE key = ${'popular_pack_' + platform}
@@ -628,7 +628,7 @@ export async function getPopularPack(platform: 'instagram' | 'tiktok' | 'twitter
   }
 }
 
-export async function setPopularPack(platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views', followers: string): Promise<void> {
+export async function setPopularPack(platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes', followers: string): Promise<void> {
   try {
     const key = 'popular_pack_' + platform;
     await sql`

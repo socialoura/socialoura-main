@@ -56,10 +56,20 @@ const DEFAULT_PRICING = {
     { followers: '50000', price: '24.90' },
     { followers: '100000', price: '39.90' },
   ],
+  tiktok_likes: [
+    { followers: '50', price: '1.49' },
+    { followers: '100', price: '2.49' },
+    { followers: '250', price: '4.90' },
+    { followers: '500', price: '7.90' },
+    { followers: '1000', price: '12.90' },
+    { followers: '2500', price: '22.90' },
+    { followers: '5000', price: '39.90' },
+    { followers: '10000', price: '69.90' },
+  ],
 };
 
 // In-memory fallback for development without database
-let memoryStore: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }>; instagram_likes?: Array<{ followers: string; price: string }>; tiktok_views?: Array<{ followers: string; price: string }> } | null = null;
+let memoryStore: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }>; instagram_likes?: Array<{ followers: string; price: string }>; tiktok_views?: Array<{ followers: string; price: string }>; tiktok_likes?: Array<{ followers: string; price: string }> } | null = null;
 
 // Check if database is configured
 const isDBConfigured = () => {
@@ -82,7 +92,7 @@ const storage = {
     }
   },
   
-  async set(_key: string, value: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }>; instagram_likes?: Array<{ followers: string; price: string }>; tiktok_views?: Array<{ followers: string; price: string }> }) {
+  async set(_key: string, value: { instagram: Array<{ followers: string; price: string }>; tiktok: Array<{ followers: string; price: string }>; twitter?: Array<{ followers: string; price: string }>; instagram_likes?: Array<{ followers: string; price: string }>; tiktok_views?: Array<{ followers: string; price: string }>; tiktok_likes?: Array<{ followers: string; price: string }> }) {
     if (isDBConfigured()) {
       try {
         await setPricing(value);
@@ -126,6 +136,7 @@ export async function GET() {
     let popularPackTwitter: string | null = null;
     let popularPackInstagramLikes: string | null = null;
     let popularPackTiktokViews: string | null = null;
+    let popularPackTiktokLikes: string | null = null;
     if (isDBConfigured()) {
       try {
         popularPackInstagram = await getPopularPack('instagram');
@@ -133,6 +144,7 @@ export async function GET() {
         popularPackTwitter = await getPopularPack('twitter');
         popularPackInstagramLikes = await getPopularPack('instagram_likes');
         popularPackTiktokViews = await getPopularPack('tiktok_views');
+        popularPackTiktokLikes = await getPopularPack('tiktok_likes');
       } catch (e) {
         console.error('Error fetching popular packs:', e);
       }
@@ -145,11 +157,13 @@ export async function GET() {
       twitter: ('twitter' in data && data.twitter) ? data.twitter : DEFAULT_PRICING.twitter,
       instagram_likes: ('instagram_likes' in data && data.instagram_likes) ? data.instagram_likes : DEFAULT_PRICING.instagram_likes,
       tiktok_views: ('tiktok_views' in data && data.tiktok_views) ? data.tiktok_views : DEFAULT_PRICING.tiktok_views,
+      tiktok_likes: ('tiktok_likes' in data && data.tiktok_likes) ? data.tiktok_likes : DEFAULT_PRICING.tiktok_likes,
       popularPackInstagram: popularPackInstagram || null,
       popularPackTiktok: popularPackTiktok || null,
       popularPackTwitter: popularPackTwitter || null,
       popularPackInstagramLikes: popularPackInstagramLikes || null,
       popularPackTiktokViews: popularPackTiktokViews || null,
+      popularPackTiktokLikes: popularPackTiktokLikes || null,
     };
     
     return NextResponse.json(responseData);
@@ -174,7 +188,7 @@ async function updatePricing(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { instagram, tiktok, twitter, instagram_likes, tiktok_views, popularPackInstagram, popularPackTiktok, popularPackTwitter, popularPackInstagramLikes, popularPackTiktokViews } = body;
+    const { instagram, tiktok, twitter, instagram_likes, tiktok_views, tiktok_likes, popularPackInstagram, popularPackTiktok, popularPackTwitter, popularPackInstagramLikes, popularPackTiktokViews, popularPackTiktokLikes } = body;
 
     // Validate data
     if (!instagram || !tiktok || !Array.isArray(instagram) || !Array.isArray(tiktok)) {
@@ -185,7 +199,7 @@ async function updatePricing(request: NextRequest) {
     }
 
     // Save pricing to storage
-    await storage.set('pricing-data', { instagram, tiktok, twitter: twitter || [], instagram_likes: instagram_likes || [], tiktok_views: tiktok_views || [] });
+    await storage.set('pricing-data', { instagram, tiktok, twitter: twitter || [], instagram_likes: instagram_likes || [], tiktok_views: tiktok_views || [], tiktok_likes: tiktok_likes || [] });
 
     // Save popular pack settings if provided
     if (isDBConfigured()) {
@@ -204,6 +218,9 @@ async function updatePricing(request: NextRequest) {
         }
         if (popularPackTiktokViews !== undefined) {
           await setPopularPack('tiktok_views', popularPackTiktokViews || '');
+        }
+        if (popularPackTiktokLikes !== undefined) {
+          await setPopularPack('tiktok_likes', popularPackTiktokLikes || '');
         }
       } catch (e) {
         console.error('Error saving popular packs:', e);
