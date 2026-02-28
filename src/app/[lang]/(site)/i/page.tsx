@@ -7,7 +7,6 @@ import { Bot, Clock, Shield, Package, Megaphone, BarChart3, Zap } from 'lucide-r
 import { useCurrency } from '@/contexts/CurrencyContext';
 import Image from 'next/image';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
-import UserSearchInput from '@/components/UserSearchInput';
 
 const GoalSelectionModal = dynamic(() => import('@/components/GoalSelectionModal'), { ssr: false });
 const PaymentModal = dynamic(() => import('@/components/PaymentModal'), { ssr: false });
@@ -44,6 +43,18 @@ export default function InstagramPage({ params }: PageProps) {
 
   const { currency, convert } = useCurrency();
 
+  const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let value = e.target.value;
+    // Remove any @ symbols from the input
+    value = value.replace(/@/g, '');
+    setUsername(value);
+  };
+
+  const handleContinue = () => {
+    if (username.trim().length > 0) {
+      setIsGoalModalOpen(true);
+    }
+  };
 
   const handleGoalSelected = (goal: FollowerGoal, emailParam: string) => {
     setSelectedGoal(goal);
@@ -516,22 +527,35 @@ export default function InstagramPage({ params }: PageProps) {
               ))}
             </div>
 
-            {/* Username Search Input */}
-            <div className="max-w-2xl mx-auto mb-4">
-              <UserSearchInput
-                platform="instagram"
-                onUserConfirmed={(confirmedUsername) => {
-                  setUsername(confirmedUsername);
-                  setIsGoalModalOpen(true);
-                }}
-                placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : lang === 'es' ? 'nombreusuario' : 'username'}
-                className="w-full"
-                language={lang}
-              />
-              
-              <p className="text-center text-sm text-gray-400 mt-3">
-                {t.hero.priceStart}
-              </p>
+            {/* Username Input & CTA Button */}
+            <div className="max-w-xl mx-auto">
+              <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50">
+                <div className="flex-1 relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 text-lg font-medium">
+                    @
+                  </span>
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={handleUsernameChange}
+                    placeholder={lang === 'fr' ? 'nomutilisateur' : lang === 'de' ? 'Benutzername' : lang === 'es' ? 'nombreusuario' : 'username'}
+                    className="w-full pl-10 pr-4 py-4 text-base bg-transparent border-0 focus:ring-0 text-white placeholder-gray-500"
+                    onKeyDown={(e) => e.key === 'Enter' && handleContinue()}
+                  />
+                </div>
+                <button
+                  onClick={handleContinue}
+                  className="relative overflow-hidden rounded-xl bg-gradient-to-r from-purple-500 via-pink-600 to-orange-500 px-8 py-4 text-base font-bold text-white shadow-lg shadow-purple-500/25 hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02] transition-all duration-300 uppercase tracking-wide group"
+                >
+                  <span className="relative z-10 flex items-center gap-2">
+                    {t.hero.cta}
+                    <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-orange-500 via-pink-600 to-purple-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </button>
+              </div>
             </div>
               
             {/* Trust indicators */}
