@@ -4,6 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Language } from '@/i18n/config';
 import { Bot, Clock, Shield, Package, Megaphone, BarChart3 } from 'lucide-react';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import Image from 'next/image';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
 
@@ -40,7 +41,7 @@ export default function TwitterPage({ params }: PageProps) {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [showToast, setShowToast] = useState(false);
 
-  const getCurrency = () => (lang === 'fr' || lang === 'de' ? 'eur' : 'usd');
+  const { currency } = useCurrency();
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -686,7 +687,7 @@ export default function TwitterPage({ params }: PageProps) {
         <PaymentModal
           isOpen={isPaymentModalOpen}
           amount={Math.round(selectedGoal.price * 100)}
-          currency={getCurrency()}
+          currency={currency}
           onClose={handleClosePaymentModal}
           onSuccess={handlePaymentSuccess}
           productName={`+${selectedGoal.followers} X (Twitter) followers`}
@@ -708,7 +709,7 @@ export default function TwitterPage({ params }: PageProps) {
           paymentIntentId={paymentIntentId}
           productName={`+${selectedGoal.followers} X (Twitter) followers`}
           amount={Math.round(selectedGoal.price * 100)}
-          currency={getCurrency()}
+          currency={currency}
           username={username}
           language={lang}
         />

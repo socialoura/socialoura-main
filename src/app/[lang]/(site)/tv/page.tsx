@@ -4,6 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Language } from '@/i18n/config';
 import { Eye, Zap, Shield, TrendingUp, Clock, Star, Play } from 'lucide-react';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
 
 const GoalSelectionModal = dynamic(() => import('@/components/GoalSelectionModal'), { ssr: false });
@@ -38,7 +39,7 @@ export default function TikTokViewsPage({ params }: PageProps) {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [showToast, setShowToast] = useState(false);
 
-  const getCurrency = () => (lang === 'fr' || lang === 'de' ? 'eur' : 'usd');
+  const { currency } = useCurrency();
 
   const handleContinue = () => {
     if (videoUrl.trim().length > 0) {
@@ -542,7 +543,7 @@ export default function TikTokViewsPage({ params }: PageProps) {
         <PaymentModal
           isOpen={isPaymentModalOpen}
           amount={selectedGoal.price * 100}
-          currency={getCurrency()}
+          currency={currency}
           onClose={() => setIsPaymentModalOpen(false)}
           onSuccess={handlePaymentSuccess}
           productName={`TikTok visibility package (${selectedGoal.followers.toLocaleString()})`}
@@ -563,7 +564,7 @@ export default function TikTokViewsPage({ params }: PageProps) {
           paymentIntentId={paymentIntentId}
           productName={`+${selectedGoal.followers.toLocaleString()} TikTok views`}
           amount={Math.round(selectedGoal.price * 100)}
-          currency={getCurrency()}
+          currency={currency}
           username={videoUrl}
           language={lang}
         />

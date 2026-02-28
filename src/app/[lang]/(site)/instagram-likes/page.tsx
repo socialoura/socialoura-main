@@ -4,6 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Language } from '@/i18n/config';
 import { Heart, Zap, Shield, TrendingUp, Eye, Clock, Star } from 'lucide-react';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
 
 const GoalSelectionModal = dynamic(() => import('@/components/GoalSelectionModal'), { ssr: false });
@@ -38,7 +39,7 @@ export default function InstagramLikesPage({ params }: PageProps) {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [showToast, setShowToast] = useState(false);
 
-  const getCurrency = () => (lang === 'fr' || lang === 'de' ? 'eur' : 'usd');
+  const { currency } = useCurrency();
 
   const handleContinue = () => {
     if (postUrl.trim().length > 0) {
@@ -573,7 +574,7 @@ export default function InstagramLikesPage({ params }: PageProps) {
         <PaymentModal
           isOpen={isPaymentModalOpen}
           amount={selectedGoal.price * 100}
-          currency={getCurrency()}
+          currency={currency}
           onClose={() => setIsPaymentModalOpen(false)}
           onSuccess={handlePaymentSuccess}
           productName={`Instagram engagement package (${selectedGoal.followers.toLocaleString()})`}
@@ -594,7 +595,7 @@ export default function InstagramLikesPage({ params }: PageProps) {
           paymentIntentId={paymentIntentId}
           productName={`Instagram engagement package (${selectedGoal.followers.toLocaleString()})`}
           amount={Math.round(selectedGoal.price * 100)}
-          currency={getCurrency()}
+          currency={currency}
           username={postUrl}
           language={lang}
         />

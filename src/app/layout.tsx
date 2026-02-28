@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import "./globals.css";
 
 const spaceGrotesk = Space_Grotesk({
@@ -74,7 +75,9 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} font-sans antialiased`}
       >
-        {children}
+        <CurrencyProvider>
+          {children}
+        </CurrencyProvider>
         <Analytics />
         <SpeedInsights />
       </body>

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { PaymentElement, ExpressCheckoutElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { X, Loader2, CheckCircle, AlertCircle, Tag } from 'lucide-react';
 import StripeProvider from './StripeProvider';
+import { formatCentsToDisplay, type SupportedCurrency } from '@/lib/pricing';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -148,12 +149,8 @@ function PaymentForm({
 
   const t = text[language];
 
-  const formatAmount = (amount: number, currency: string) => {
-    const value = amount / 100;
-    if (currency.toLowerCase() === 'eur') {
-      return `${value.toFixed(2)}€`;
-    }
-    return `$${value.toFixed(2)}`;
+  const formatAmount = (amount: number, curr: string) => {
+    return formatCentsToDisplay(amount, curr as SupportedCurrency);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { formatPrice, type SupportedCurrency } from '@/lib/pricing';
 
 interface FollowerGoal {
   followers: number;
@@ -19,6 +20,7 @@ interface GoalSelectionModalProps {
   platform: 'instagram' | 'tiktok' | 'twitter';
   serviceType?: 'followers' | 'likes' | 'views';
   language?: 'en' | 'fr' | 'de';
+  currency?: SupportedCurrency;
 }
 
 export default function GoalSelectionModal({
@@ -29,6 +31,7 @@ export default function GoalSelectionModal({
   platform,
   serviceType = 'followers',
   language = 'en',
+  currency = 'eur',
 }: GoalSelectionModalProps) {
   const [email, setEmail] = useState('');
   const [selectedGoal, setSelectedGoal] = useState<FollowerGoal | null>(null);
@@ -377,10 +380,10 @@ export default function GoalSelectionModal({
                       +{goal.followers.toLocaleString()} {serviceType === 'views' ? 'views' : serviceType === 'likes' ? 'likes' : language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
                     </div>
                     <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      {language === 'fr' || language === 'de' ? `${goal.price.toFixed(2)}€` : `$${goal.price.toFixed(2)}`}
+                      {formatPrice(goal.price, currency)}
                     </div>
                     <div className="text-xs text-gray-500 line-through">
-                      {language === 'fr' || language === 'de' ? `${goal.originalPrice.toFixed(1)}€` : `$${goal.originalPrice.toFixed(1)}`}
+                      {formatPrice(goal.originalPrice, currency)}
                     </div>
                   </div>
                   {/* Selection indicator */}
@@ -429,7 +432,7 @@ export default function GoalSelectionModal({
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      {language === 'fr' || language === 'de' ? `${calculateCustomPrice(customFollowers)}€` : `$${calculateCustomPrice(customFollowers)}`}
+                      {formatPrice(calculateCustomPrice(customFollowers), currency)}
                     </div>
                   </div>
                 </div>

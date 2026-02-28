@@ -4,6 +4,7 @@ import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { Language } from '@/i18n/config';
 import { Bot, Clock, Shield, Package, Megaphone, BarChart3 } from 'lucide-react';
+import { useCurrency } from '@/contexts/CurrencyContext';
 import Image from 'next/image';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
 
@@ -40,7 +41,7 @@ export default function TikTokPage({ params }: PageProps) {
   const [paymentIntentId, setPaymentIntentId] = useState('');
   const [showToast, setShowToast] = useState(false);
 
-  const getCurrency = () => (lang === 'fr' || lang === 'de' ? 'eur' : 'usd');
+  const { currency, convert } = useCurrency();
 
   const handleUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let value = e.target.value;
@@ -680,14 +681,15 @@ export default function TikTokPage({ params }: PageProps) {
         username={username}
         platform="tiktok"
         language={lang}
+        currency={currency}
       />
 
       {/* Payment Modal */}
       {selectedGoal && (
         <PaymentModal
           isOpen={isPaymentModalOpen}
-          amount={Math.round(selectedGoal.price * 100)} // Convert to cents and round to avoid floating point errors
-          currency={getCurrency()}
+          amount={convert(selectedGoal.price).amountInCents}
+          currency={currency}
           onClose={handleClosePaymentModal}
           onSuccess={handlePaymentSuccess}
           productName={`+${selectedGoal.followers} TikTok followers`}
@@ -708,8 +710,8 @@ export default function TikTokPage({ params }: PageProps) {
           onClose={handleCloseSuccessModal}
           paymentIntentId={paymentIntentId}
           productName={`+${selectedGoal.followers} TikTok followers`}
-          amount={Math.round(selectedGoal.price * 100)}
-          currency={getCurrency()}
+          amount={convert(selectedGoal.price).amountInCents}
+          currency={currency}
           username={username}
           language={lang}
         />
