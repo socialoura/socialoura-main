@@ -8,7 +8,10 @@
  */
 
 // ─── Supported currencies ────────────────────────────────────────────────────
-export type SupportedCurrency = 'eur' | 'gbp' | 'usd' | 'chf';
+export type SupportedCurrency = 
+  | 'eur' | 'gbp' | 'usd' | 'chf' | 'cad' | 'aud' | 'nzd' | 'jpy' 
+  | 'cny' | 'inr' | 'brl' | 'mxn' | 'krw' | 'sek' | 'nok' | 'dkk' 
+  | 'pln' | 'czk' | 'huf' | 'ron' | 'try' | 'zar' | 'sgd' | 'hkd';
 
 export interface CurrencyConfig {
   code: SupportedCurrency;
@@ -48,6 +51,146 @@ export const CURRENCIES: Record<SupportedCurrency, CurrencyConfig> = {
     rate: 0.94,
     zeroDecimal: false,
   },
+  cad: {
+    code: 'cad',
+    symbol: 'C$',
+    symbolPosition: 'before',
+    rate: 1.45,
+    zeroDecimal: false,
+  },
+  aud: {
+    code: 'aud',
+    symbol: 'A$',
+    symbolPosition: 'before',
+    rate: 1.65,
+    zeroDecimal: false,
+  },
+  nzd: {
+    code: 'nzd',
+    symbol: 'NZ$',
+    symbolPosition: 'before',
+    rate: 1.78,
+    zeroDecimal: false,
+  },
+  jpy: {
+    code: 'jpy',
+    symbol: '¥',
+    symbolPosition: 'before',
+    rate: 160,
+    zeroDecimal: true,
+  },
+  cny: {
+    code: 'cny',
+    symbol: '¥',
+    symbolPosition: 'before',
+    rate: 7.8,
+    zeroDecimal: false,
+  },
+  inr: {
+    code: 'inr',
+    symbol: '₹',
+    symbolPosition: 'before',
+    rate: 90,
+    zeroDecimal: false,
+  },
+  brl: {
+    code: 'brl',
+    symbol: 'R$',
+    symbolPosition: 'before',
+    rate: 5.4,
+    zeroDecimal: false,
+  },
+  mxn: {
+    code: 'mxn',
+    symbol: 'MX$',
+    symbolPosition: 'before',
+    rate: 18.5,
+    zeroDecimal: false,
+  },
+  krw: {
+    code: 'krw',
+    symbol: '₩',
+    symbolPosition: 'before',
+    rate: 1450,
+    zeroDecimal: true,
+  },
+  sek: {
+    code: 'sek',
+    symbol: 'kr',
+    symbolPosition: 'after',
+    rate: 11.2,
+    zeroDecimal: false,
+  },
+  nok: {
+    code: 'nok',
+    symbol: 'kr',
+    symbolPosition: 'after',
+    rate: 11.5,
+    zeroDecimal: false,
+  },
+  dkk: {
+    code: 'dkk',
+    symbol: 'kr',
+    symbolPosition: 'after',
+    rate: 7.45,
+    zeroDecimal: false,
+  },
+  pln: {
+    code: 'pln',
+    symbol: 'zł',
+    symbolPosition: 'after',
+    rate: 4.3,
+    zeroDecimal: false,
+  },
+  czk: {
+    code: 'czk',
+    symbol: 'Kč',
+    symbolPosition: 'after',
+    rate: 25,
+    zeroDecimal: false,
+  },
+  huf: {
+    code: 'huf',
+    symbol: 'Ft',
+    symbolPosition: 'after',
+    rate: 390,
+    zeroDecimal: false,
+  },
+  ron: {
+    code: 'ron',
+    symbol: 'lei',
+    symbolPosition: 'after',
+    rate: 4.95,
+    zeroDecimal: false,
+  },
+  try: {
+    code: 'try',
+    symbol: '₺',
+    symbolPosition: 'before',
+    rate: 35,
+    zeroDecimal: false,
+  },
+  zar: {
+    code: 'zar',
+    symbol: 'R',
+    symbolPosition: 'before',
+    rate: 20,
+    zeroDecimal: false,
+  },
+  sgd: {
+    code: 'sgd',
+    symbol: 'S$',
+    symbolPosition: 'before',
+    rate: 1.45,
+    zeroDecimal: false,
+  },
+  hkd: {
+    code: 'hkd',
+    symbol: 'HK$',
+    symbolPosition: 'before',
+    rate: 8.4,
+    zeroDecimal: false,
+  },
 };
 
 // ─── Country → Currency mapping ──────────────────────────────────────────────
@@ -63,6 +206,46 @@ const COUNTRY_TO_CURRENCY: Record<string, SupportedCurrency> = {
   US: 'usd',
   // CHF
   CH: 'chf',
+  // CAD
+  CA: 'cad',
+  // AUD
+  AU: 'aud',
+  // NZD
+  NZ: 'nzd',
+  // JPY
+  JP: 'jpy',
+  // CNY
+  CN: 'cny',
+  // INR
+  IN: 'inr',
+  // BRL
+  BR: 'brl',
+  // MXN
+  MX: 'mxn',
+  // KRW
+  KR: 'krw',
+  // SEK
+  SE: 'sek',
+  // NOK
+  NO: 'nok',
+  // DKK
+  DK: 'dkk',
+  // PLN
+  PL: 'pln',
+  // CZK
+  CZ: 'czk',
+  // HUF
+  HU: 'huf',
+  // RON
+  RO: 'ron',
+  // TRY
+  TR: 'try',
+  // ZAR
+  ZA: 'zar',
+  // SGD
+  SG: 'sgd',
+  // HKD
+  HK: 'hkd',
 };
 
 const DEFAULT_CURRENCY: SupportedCurrency = 'eur';
@@ -158,8 +341,16 @@ export function formatPrice(price: number, configOrCurrency: CurrencyConfig | Su
     ? CURRENCIES[configOrCurrency]
     : configOrCurrency;
 
-  const value = price.toFixed(2);
+  // Handle zero-decimal currencies (JPY, KRW)
+  if (config.zeroDecimal) {
+    const value = Math.round(price).toString();
+    if (config.symbolPosition === 'before') {
+      return `${config.symbol}${value}`;
+    }
+    return `${value}${config.symbol}`;
+  }
 
+  const value = price.toFixed(2);
   if (config.symbolPosition === 'before') {
     return `${config.symbol}${value}`;
   }
@@ -171,8 +362,17 @@ export function formatPrice(price: number, configOrCurrency: CurrencyConfig | Su
  */
 export function formatCentsToDisplay(amountInCents: number, currency: SupportedCurrency): string {
   const config = CURRENCIES[currency];
+  
+  // Handle zero-decimal currencies (JPY, KRW)
+  if (config.zeroDecimal) {
+    const value = Math.round(amountInCents / 100).toString();
+    if (config.symbolPosition === 'before') {
+      return `${config.symbol}${value}`;
+    }
+    return `${value}${config.symbol}`;
+  }
+  
   const value = (amountInCents / 100).toFixed(2);
-
   if (config.symbolPosition === 'before') {
     return `${config.symbol}${value}`;
   }

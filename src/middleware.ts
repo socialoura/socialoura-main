@@ -6,9 +6,57 @@ const defaultLocale = 'fr';
 
 // Country → currency mapping (lightweight, no imports from lib to keep middleware edge-compatible)
 const COUNTRY_CURRENCY: Record<string, string> = {
+  // EUR zone
+  FR: 'eur', DE: 'eur', ES: 'eur', IT: 'eur', NL: 'eur', BE: 'eur',
+  AT: 'eur', PT: 'eur', IE: 'eur', FI: 'eur', GR: 'eur', LU: 'eur',
+  SK: 'eur', SI: 'eur', EE: 'eur', LV: 'eur', LT: 'eur', MT: 'eur',
+  CY: 'eur', HR: 'eur',
+  // GBP
   GB: 'gbp',
+  // USD
   US: 'usd',
+  // CHF
   CH: 'chf',
+  // CAD
+  CA: 'cad',
+  // AUD
+  AU: 'aud',
+  // NZD
+  NZ: 'nzd',
+  // JPY
+  JP: 'jpy',
+  // CNY
+  CN: 'cny',
+  // INR
+  IN: 'inr',
+  // BRL
+  BR: 'brl',
+  // MXN
+  MX: 'mxn',
+  // KRW
+  KR: 'krw',
+  // SEK
+  SE: 'sek',
+  // NOK
+  NO: 'nok',
+  // DKK
+  DK: 'dkk',
+  // PLN
+  PL: 'pln',
+  // CZK
+  CZ: 'czk',
+  // HUF
+  HU: 'huf',
+  // RON
+  RO: 'ron',
+  // TRY
+  TR: 'try',
+  // ZAR
+  ZA: 'zar',
+  // SGD
+  SG: 'sgd',
+  // HKD
+  HK: 'hkd',
   // All other countries default to EUR
 };
 const DEFAULT_CURRENCY = 'eur';
