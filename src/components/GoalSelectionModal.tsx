@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
-import { formatPrice, type SupportedCurrency } from '@/lib/pricing';
+import { formatPrice, type SupportedCurrency, convertPrice } from '@/lib/pricing';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface FollowerGoal {
   followers: number;
@@ -33,6 +34,9 @@ export default function GoalSelectionModal({
   language = 'en',
   currency = 'eur',
 }: GoalSelectionModalProps) {
+  const { currency: detectedCurrency } = useCurrency();
+  const activeCurrency = currency || detectedCurrency;
+  
   const [email, setEmail] = useState('');
   const [selectedGoal, setSelectedGoal] = useState<FollowerGoal | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -163,7 +167,12 @@ export default function GoalSelectionModal({
           // Convert API data to FollowerGoal format
           const formattedGoals: FollowerGoal[] = platformGoals.map((goal: { followers: string; price: string }, index: number) => {
             const followers = parseInt(goal.followers);
-            const price = parseFloat(goal.price);
+            const eurPrice = parseFloat(goal.price);
+            
+            // Convert EUR price to local currency
+            const converted = convertPrice(eurPrice, activeCurrency);
+            const price = converted.price;
+            
             // Calculate discount based on position (higher = more discount)
             const discountPercentage = 50 + (index * 5);
             const originalPrice = price / (1 - discountPercentage / 100);
@@ -380,10 +389,10 @@ export default function GoalSelectionModal({
                       +{goal.followers.toLocaleString()} {serviceType === 'views' ? 'views' : serviceType === 'likes' ? 'likes' : language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
                     </div>
                     <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      {formatPrice(goal.price, currency)}
+                      {formatPrice(goal.price, activeCurrency)}
                     </div>
                     <div className="text-xs text-gray-500 line-through">
-                      {formatPrice(goal.originalPrice, currency)}
+                      {formatPrice(goal.originalPrice, activeCurrency)}
                     </div>
                   </div>
                   {/* Selection indicator */}
@@ -432,7 +441,7 @@ export default function GoalSelectionModal({
                   </div>
                   <div className="text-right">
                     <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-                      {formatPrice(calculateCustomPrice(customFollowers), currency)}
+                      {formatPrice(convertPrice(calculateCustomPrice(customFollowers), activeCurrency).price, activeCurrency)}
                     </div>
                   </div>
                 </div>
