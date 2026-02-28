@@ -7,6 +7,7 @@ import {
   convertPrice,
   formatCentsToDisplay,
   CURRENCY_COOKIE_NAME,
+  CURRENCIES,
 } from '@/lib/pricing';
 
 interface CurrencyContextType {
@@ -33,7 +34,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     const currencyCookie = cookies.find((c) => c.startsWith(`${CURRENCY_COOKIE_NAME}=`));
     if (currencyCookie) {
       const value = currencyCookie.split('=')[1] as SupportedCurrency;
-      if (['eur', 'gbp', 'usd', 'chf'].includes(value)) {
+      if (value in CURRENCIES) {
         setCurrency(value);
       }
     }

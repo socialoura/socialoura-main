@@ -70,13 +70,14 @@ export function middleware(request: NextRequest) {
   }
 
   // ─── Country / Currency detection ────────────────────────────────────
-  const existingCurrency = request.cookies.get('user_currency')?.value;
   const existingCountry = request.cookies.get('user_country')?.value;
+  const detectedCountry = (request.headers.get('x-vercel-ip-country') || 'FR').toUpperCase();
+  const detectedCurrency = COUNTRY_CURRENCY[detectedCountry] || DEFAULT_CURRENCY;
 
-  // Only detect if cookies are not already set
+  // Update cookies if country changed or cookies missing
+  const needsUpdate = !existingCountry || existingCountry !== detectedCountry;
+
   let response: NextResponse | undefined;
-
-  const needsCurrencyCookie = !existingCurrency || !existingCountry;
 
   // Check if the pathname is just '/'
   if (pathname === '/') {
@@ -99,17 +100,14 @@ export function middleware(request: NextRequest) {
     response = NextResponse.next();
   }
 
-  // Set currency cookies if not already present
-  if (needsCurrencyCookie) {
-    const country = request.headers.get('x-vercel-ip-country') || 'FR';
-    const currency = COUNTRY_CURRENCY[country.toUpperCase()] || DEFAULT_CURRENCY;
-
-    response.cookies.set('user_currency', currency, {
+  // Always set currency cookies when country changes (or on first visit)
+  if (needsUpdate) {
+    response.cookies.set('user_currency', detectedCurrency, {
       path: '/',
       maxAge: 60 * 60 * 24 * 30, // 30 days
       sameSite: 'lax',
     });
-    response.cookies.set('user_country', country.toUpperCase(), {
+    response.cookies.set('user_country', detectedCountry, {
       path: '/',
       maxAge: 60 * 60 * 24 * 30,
       sameSite: 'lax',
