@@ -216,12 +216,24 @@ function PaymentForm({
         
         // Google Ads Conversion Tracking
         if (typeof window !== 'undefined' && (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag) {
-          (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
-            'send_to': 'AW-17963974181/blwQCJrAm_0bEKX88fVC',
-            'value': amount / 100,
-            'currency': currency.toUpperCase(),
-            'transaction_id': paymentIntent.id
+          const gtagFn = (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag;
+
+          let conversionCallbackFired = false;
+          gtagFn('event', 'conversion', {
+            send_to: 'AW-17985942356/mF8GCIbql4EcENTmroBD',
+            value: amount / 100,
+            currency: currency.toUpperCase(),
+            transaction_id: paymentIntent.id,
+            event_callback: () => {
+              conversionCallbackFired = true;
+            },
           });
+
+          setTimeout(() => {
+            if (!conversionCallbackFired) {
+              // no-op: best-effort; don't block purchase flow
+            }
+          }, 800);
         }
 
         // Send confirmation email and Discord notification
