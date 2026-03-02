@@ -18,7 +18,7 @@ interface GoalSelectionModalProps {
   onClose: () => void;
   onSelectGoal: (goal: FollowerGoal, email: string) => void;
   username: string;
-  platform: 'instagram' | 'tiktok' | 'twitter';
+  platform: 'instagram' | 'tiktok' | 'twitter' | 'youtube' | 'linkedin';
   serviceType?: 'followers' | 'likes' | 'views';
   language?: 'en' | 'fr' | 'de' | 'es';
   currency?: SupportedCurrency;
@@ -52,7 +52,7 @@ export default function GoalSelectionModal({
       emailLabel: 'Email address',
       emailPlaceholder: 'your@email.com',
       continue: 'Continue',
-      disclaimer: `**Socialoura is fully aligned with the terms of service of ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : 'X (Twitter)'} and Google Ads. Our approach is based on authentic marketing strategies and professional partnerships.**`,
+      disclaimer: `**Socialoura is fully aligned with the terms of service of ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : platform === 'youtube' ? 'YouTube' : platform === 'linkedin' ? 'LinkedIn' : 'X (Twitter)'} and Google Ads. Our approach is based on authentic marketing strategies and professional partnerships.**`,
       disclaimerPart2: 'We enhance your profile\'s visibility by sharing your content through our global partner network, including real creators, mobile platforms, influencer groups, and niche communities. The package you select defines the level of exposure delivered through these partnerships.',
       disclaimerPart3: '**Disclaimer:** Visibility results depend on your content quality, niche relevance, and consistency. While Socialoura provides exposure tools, we do not promise specific performance metrics.',
       mostPopular: 'Most popular',
@@ -65,7 +65,7 @@ export default function GoalSelectionModal({
       emailLabel: 'Adresse e-mail',
       emailPlaceholder: 'votre@email.com',
       continue: 'Continuer',
-      disclaimer: `**Socialoura est entièrement conforme aux conditions d'utilisation de ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : 'X (Twitter)'} et Google Ads. Notre approche est basée sur des stratégies marketing authentiques et des partenariats professionnels.**`,
+      disclaimer: `**Socialoura est entièrement conforme aux conditions d'utilisation de ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : platform === 'youtube' ? 'YouTube' : platform === 'linkedin' ? 'LinkedIn' : 'X (Twitter)'} et Google Ads. Notre approche est basée sur des stratégies marketing authentiques et des partenariats professionnels.**`,
       disclaimerPart2: '**Nous améliorons la visibilité de votre profil en partageant votre contenu à travers notre réseau mondial de partenaires, incluant de vrais créateurs, des plateformes mobiles, des groupes d\'influenceurs et des communautés de niche. Le forfait que vous sélectionnez définit le niveau d\'exposition fourni par ces partenariats.**',
       disclaimerPart3: '**Avertissement :** Les résultats de visibilité dépendent de la qualité de votre contenu, de la pertinence de votre niche et de votre régularité. Bien que Socialoura fournisse des outils d\'exposition, nous ne promettons pas de mesures de performance spécifiques.',
       mostPopular: 'Plus populaire',
@@ -78,7 +78,7 @@ export default function GoalSelectionModal({
       emailLabel: 'E-Mail-Adresse',
       emailPlaceholder: 'ihre@email.com',
       continue: 'Weiter',
-      disclaimer: `**Socialoura steht vollständig im Einklang mit den Nutzungsbedingungen von ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : 'X (Twitter)'} und Google Ads. Unser Ansatz basiert auf authentischen Marketingstrategien und professionellen Partnerschaften.**`,
+      disclaimer: `**Socialoura steht vollständig im Einklang mit den Nutzungsbedingungen von ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : platform === 'youtube' ? 'YouTube' : platform === 'linkedin' ? 'LinkedIn' : 'X (Twitter)'} und Google Ads. Unser Ansatz basiert auf authentischen Marketingstrategien und professionellen Partnerschaften.**`,
       disclaimerPart2: 'Wir steigern die Sichtbarkeit Ihres Profils, indem wir Ihre Inhalte über unser globales Partnernetzwerk teilen, darunter echte Creator, mobile Plattformen, Influencer-Gruppen und Nischen-Communities. Das gewählte Paket bestimmt das Maß an Reichweite, das durch diese Partnerschaften erzielt wird.',
       disclaimerPart3: '**Haftungsausschluss:** Die Sichtbarkeitsergebnisse hängen von der Qualität Ihres Contents, der Nischenrelevanz und Ihrer Konsistenz ab. Obwohl Socialoura Reichweiten-Tools bereitstellt, versprechen wir keine bestimmten Leistungskennzahlen.',
       mostPopular: 'Beliebteste',
@@ -91,7 +91,7 @@ export default function GoalSelectionModal({
       emailLabel: 'Correo electrónico',
       emailPlaceholder: 'tu@email.com',
       continue: 'Continuar',
-      disclaimer: `**Socialoura cumple plenamente con los términos de servicio de ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : 'X (Twitter)'} y Google Ads. Nuestro enfoque se basa en estrategias de marketing auténticas y asociaciones profesionales.**`,
+      disclaimer: `**Socialoura cumple plenamente con los términos de servicio de ${platform === 'instagram' ? 'Instagram' : platform === 'tiktok' ? 'TikTok' : platform === 'youtube' ? 'YouTube' : platform === 'linkedin' ? 'LinkedIn' : 'X (Twitter)'} y Google Ads. Nuestro enfoque se basa en estrategias de marketing auténticas y asociaciones profesionales.**`,
       disclaimerPart2: 'Mejoramos la visibilidad de tu perfil compartiendo tu contenido a través de nuestra red global de socios, incluyendo creadores reales, plataformas móviles, grupos de influencers y comunidades de nicho. El paquete que selecciones define el nivel de exposición proporcionado por estas asociaciones.',
       disclaimerPart3: '**Aviso:** Los resultados de visibilidad dependen de la calidad de tu contenido, la relevancia de tu nicho y tu consistencia. Aunque Socialoura proporciona herramientas de exposición, no prometemos métricas de rendimiento específicas.',
       mostPopular: 'Más popular',
@@ -105,7 +105,28 @@ export default function GoalSelectionModal({
 
   // Calculate custom price based on followers using real pricing data
   const calculateCustomPrice = (followers: number): number => {
-    const pricePoints = serviceType === 'likes' && platform === 'tiktok'
+    const pricePoints = platform === 'linkedin'
+      ? [
+          { followers: 100, price: 3.90 },
+          { followers: 250, price: 7.90 },
+          { followers: 500, price: 12.90 },
+          { followers: 1000, price: 19.90 },
+          { followers: 2500, price: 39.90 },
+          { followers: 5000, price: 69.90 },
+          { followers: 10000, price: 119.90 },
+        ]
+      : serviceType === 'views' && platform === 'youtube'
+      ? [
+          { followers: 500, price: 1.49 },
+          { followers: 1000, price: 2.49 },
+          { followers: 2500, price: 4.90 },
+          { followers: 5000, price: 7.90 },
+          { followers: 10000, price: 12.90 },
+          { followers: 25000, price: 24.90 },
+          { followers: 50000, price: 39.90 },
+          { followers: 100000, price: 69.90 },
+        ]
+      : serviceType === 'likes' && platform === 'tiktok'
       ? [
           { followers: 50, price: 1.49 },
           { followers: 100, price: 2.49 },
@@ -176,13 +197,17 @@ export default function GoalSelectionModal({
         const response = await fetch('/api/admin/pricing');
         if (response.ok) {
           const data = await response.json();
-          const platformGoals = serviceType === 'views' 
-            ? data.tiktok_views 
+          const platformGoals = platform === 'linkedin'
+            ? data.linkedin_followers
+            : serviceType === 'views' 
+            ? (platform === 'youtube' ? data.youtube_views : data.tiktok_views) 
             : serviceType === 'likes' 
             ? (platform === 'tiktok' ? data.tiktok_likes : data.instagram_likes) 
             : platform === 'instagram' ? data.instagram : platform === 'tiktok' ? data.tiktok : data.twitter;
-          const popularPack = serviceType === 'views'
-            ? data.popularPackTiktokViews
+          const popularPack = platform === 'linkedin'
+            ? data.popularPackLinkedinFollowers
+            : serviceType === 'views'
+            ? (platform === 'youtube' ? data.popularPackYoutubeViews : data.popularPackTiktokViews)
             : serviceType === 'likes'
             ? (platform === 'tiktok' ? data.popularPackTiktokLikes : data.popularPackInstagramLikes)
             : platform === 'instagram' ? data.popularPackInstagram : platform === 'tiktok' ? data.popularPackTiktok : data.popularPackTwitter;

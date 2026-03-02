@@ -35,6 +35,7 @@ export default function Header({ lang }: HeaderProps) {
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false);
   const [isInstagramMenuOpen, setIsInstagramMenuOpen] = useState(false);
   const [isTiktokMenuOpen, setIsTiktokMenuOpen] = useState(false);
+  const [isYoutubeMenuOpen, setIsYoutubeMenuOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [timeLeft, setTimeLeft] = useState({ h: 0, m: 0, s: 0 });
   const [promoConfig, setPromoConfig] = useState<PromoBarConfig | null>(null);
@@ -332,6 +333,39 @@ export default function Header({ lang }: HeaderProps) {
                 </div>
               )}
             </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => { setIsYoutubeMenuOpen((v) => !v); setIsInstagramMenuOpen(false); setIsTiktokMenuOpen(false); }}
+                className="flex items-center gap-1 text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+              >
+                YouTube
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+              {isYoutubeMenuOpen && (
+                <div className="absolute left-0 mt-2 w-48 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-xl overflow-hidden z-50">
+                  <Link
+                    href={`/${lang}/youtube-v`}
+                    onClick={() => setIsYoutubeMenuOpen(false)}
+                    className="flex items-center gap-2 px-4 py-3 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <svg className="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    {nt.views}
+                  </Link>
+                </div>
+              )}
+            </div>
+            <Link
+              href={`/${lang}/linkedin-f`}
+              className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+            >
+              LinkedIn
+            </Link>
             <Link
               href={`/${lang}/x`}
               className="text-base font-semibold text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
@@ -510,6 +544,29 @@ export default function Header({ lang }: HeaderProps) {
                   </Link>
                 </div>
               </div>
+              <div>
+                <span className="text-base font-medium text-gray-700 dark:text-gray-300">YouTube</span>
+                <div className="flex flex-col ml-4 mt-2 space-y-2">
+                  <Link
+                    href={`/${lang}/youtube-v`}
+                    className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    <svg className="w-4 h-4 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                    {nt.views}
+                  </Link>
+                </div>
+              </div>
+              <Link
+                href={`/${lang}/linkedin-f`}
+                className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                LinkedIn
+              </Link>
               <Link
                 href={`/${lang}/x`}
                 className="text-base font-medium text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"

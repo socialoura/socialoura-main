@@ -17,6 +17,8 @@ interface PricingData {
   instagram_likes: Goal[];
   tiktok_views: Goal[];
   tiktok_likes: Goal[];
+  youtube_views: Goal[];
+  linkedin_followers: Goal[];
 }
 
 interface Order {
@@ -39,7 +41,7 @@ type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
 
 interface DeleteConfirmation {
   isOpen: boolean;
-  platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes' | null;
+  platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes' | 'youtube_views' | 'linkedin_followers' | null;
   index: number | null;
   followers: string;
 }
@@ -98,6 +100,8 @@ export default function AdminDashboard() {
     instagram_likes: [],
     tiktok_views: [],
     tiktok_likes: [],
+    youtube_views: [],
+    linkedin_followers: [],
   });
   const [orders, setOrders] = useState<Order[]>([]);
   const [passwordData, setPasswordData] = useState({
@@ -187,6 +191,8 @@ export default function AdminDashboard() {
   const [popularPackInstagramLikes, setPopularPackInstagramLikes] = useState<string>('');
   const [popularPackTiktokViews, setPopularPackTiktokViews] = useState<string>('');
   const [popularPackTiktokLikes, setPopularPackTiktokLikes] = useState<string>('');
+  const [popularPackYoutubeViews, setPopularPackYoutubeViews] = useState<string>('');
+  const [popularPackLinkedinFollowers, setPopularPackLinkedinFollowers] = useState<string>('');
   const [googleAdsExpenses, setGoogleAdsExpenses] = useState<GoogleAdsExpense[]>([]);
   const [googleAdsMonth, setGoogleAdsMonth] = useState('');
   const [googleAdsAmount, setGoogleAdsAmount] = useState('');
@@ -266,13 +272,15 @@ export default function AdminDashboard() {
       const response = await fetch('/api/admin/pricing');
       if (response.ok) {
         const data = await response.json();
-        setPricing({ instagram: data.instagram, tiktok: data.tiktok, twitter: data.twitter || [], instagram_likes: data.instagram_likes || [], tiktok_views: data.tiktok_views || [], tiktok_likes: data.tiktok_likes || [] });
+        setPricing({ instagram: data.instagram, tiktok: data.tiktok, twitter: data.twitter || [], instagram_likes: data.instagram_likes || [], tiktok_views: data.tiktok_views || [], tiktok_likes: data.tiktok_likes || [], youtube_views: data.youtube_views || [], linkedin_followers: data.linkedin_followers || [] });
         if (data.popularPackInstagram) setPopularPackInstagram(data.popularPackInstagram);
         if (data.popularPackTiktok) setPopularPackTiktok(data.popularPackTiktok);
         if (data.popularPackTwitter) setPopularPackTwitter(data.popularPackTwitter);
         if (data.popularPackInstagramLikes) setPopularPackInstagramLikes(data.popularPackInstagramLikes);
         if (data.popularPackTiktokViews) setPopularPackTiktokViews(data.popularPackTiktokViews);
         if (data.popularPackTiktokLikes) setPopularPackTiktokLikes(data.popularPackTiktokLikes);
+        if (data.popularPackYoutubeViews) setPopularPackYoutubeViews(data.popularPackYoutubeViews);
+        if (data.popularPackLinkedinFollowers) setPopularPackLinkedinFollowers(data.popularPackLinkedinFollowers);
       }
     } catch (error) {
       console.error('Error fetching pricing:', error);
@@ -678,14 +686,14 @@ export default function AdminDashboard() {
     return true;
   });
 
-  const handleAddGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes') => {
+  const handleAddGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes' | 'youtube_views' | 'linkedin_followers') => {
     setPricing((prev) => ({
       ...prev,
       [platform]: [...prev[platform], { followers: '', price: '' }],
     }));
   };
 
-  const handleRemoveGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes', index: number) => {
+  const handleRemoveGoal = (platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes' | 'youtube_views' | 'linkedin_followers', index: number) => {
     const goal = pricing[platform][index];
     setDeleteConfirmation({
       isOpen: true,
@@ -748,7 +756,7 @@ export default function AdminDashboard() {
   };
 
   const handleUpdateGoal = (
-    platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes',
+    platform: 'instagram' | 'tiktok' | 'twitter' | 'instagram_likes' | 'tiktok_views' | 'tiktok_likes' | 'youtube_views' | 'linkedin_followers',
     index: number,
     field: 'followers' | 'price',
     value: string
@@ -781,6 +789,8 @@ export default function AdminDashboard() {
           popularPackInstagramLikes,
           popularPackTiktokViews,
           popularPackTiktokLikes,
+          popularPackYoutubeViews,
+          popularPackLinkedinFollowers,
         }),
       });
 
@@ -1645,6 +1655,194 @@ export default function AdminDashboard() {
                       {pricing.tiktok_likes.map((goal) => (
                         <option key={goal.followers} value={goal.followers}>
                           {parseInt(goal.followers).toLocaleString()} likes — {goal.price}€
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* YouTube Views Pricing */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-red-100 dark:border-red-900/30">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-red-500 to-rose-600 rounded-xl shadow-lg">
+                    <Eye className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      YouTube Views
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                      Configure YouTube views pricing
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleAddGoal('youtube_views')}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-red-500 to-rose-600 rounded-xl hover:from-red-600 hover:to-rose-700 transition-all shadow-lg hover:shadow-red-500/30 hover:scale-105"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Goal
+                </button>
+              </div>
+
+              {pricing.youtube_views.length === 0 ? (
+                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                  <Eye className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>No YouTube Views goals yet. Add one to get started.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pricing.youtube_views.map((goal, index) => (
+                    <div
+                      key={index}
+                      className="group flex items-center gap-4 p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 hover:border-red-300 dark:hover:border-red-700 bg-gray-50 dark:bg-gray-900 transition-all"
+                    >
+                      <div className="flex-1 grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 block">
+                            Views
+                          </label>
+                          <input
+                            type="text"
+                            value={goal.followers}
+                            onChange={(e) => handleUpdateGoal('youtube_views', index, 'followers', e.target.value)}
+                            className="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all text-sm font-medium"
+                            placeholder="e.g. 1000"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 block">
+                            Price (€)
+                          </label>
+                          <input
+                            type="text"
+                            value={goal.price}
+                            onChange={(e) => handleUpdateGoal('youtube_views', index, 'price', e.target.value)}
+                            className="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all text-sm font-medium"
+                            placeholder="e.g. 9.90"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setDeleteConfirmation({ isOpen: true, platform: 'youtube_views', index, followers: goal.followers })}
+                        className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                        title="Remove goal"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      &quot;Most Popular&quot; badge on:
+                    </span>
+                    <select
+                      value={popularPackYoutubeViews}
+                      onChange={(e) => setPopularPackYoutubeViews(e.target.value)}
+                      className="flex-1 px-4 py-2.5 border-2 border-red-300 dark:border-red-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all text-sm font-medium"
+                    >
+                      <option value="">None</option>
+                      {pricing.youtube_views.map((goal) => (
+                        <option key={goal.followers} value={goal.followers}>
+                          {parseInt(goal.followers).toLocaleString()} views — {goal.price}€
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* LinkedIn Followers Pricing */}
+            <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-blue-100 dark:border-blue-900/30">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-[#0A66C2] to-blue-600 rounded-xl shadow-lg">
+                    <BarChart3 className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                      LinkedIn Followers
+                    </h2>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                      Configure LinkedIn followers pricing
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleAddGoal('linkedin_followers')}
+                  className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-[#0A66C2] to-blue-600 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg hover:shadow-blue-500/30 hover:scale-105"
+                >
+                  <Plus className="w-4 h-4" />
+                  Add Goal
+                </button>
+              </div>
+
+              {pricing.linkedin_followers.length === 0 ? (
+                <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+                  <BarChart3 className="w-12 h-12 mx-auto mb-3 opacity-30" />
+                  <p>No LinkedIn Followers goals yet. Add one to get started.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {pricing.linkedin_followers.map((goal, index) => (
+                    <div
+                      key={index}
+                      className="group flex items-center gap-4 p-4 rounded-xl border-2 border-gray-100 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700 bg-gray-50 dark:bg-gray-900 transition-all"
+                    >
+                      <div className="flex-1 grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 block">
+                            Followers
+                          </label>
+                          <input
+                            type="text"
+                            value={goal.followers}
+                            onChange={(e) => handleUpdateGoal('linkedin_followers', index, 'followers', e.target.value)}
+                            className="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm font-medium"
+                            placeholder="e.g. 1000"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 block">
+                            Price (€)
+                          </label>
+                          <input
+                            type="text"
+                            value={goal.price}
+                            onChange={(e) => handleUpdateGoal('linkedin_followers', index, 'price', e.target.value)}
+                            className="w-full px-4 py-2.5 border-2 border-gray-200 dark:border-gray-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm font-medium"
+                            placeholder="e.g. 19.90"
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => setDeleteConfirmation({ isOpen: true, platform: 'linkedin_followers', index, followers: goal.followers })}
+                        className="p-2.5 text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl transition-all opacity-0 group-hover:opacity-100"
+                        title="Remove goal"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    </div>
+                  ))}
+
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                      &quot;Most Popular&quot; badge on:
+                    </span>
+                    <select
+                      value={popularPackLinkedinFollowers}
+                      onChange={(e) => setPopularPackLinkedinFollowers(e.target.value)}
+                      className="flex-1 px-4 py-2.5 border-2 border-blue-300 dark:border-blue-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all text-sm font-medium"
+                    >
+                      <option value="">None</option>
+                      {pricing.linkedin_followers.map((goal) => (
+                        <option key={goal.followers} value={goal.followers}>
+                          {parseInt(goal.followers).toLocaleString()} followers — {goal.price}€
                         </option>
                       ))}
                     </select>

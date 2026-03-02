@@ -24,6 +24,8 @@ export default function Footer({ lang }: FooterProps) {
   const instagramText = 'Instagram';
   const tiktokText = 'TikTok';
   const tiktokLikesText = lang === 'fr' ? 'Boost Likes TikTok' : lang === 'de' ? 'TikTok Likes Boost' : lang === 'es' ? 'Boost Likes TikTok' : 'TikTok Likes Boost';
+  const youtubeViewsText = lang === 'fr' ? 'Boost Vues YouTube' : lang === 'de' ? 'YouTube Views Boost' : lang === 'es' ? 'Boost Vistas YouTube' : 'YouTube Views Boost';
+  const linkedinFollowersText = lang === 'fr' ? 'Abonnés LinkedIn' : lang === 'de' ? 'LinkedIn Follower' : lang === 'es' ? 'Seguidores LinkedIn' : 'LinkedIn Followers';
 
   return (
     <footer className="w-full border-t border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-900">
@@ -74,6 +76,22 @@ export default function Footer({ lang }: FooterProps) {
                   className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                 >
                   {tiktokLikesText}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={`/${lang}/youtube-v`}
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                >
+                  {youtubeViewsText}
+                </a>
+              </li>
+              <li>
+                <a 
+                  href={`/${lang}/linkedin-f`}
+                  className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
+                >
+                  {linkedinFollowersText}
                 </a>
               </li>
               <li>
