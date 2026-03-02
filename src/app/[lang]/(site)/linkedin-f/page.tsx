@@ -8,7 +8,7 @@ import { useCurrency } from '@/contexts/CurrencyContext';
 import Image from 'next/image';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
 
-const GoalSelectionModal = dynamic(() => import('@/components/GoalSelectionModal'), { ssr: false });
+import GoalSelectionModal from '@/components/GoalSelectionModal';
 const PaymentModal = dynamic(() => import('@/components/PaymentModal'), { ssr: false });
 const OrderSuccessModal = dynamic(() => import('@/components/OrderSuccessModal'), { ssr: false });
 const ChatWidget = dynamic(() => import('@/components/ChatWidget'), { ssr: false });

@@ -22,6 +22,7 @@ interface GoalSelectionModalProps {
   serviceType?: 'followers' | 'likes' | 'views';
   language?: 'en' | 'fr' | 'de' | 'es';
   currency?: SupportedCurrency;
+  prefetchedGoals?: FollowerGoal[];
 }
 
 export default function GoalSelectionModal({
@@ -33,6 +34,7 @@ export default function GoalSelectionModal({
   serviceType = 'followers',
   language = 'en',
   currency = 'eur',
+  prefetchedGoals,
 }: GoalSelectionModalProps) {
   const { currency: detectedCurrency } = useCurrency();
   const activeCurrency = currency || detectedCurrency;
@@ -102,6 +104,122 @@ export default function GoalSelectionModal({
   };
 
   const t = text[language];
+
+  // Platform-specific accent colors
+  const platformColors = {
+    instagram: {
+      accent: 'from-purple-500 to-pink-500',
+      accentSolid: 'bg-purple-500',
+      accentBorder: 'border-purple-500',
+      accentBg: 'bg-purple-500/10',
+      accentBorderLight: 'border-purple-500/30',
+      accentShadow: 'shadow-purple-500/20',
+      accentText: 'from-purple-400 to-pink-400',
+      accentGradientBg: 'from-purple-500/20 to-pink-500/20',
+      accentGradientBtn: 'from-purple-600 via-pink-600 to-purple-600 hover:from-purple-500 hover:via-pink-500 hover:to-purple-500',
+      accentBtnShadow: 'shadow-purple-500/25 hover:shadow-purple-500/40',
+      orb1: 'bg-purple-600/20',
+      orb2: 'bg-indigo-600/20',
+      spinner: 'border-purple-500',
+      hoverText: 'group-hover:text-purple-300',
+      sliderGradient: 'rgb(168 85 247)',
+      sliderGradientEnd: 'rgb(236 72 153)',
+      avatarGradient: 'from-purple-500 via-pink-500 to-orange-400',
+      avatarShadow: 'shadow-purple-500/30',
+      headerBadgeBg: 'from-purple-500/20 to-pink-500/20',
+      headerBadgeBorder: 'border-purple-500/30',
+    },
+    tiktok: {
+      accent: 'from-cyan-500 to-teal-500',
+      accentSolid: 'bg-cyan-500',
+      accentBorder: 'border-cyan-500',
+      accentBg: 'bg-cyan-500/10',
+      accentBorderLight: 'border-cyan-500/30',
+      accentShadow: 'shadow-cyan-500/20',
+      accentText: 'from-cyan-400 to-teal-400',
+      accentGradientBg: 'from-cyan-500/20 to-teal-500/20',
+      accentGradientBtn: 'from-cyan-600 via-teal-600 to-cyan-600 hover:from-cyan-500 hover:via-teal-500 hover:to-cyan-500',
+      accentBtnShadow: 'shadow-cyan-500/25 hover:shadow-cyan-500/40',
+      orb1: 'bg-cyan-600/20',
+      orb2: 'bg-teal-600/20',
+      spinner: 'border-cyan-500',
+      hoverText: 'group-hover:text-cyan-300',
+      sliderGradient: 'rgb(6 182 212)',
+      sliderGradientEnd: 'rgb(20 184 166)',
+      avatarGradient: 'from-cyan-500 via-teal-500 to-green-400',
+      avatarShadow: 'shadow-cyan-500/30',
+      headerBadgeBg: 'from-cyan-500/20 to-teal-500/20',
+      headerBadgeBorder: 'border-cyan-500/30',
+    },
+    twitter: {
+      accent: 'from-gray-500 to-gray-700',
+      accentSolid: 'bg-gray-500',
+      accentBorder: 'border-gray-500',
+      accentBg: 'bg-gray-500/10',
+      accentBorderLight: 'border-gray-500/30',
+      accentShadow: 'shadow-gray-500/20',
+      accentText: 'from-gray-300 to-gray-400',
+      accentGradientBg: 'from-gray-500/20 to-gray-700/20',
+      accentGradientBtn: 'from-gray-600 via-gray-700 to-gray-600 hover:from-gray-500 hover:via-gray-600 hover:to-gray-500',
+      accentBtnShadow: 'shadow-gray-500/25 hover:shadow-gray-500/40',
+      orb1: 'bg-gray-600/20',
+      orb2: 'bg-gray-700/20',
+      spinner: 'border-gray-500',
+      hoverText: 'group-hover:text-gray-300',
+      sliderGradient: 'rgb(107 114 128)',
+      sliderGradientEnd: 'rgb(75 85 99)',
+      avatarGradient: 'from-gray-500 via-gray-600 to-gray-700',
+      avatarShadow: 'shadow-gray-500/30',
+      headerBadgeBg: 'from-gray-500/20 to-gray-700/20',
+      headerBadgeBorder: 'border-gray-500/30',
+    },
+    youtube: {
+      accent: 'from-red-500 to-rose-500',
+      accentSolid: 'bg-red-500',
+      accentBorder: 'border-red-500',
+      accentBg: 'bg-red-500/10',
+      accentBorderLight: 'border-red-500/30',
+      accentShadow: 'shadow-red-500/20',
+      accentText: 'from-red-400 to-rose-400',
+      accentGradientBg: 'from-red-500/20 to-rose-500/20',
+      accentGradientBtn: 'from-red-600 via-rose-600 to-red-600 hover:from-red-500 hover:via-rose-500 hover:to-red-500',
+      accentBtnShadow: 'shadow-red-500/25 hover:shadow-red-500/40',
+      orb1: 'bg-red-600/20',
+      orb2: 'bg-rose-600/20',
+      spinner: 'border-red-500',
+      hoverText: 'group-hover:text-red-300',
+      sliderGradient: 'rgb(239 68 68)',
+      sliderGradientEnd: 'rgb(244 63 94)',
+      avatarGradient: 'from-red-500 via-rose-500 to-orange-400',
+      avatarShadow: 'shadow-red-500/30',
+      headerBadgeBg: 'from-red-500/20 to-rose-500/20',
+      headerBadgeBorder: 'border-red-500/30',
+    },
+    linkedin: {
+      accent: 'from-[#0A66C2] to-blue-500',
+      accentSolid: 'bg-[#0A66C2]',
+      accentBorder: 'border-[#0A66C2]',
+      accentBg: 'bg-[#0A66C2]/10',
+      accentBorderLight: 'border-[#0A66C2]/30',
+      accentShadow: 'shadow-blue-500/20',
+      accentText: 'from-blue-400 to-sky-400',
+      accentGradientBg: 'from-[#0A66C2]/20 to-blue-500/20',
+      accentGradientBtn: 'from-[#0A66C2] via-blue-600 to-[#0A66C2] hover:from-blue-600 hover:via-blue-500 hover:to-blue-600',
+      accentBtnShadow: 'shadow-blue-500/25 hover:shadow-blue-500/40',
+      orb1: 'bg-blue-600/20',
+      orb2: 'bg-sky-600/20',
+      spinner: 'border-[#0A66C2]',
+      hoverText: 'group-hover:text-blue-300',
+      sliderGradient: 'rgb(10 102 194)',
+      sliderGradientEnd: 'rgb(59 130 246)',
+      avatarGradient: 'from-[#0A66C2] via-blue-500 to-sky-400',
+      avatarShadow: 'shadow-blue-500/30',
+      headerBadgeBg: 'from-[#0A66C2]/20 to-blue-500/20',
+      headerBadgeBorder: 'border-[#0A66C2]/30',
+    },
+  };
+
+  const c = platformColors[platform];
 
   // Calculate custom price based on followers using real pricing data
   const calculateCustomPrice = (followers: number): number => {
@@ -190,8 +308,18 @@ export default function GoalSelectionModal({
     return pricePoints[pricePoints.length - 1].price;
   };
 
-  // Fetch pricing from API
+  // Use prefetched goals if available
   useEffect(() => {
+    if (prefetchedGoals && prefetchedGoals.length > 0) {
+      setGoals(prefetchedGoals);
+      setIsLoading(false);
+    }
+  }, [prefetchedGoals]);
+
+  // Fetch pricing from API (runs immediately on mount, not waiting for isOpen)
+  useEffect(() => {
+    if (prefetchedGoals && prefetchedGoals.length > 0) return;
+
     const fetchPricing = async () => {
       try {
         const response = await fetch('/api/admin/pricing');
@@ -238,16 +366,13 @@ export default function GoalSelectionModal({
         }
       } catch (error) {
         console.error('Error fetching pricing:', error);
-        // Keep default empty state if API fails
       } finally {
         setIsLoading(false);
       }
     };
 
-    if (isOpen) {
-      fetchPricing();
-    }
-  }, [isOpen, platform, serviceType]);
+    fetchPricing();
+  }, [platform, serviceType]);
 
   // Handle animations
   useEffect(() => {
@@ -336,13 +461,9 @@ export default function GoalSelectionModal({
     }
   };
 
-  if (!shouldRender) {
-    return null;
-  }
-
   return (
     <div
-      className="fixed inset-0 z-50 overflow-y-auto"
+      className={`fixed inset-0 z-50 overflow-y-auto ${!shouldRender ? 'pointer-events-none invisible' : ''}`}
       aria-labelledby="modal-title"
       role="dialog"
       aria-modal="true"
@@ -366,8 +487,8 @@ export default function GoalSelectionModal({
           onClick={(e) => e.stopPropagation()}
         >
           {/* Decorative gradient orbs */}
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className={`absolute -top-40 -right-40 w-80 h-80 ${c.orb1} rounded-full blur-3xl pointer-events-none`} />
+          <div className={`absolute -bottom-40 -left-40 w-80 h-80 ${c.orb2} rounded-full blur-3xl pointer-events-none`} />
           
           {/* Close Button */}
           <button
@@ -381,12 +502,12 @@ export default function GoalSelectionModal({
           <div className="relative p-8">
             {/* Header with username badge */}
             <div className="text-center mb-8">
-              <div className="inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-500/30 rounded-2xl mb-6 backdrop-blur-sm">
-                <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400 flex items-center justify-center shadow-lg shadow-purple-500/30">
+              <div className={`inline-flex items-center gap-3 px-5 py-3 bg-gradient-to-r ${c.headerBadgeBg} border ${c.headerBadgeBorder} rounded-2xl mb-6 backdrop-blur-sm`}>
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${c.avatarGradient} flex items-center justify-center shadow-lg ${c.avatarShadow}`}>
                   <span className="text-white text-xl font-bold">{username.charAt(0).toUpperCase()}</span>
                 </div>
                 <div className="text-left">
-                  <div className="text-xs text-gray-400 uppercase tracking-wider">Account</div>
+                  <div className="text-xs text-gray-400 uppercase tracking-wider">{serviceType === 'views' ? (language === 'fr' ? 'Vidéo' : language === 'de' ? 'Video' : language === 'es' ? 'Video' : 'Video') : (language === 'fr' ? 'Compte' : language === 'de' ? 'Konto' : language === 'es' ? 'Cuenta' : 'Account')}</div>
                   <div className="text-lg font-bold text-white">@{username}</div>
                 </div>
               </div>
@@ -402,7 +523,7 @@ export default function GoalSelectionModal({
             {isLoading ? (
               <div className="flex justify-center items-center py-12">
                 <div className="flex items-center gap-3">
-                  <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+                  <div className={`w-6 h-6 border-2 ${c.spinner} border-t-transparent rounded-full animate-spin`} />
                   <span className="text-gray-400">Loading...</span>
                 </div>
               </div>
@@ -418,13 +539,13 @@ export default function GoalSelectionModal({
                   onClick={() => handleGoalSelect(goal)}
                   className={`relative p-4 rounded-2xl border transition-all duration-300 group ${
                     selectedGoal?.followers === goal.followers
-                      ? 'border-purple-500 bg-purple-500/10 shadow-lg shadow-purple-500/20 scale-[1.02]'
+                      ? `${c.accentBorder} ${c.accentBg} shadow-lg ${c.accentShadow} scale-[1.02]`
                       : 'border-gray-700/50 bg-gray-800/30 hover:border-gray-600 hover:bg-gray-800/50'
                   }`}
                 >
                   {goal.popular && (
                     <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap uppercase tracking-wider shadow-lg shadow-purple-500/30">
+                      <span className={`bg-gradient-to-r ${c.accent} text-white text-[10px] font-bold px-3 py-1 rounded-full whitespace-nowrap uppercase tracking-wider shadow-lg ${c.accentShadow}`}>
                         {t.mostPopular}
                       </span>
                     </div>
@@ -433,10 +554,10 @@ export default function GoalSelectionModal({
                     <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-[10px] font-bold mb-2">
                       <span>-{goal.discount}%</span>
                     </div>
-                    <div className="text-2xl font-black text-white mb-1 group-hover:text-purple-300 transition-colors">
-                      +{goal.followers.toLocaleString()} {serviceType === 'views' ? 'views' : serviceType === 'likes' ? 'likes' : language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
+                    <div className={`text-2xl font-black text-white mb-1 ${c.hoverText} transition-colors`}>
+                      +{goal.followers.toLocaleString()} {serviceType === 'views' ? (language === 'fr' ? 'vues' : 'views') : serviceType === 'likes' ? (language === 'fr' ? 'likes' : 'likes') : language === 'fr' ? 'abonnés' : language === 'de' ? 'Follower' : 'followers'}
                     </div>
-                    <div className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    <div className={`text-xl font-bold bg-gradient-to-r ${c.accentText} bg-clip-text text-transparent`}>
                       {formatPrice(goal.price, activeCurrency)}
                     </div>
                     <div className="text-xs text-gray-500 line-through">
@@ -445,7 +566,7 @@ export default function GoalSelectionModal({
                   </div>
                   {/* Selection indicator */}
                   {selectedGoal?.followers === goal.followers && (
-                    <div className="absolute top-2 right-2 w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                    <div className={`absolute top-2 right-2 w-5 h-5 rounded-full ${c.accentSolid} flex items-center justify-center`}>
                       <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                       </svg>
@@ -459,17 +580,17 @@ export default function GoalSelectionModal({
                 onClick={() => handleGoalSelect({ followers: 0, price: 0, originalPrice: 0, discount: 50 })}
                 className={`relative p-4 rounded-2xl border transition-all duration-300 col-span-2 sm:col-span-4 group ${
                   showCustomSlider
-                    ? 'border-purple-500 bg-purple-500/10'
+                    ? `${c.accentBorder} ${c.accentBg}`
                     : 'border-gray-700/50 bg-gray-800/30 hover:border-gray-600 hover:bg-gray-800/50'
                 }`}
               >
                 <div className="flex items-center justify-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${c.accent} flex items-center justify-center`}>
                     <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
                     </svg>
                   </div>
-                  <span className="text-lg font-bold text-white group-hover:text-purple-300 transition-colors">
+                  <span className={`text-lg font-bold text-white ${c.hoverText} transition-colors`}>
                     {t.custom}
                   </span>
                 </div>
@@ -479,16 +600,16 @@ export default function GoalSelectionModal({
 
             {/* Custom Slider */}
             {showCustomSlider && (
-              <div className="mb-6 p-6 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-2xl border border-purple-500/30 backdrop-blur-sm">
+              <div className={`mb-6 p-6 bg-gradient-to-br ${c.accentGradientBg} rounded-2xl border ${c.accentBorderLight} backdrop-blur-sm`}>
                 <div className="flex items-center justify-between mb-6">
                   <div>
                     <h3 className="text-xl font-bold text-white">
                       {customFollowers.toLocaleString()}
                     </h3>
-                    <p className="text-sm text-gray-400">{serviceType === 'views' ? 'views' : serviceType === 'likes' ? 'likes' : 'followers'}</p>
+                    <p className="text-sm text-gray-400">{serviceType === 'views' ? (language === 'fr' ? 'vues' : 'views') : serviceType === 'likes' ? (language === 'fr' ? 'likes' : 'likes') : (language === 'fr' ? 'abonnés' : 'followers')}</p>
                   </div>
                   <div className="text-right">
-                    <div className="text-3xl font-black bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+                    <div className={`text-3xl font-black bg-gradient-to-r ${c.accentText} bg-clip-text text-transparent`}>
                       {formatPrice(convertPrice(calculateCustomPrice(customFollowers), activeCurrency).price, activeCurrency)}
                     </div>
                   </div>
@@ -503,7 +624,7 @@ export default function GoalSelectionModal({
                   onChange={(e) => handleCustomFollowersChange(parseInt(e.target.value))}
                   className="w-full h-2 rounded-full appearance-none cursor-pointer slider bg-gray-700"
                   style={{
-                    background: `linear-gradient(to right, rgb(168 85 247) 0%, rgb(236 72 153) ${((customFollowers - 100) / (50000 - 100)) * 100}%, rgb(55 65 81) ${((customFollowers - 100) / (50000 - 100)) * 100}%, rgb(55 65 81) 100%)`
+                    background: `linear-gradient(to right, ${c.sliderGradient} 0%, ${c.sliderGradientEnd} ${((customFollowers - 100) / (50000 - 100)) * 100}%, rgb(55 65 81) ${((customFollowers - 100) / (50000 - 100)) * 100}%, rgb(55 65 81) 100%)`
                   }}
                 />
                 
@@ -527,7 +648,7 @@ export default function GoalSelectionModal({
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t.emailPlaceholder}
-                className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500 transition-all"
+                className={`w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-white placeholder-gray-500 transition-all`}
               />
             </div>
 
@@ -535,7 +656,7 @@ export default function GoalSelectionModal({
             <button
               onClick={handleContinue}
               disabled={!selectedGoal || !email}
-              className="w-full relative overflow-hidden bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 hover:from-purple-500 hover:via-pink-500 hover:to-purple-500 disabled:from-gray-600 disabled:via-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-[1.02] disabled:shadow-none disabled:hover:scale-100 group"
+              className={`w-full relative overflow-hidden bg-gradient-to-r ${c.accentGradientBtn} disabled:from-gray-600 disabled:via-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 shadow-lg ${c.accentBtnShadow} hover:scale-[1.02] disabled:shadow-none disabled:hover:scale-100 group`}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
                 {t.continue}
