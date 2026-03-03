@@ -127,7 +127,7 @@ export async function GET(request: Request) {
       console.log('[scraper] - posts count:', response.posts.length);
       
       return NextResponse.json(response);
-    } catch (apifyError: any) {
+    } catch (apifyError: unknown) {
       console.error('Erreur Apify:', apifyError);
       console.error('[scraper] ❌ APIFY ERROR CAUGHT:');
       console.error('[scraper] Error type:', apifyError instanceof Error ? apifyError.constructor.name : typeof apifyError);
@@ -138,12 +138,16 @@ export async function GET(request: Request) {
         console.error('[scraper] Error details:', JSON.stringify(apifyError, Object.getOwnPropertyNames(apifyError), 2));
       }
       
+      const errorDetails = apifyError instanceof Error 
+        ? apifyError.message 
+        : String(apifyError);
+      
       return NextResponse.json(
-        { error: 'Failed to fetch', details: apifyError.message || apifyError.toString() },
+        { error: 'Failed to fetch', details: errorDetails },
         { status: 500 }
       );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Erreur Apify:', error);
     console.error('[scraper] ❌ OUTER ERROR CAUGHT:');
     console.error('[scraper] Error type:', error instanceof Error ? error.constructor.name : typeof error);
@@ -154,8 +158,12 @@ export async function GET(request: Request) {
       console.error('[scraper] Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
     }
     
+    const errorDetails = error instanceof Error 
+      ? error.message 
+      : String(error);
+    
     return NextResponse.json(
-      { error: 'Failed to fetch', details: error.message || error.toString() },
+      { error: 'Failed to fetch', details: errorDetails },
       { status: 500 }
     );
   }
