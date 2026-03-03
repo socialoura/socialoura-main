@@ -7,6 +7,13 @@ import useUpsellStore from '@/store/useUpsellStore';
 
 export default function ProfileSearchInput() {
   const [inputValue, setInputValue] = useState('');
+  const [searchResult, setSearchResult] = useState<{
+    username: string;
+    fullName: string;
+    avatarUrl: string;
+    followersCount: number;
+    posts: Array<{ id: string; shortCode: string; imageUrl: string; caption: string; likesCount: number; commentsCount: number }>;
+  } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const {
@@ -39,9 +46,11 @@ export default function ProfileSearchInput() {
         throw new Error(data.error || 'Profil introuvable');
       }
 
-      setProfile({
-        avatarUrl: data.avatarUrl,
+      // Store search result instead of immediately setting profile
+      setSearchResult({
+        username: data.username,
         fullName: data.fullName,
+        avatarUrl: data.avatarUrl,
         followersCount: data.followersCount,
         posts: data.posts,
       });
@@ -50,6 +59,18 @@ export default function ProfileSearchInput() {
     } finally {
       setProfileLoading(false);
     }
+  };
+
+  const handleSelectProfile = () => {
+    if (!searchResult) return;
+    
+    setUsername(searchResult.username);
+    setProfile({
+      avatarUrl: searchResult.avatarUrl,
+      fullName: searchResult.fullName,
+      followersCount: searchResult.followersCount,
+      posts: searchResult.posts,
+    });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -124,6 +145,45 @@ export default function ProfileSearchInput() {
                 <div className="h-3 bg-gray-100 rounded-lg w-24 animate-pulse" />
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Search result - Profile card */}
+      <AnimatePresence>
+        {searchResult && !isProfileLoading && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="mt-6"
+          >
+            <button
+              onClick={handleSelectProfile}
+              className="w-full bg-white rounded-2xl shadow-sm border border-gray-200 hover:border-fuchsia-500 hover:shadow-md p-5 flex items-center gap-4 transition-all group"
+            >
+              <div className="w-14 h-14 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 ring-2 ring-transparent group-hover:ring-fuchsia-500 transition-all">
+                <img
+                  src={searchResult.avatarUrl}
+                  alt={searchResult.username}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="font-semibold text-gray-900 group-hover:text-fuchsia-600 transition-colors">
+                  @{searchResult.username}
+                </p>
+                <p className="text-sm text-gray-500">{searchResult.fullName}</p>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  {searchResult.followersCount.toLocaleString()} abonnés
+                </p>
+              </div>
+              <div className="flex-shrink-0">
+                <svg className="w-5 h-5 text-gray-400 group-hover:text-fuchsia-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
