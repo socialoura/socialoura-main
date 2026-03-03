@@ -1,21 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ApifyClient } from 'apify-client';
 
-const MOCK_POSTS = [
-  { id: '1', shortCode: 'abc1', imageUrl: 'https://picsum.photos/seed/ig1/400/400', caption: 'Post 1', likesCount: 234, commentsCount: 12 },
-  { id: '2', shortCode: 'abc2', imageUrl: 'https://picsum.photos/seed/ig2/400/400', caption: 'Post 2', likesCount: 567, commentsCount: 34 },
-  { id: '3', shortCode: 'abc3', imageUrl: 'https://picsum.photos/seed/ig3/400/400', caption: 'Post 3', likesCount: 890, commentsCount: 56 },
-  { id: '4', shortCode: 'abc4', imageUrl: 'https://picsum.photos/seed/ig4/400/400', caption: 'Post 4', likesCount: 123, commentsCount: 8 },
-  { id: '5', shortCode: 'abc5', imageUrl: 'https://picsum.photos/seed/ig5/400/400', caption: 'Post 5', likesCount: 456, commentsCount: 23 },
-  { id: '6', shortCode: 'abc6', imageUrl: 'https://picsum.photos/seed/ig6/400/400', caption: 'Post 6', likesCount: 789, commentsCount: 45 },
-  { id: '7', shortCode: 'abc7', imageUrl: 'https://picsum.photos/seed/ig7/400/400', caption: 'Post 7', likesCount: 321, commentsCount: 19 },
-  { id: '8', shortCode: 'abc8', imageUrl: 'https://picsum.photos/seed/ig8/400/400', caption: 'Post 8', likesCount: 654, commentsCount: 37 },
-  { id: '9', shortCode: 'abc9', imageUrl: 'https://picsum.photos/seed/ig9/400/400', caption: 'Post 9', likesCount: 987, commentsCount: 61 },
-  { id: '10', shortCode: 'abc10', imageUrl: 'https://picsum.photos/seed/ig10/400/400', caption: 'Post 10', likesCount: 210, commentsCount: 15 },
-  { id: '11', shortCode: 'abc11', imageUrl: 'https://picsum.photos/seed/ig11/400/400', caption: 'Post 11', likesCount: 543, commentsCount: 29 },
-  { id: '12', shortCode: 'abc12', imageUrl: 'https://picsum.photos/seed/ig12/400/400', caption: 'Post 12', likesCount: 876, commentsCount: 52 },
-];
-
 export async function GET(request: Request) {
   console.log('[scraper] ========== NEW REQUEST ==========');
   
@@ -37,44 +22,40 @@ export async function GET(request: Request) {
     console.log('Démarrage du scraping pour:', cleanUsername);
 
     const apiToken = process.env.APIFY_API_TOKEN;
-    const isDevelopment = process.env.NODE_ENV === 'development';
     
     console.log('[scraper] Step 3: Environment check');
     console.log('[scraper] - NODE_ENV:', process.env.NODE_ENV);
-    console.log('[scraper] - isDevelopment:', isDevelopment);
     console.log('[scraper] - Has APIFY_API_TOKEN:', !!apiToken);
     console.log('[scraper] - APIFY_API_TOKEN length:', apiToken?.length || 0);
 
-    // Always use mock data in development, or if no API token
-    if (isDevelopment || !apiToken) {
-      console.log('[scraper] Step 4: Using MOCK DATA (dev mode or no token)');
-      const mockResponse = {
-        username: cleanUsername,
-        fullName: cleanUsername,
-        avatarUrl: `https://ui-avatars.com/api/?name=${cleanUsername}&background=random&size=200`,
-        followersCount: 12500,
-        posts: MOCK_POSTS,
-      };
-      console.log('[scraper] Returning mock response:', JSON.stringify(mockResponse, null, 2));
-      return NextResponse.json(mockResponse);
+    if (!apiToken) {
+      console.error('[scraper] ERROR: APIFY_API_TOKEN not configured');
+      return NextResponse.json(
+        { error: 'API configuration error - APIFY_API_TOKEN missing' },
+        { status: 500 }
+      );
     }
 
-    // Production: Use Apify
-    console.log('[scraper] Step 4: PRODUCTION MODE - Using Apify');
-    try {
-      console.log('[scraper] Step 5: Creating Apify client');
-      const client = new ApifyClient({ token: apiToken });
-      console.log('[scraper] Apify client created successfully');
+    // Use Apify
+    console.log('[scraper] Step 4: Creating Apify client');
+    const client = new ApifyClient({ token: apiToken });
+    console.log('[scraper] Apify client created successfully');
 
-      console.log('[scraper] Step 6: Calling Apify actor with username:', cleanUsername);
+    try {
+      console.log('[scraper] Step 5: Calling Apify actor apify/instagram-profile-scraper');
+      console.log('[scraper] Actor input:', { usernames: [cleanUsername], resultsLimit: 12 });
+      
       const run = await client.actor('apify/instagram-profile-scraper').call({
         usernames: [cleanUsername],
         resultsLimit: 12,
       });
-      console.log('[scraper] Apify run completed. Run ID:', run.id);
+      
+      console.log('[scraper] Apify run completed successfully');
+      console.log('[scraper] Run ID:', run.id);
+      console.log('[scraper] Run status:', run.status);
       console.log('[scraper] Default dataset ID:', run.defaultDatasetId);
 
-      console.log('[scraper] Step 7: Fetching results from dataset');
+      console.log('[scraper] Step 6: Fetching results from dataset');
       const { items } = await client.dataset(run.defaultDatasetId).listItems();
       console.log('[scraper] Items fetched. Count:', items?.length || 0);
 
@@ -84,35 +65,67 @@ export async function GET(request: Request) {
       }
 
       const profile = items[0] as Record<string, unknown>;
-      console.log('[scraper] Step 8: Processing profile data');
+      console.log('[scraper] Step 7: Processing profile data');
       console.log('[scraper] Profile keys:', Object.keys(profile));
       console.log('[scraper] Profile username:', profile.username);
       console.log('[scraper] Profile fullName:', profile.fullName);
       console.log('[scraper] Profile followersCount:', profile.followersCount);
-      console.log('[scraper] Profile latestPosts count:', (profile.latestPosts as Array<unknown>)?.length || 0);
+      console.log('[scraper] Profile profilePicUrl:', profile.profilePicUrl);
+      console.log('[scraper] Profile profilePicUrlHD:', profile.profilePicUrlHD);
+      
+      const latestPostsRaw = profile.latestPosts as Array<Record<string, unknown>> | undefined;
+      console.log('[scraper] Profile latestPosts count:', latestPostsRaw?.length || 0);
+
+      if (latestPostsRaw && latestPostsRaw.length > 0) {
+        console.log('[scraper] First post keys:', Object.keys(latestPostsRaw[0]));
+        console.log('[scraper] First post sample:', {
+          id: latestPostsRaw[0].id,
+          shortCode: latestPostsRaw[0].shortCode,
+          displayUrl: latestPostsRaw[0].displayUrl,
+          videoUrl: latestPostsRaw[0].videoUrl,
+          type: latestPostsRaw[0].type,
+        });
+      }
 
       // Extract posts from the profile data
-      const latestPosts = ((profile.latestPosts as Array<Record<string, unknown>>) || []).slice(0, 12).map((post, index) => ({
-        id: (post.id as string) || String(index),
-        shortCode: (post.shortCode as string) || '',
-        imageUrl: (post.displayUrl as string) || (post.url as string) || '',
-        caption: ((post.caption as string) || '').slice(0, 100),
-        likesCount: (post.likesCount as number) || 0,
-        commentsCount: (post.commentsCount as number) || 0,
-      }));
+      const latestPosts = (latestPostsRaw || []).slice(0, 12).map((post, index) => {
+        const imageUrl = (post.displayUrl as string) || 
+                        (post.videoUrl as string) || 
+                        (post.url as string) || 
+                        '';
+        
+        return {
+          id: (post.id as string) || String(index),
+          shortCode: (post.shortCode as string) || '',
+          imageUrl,
+          caption: ((post.caption as string) || '').slice(0, 100),
+          likesCount: (post.likesCount as number) || 0,
+          commentsCount: (post.commentsCount as number) || 0,
+        };
+      });
       
-      console.log('[scraper] Step 9: Extracted posts count:', latestPosts.length);
+      console.log('[scraper] Step 8: Extracted posts count:', latestPosts.length);
+
+      const avatarUrl = (profile.profilePicUrlHD as string) || 
+                       (profile.profilePicUrl as string) || 
+                       '';
 
       const response = {
         username: (profile.username as string) || cleanUsername,
         fullName: (profile.fullName as string) || cleanUsername,
-        avatarUrl: (profile.profilePicUrl as string) || (profile.profilePicUrlHD as string) || '',
+        avatarUrl,
         followersCount: (profile.followersCount as number) || 0,
-        posts: latestPosts.length > 0 ? latestPosts : MOCK_POSTS,
+        posts: latestPosts,
       };
       
-      console.log('[scraper] Step 10: Returning Apify response');
-      console.log('[scraper] Response summary - username:', response.username, 'posts:', response.posts.length);
+      console.log('[scraper] Step 9: Returning Apify response');
+      console.log('[scraper] Response summary:');
+      console.log('[scraper] - username:', response.username);
+      console.log('[scraper] - fullName:', response.fullName);
+      console.log('[scraper] - avatarUrl:', response.avatarUrl ? 'present' : 'missing');
+      console.log('[scraper] - followersCount:', response.followersCount);
+      console.log('[scraper] - posts count:', response.posts.length);
+      
       return NextResponse.json(response);
     } catch (apifyError) {
       console.error('Erreur Apify:', apifyError);
@@ -120,17 +133,15 @@ export async function GET(request: Request) {
       console.error('[scraper] Error type:', apifyError instanceof Error ? apifyError.constructor.name : typeof apifyError);
       console.error('[scraper] Error message:', apifyError instanceof Error ? apifyError.message : String(apifyError));
       console.error('[scraper] Error stack:', apifyError instanceof Error ? apifyError.stack : 'No stack trace');
-      console.error('[scraper] Full error object:', JSON.stringify(apifyError, null, 2));
       
-      console.log('[scraper] Falling back to MOCK DATA due to Apify error');
-      const fallbackResponse = {
-        username: cleanUsername,
-        fullName: cleanUsername,
-        avatarUrl: `https://ui-avatars.com/api/?name=${cleanUsername}&background=random&size=200`,
-        followersCount: 12500,
-        posts: MOCK_POSTS,
-      };
-      return NextResponse.json(fallbackResponse);
+      if (apifyError && typeof apifyError === 'object') {
+        console.error('[scraper] Error details:', JSON.stringify(apifyError, Object.getOwnPropertyNames(apifyError), 2));
+      }
+      
+      return NextResponse.json(
+        { error: 'Failed to fetch Instagram profile from Apify' },
+        { status: 500 }
+      );
     }
   } catch (error) {
     console.error('Erreur Apify:', error);
@@ -138,7 +149,10 @@ export async function GET(request: Request) {
     console.error('[scraper] Error type:', error instanceof Error ? error.constructor.name : typeof error);
     console.error('[scraper] Error message:', error instanceof Error ? error.message : String(error));
     console.error('[scraper] Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    console.error('[scraper] Full error object:', JSON.stringify(error, null, 2));
+    
+    if (error && typeof error === 'object') {
+      console.error('[scraper] Error details:', JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+    }
     
     return NextResponse.json(
       { error: 'Failed to fetch Instagram profile' },
