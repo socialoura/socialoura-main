@@ -83,6 +83,7 @@ function PaymentForm({
       close: 'Close',
       securePayment: 'Secure payment powered by Stripe',
       paymentFailed: 'Payment Failed',
+      emailSent: 'A confirmation email has been sent to your inbox.',
       initializingPayment: 'Initializing secure payment...',
       paymentSetupFailed: 'Payment Setup Failed',
       termsLabel: 'I have read and accept the',
@@ -108,6 +109,7 @@ function PaymentForm({
       close: 'Fermer',
       securePayment: 'Paiement sécurisé par Stripe',
       paymentFailed: 'Paiement Échoué',
+      emailSent: 'Un e-mail de confirmation a été envoyé dans votre boîte de réception.',
       initializingPayment: 'Initialisation du paiement sécurisé...',
       paymentSetupFailed: 'Échec de la Configuration',
       termsLabel: 'J\'ai lu et j\'accepte les',
@@ -133,6 +135,7 @@ function PaymentForm({
       close: 'Schließen',
       securePayment: 'Sichere Zahlung über Stripe',
       paymentFailed: 'Zahlung fehlgeschlagen',
+      emailSent: 'Eine Bestätigungs-E-Mail wurde an Ihr Postfach gesendet.',
       initializingPayment: 'Sichere Zahlung wird initialisiert...',
       paymentSetupFailed: 'Einrichtung fehlgeschlagen',
       termsLabel: 'Ich habe die',
@@ -158,6 +161,7 @@ function PaymentForm({
       close: 'Cerrar',
       securePayment: 'Pago seguro con Stripe',
       paymentFailed: 'Pago fallido',
+      emailSent: 'Se ha enviado un correo de confirmación a su bandeja de entrada.',
       initializingPayment: 'Inicializando pago seguro...',
       paymentSetupFailed: 'Error de configuración',
       termsLabel: 'He leído y acepto los',
@@ -220,7 +224,7 @@ function PaymentForm({
 
           let conversionCallbackFired = false;
           gtagFn('event', 'conversion', {
-            send_to: 'AW-17985942356/mF8GCIbql4EcENTmroBD',
+            send_to: 'AW-17985942356/o6JlCPTc6oEcENTmroBD',
             value: amount / 100,
             currency: currency.toUpperCase(),
             transaction_id: paymentIntent.id,
@@ -292,10 +296,6 @@ function PaymentForm({
             console.error('Failed to send Discord notification:', discordError);
           }
           
-          // Redirect to order confirmation page after a short delay
-          setTimeout(() => {
-            window.location.href = `/${language}/order-confirmation`;
-          }, 1500);
         }
         
         if (onSuccess) {
@@ -354,9 +354,15 @@ function PaymentForm({
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             {t.paymentComplete}
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="text-gray-600 dark:text-gray-400 mb-3">
             {t.paymentSuccessDesc}
           </p>
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 mb-6">
+            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">{t.emailSent}</span>
+          </div>
           {paymentIntentId && (
             <p className="text-xs text-gray-500 dark:text-gray-500 mb-6 font-mono bg-gray-100 dark:bg-gray-700/50 px-4 py-2 rounded-lg inline-block">
               {t.paymentId} {paymentIntentId}
@@ -428,7 +434,7 @@ function PaymentForm({
                       // Google Ads Conversion Tracking
                       if (typeof window !== 'undefined' && (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag) {
                         (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag('event', 'conversion', {
-                          'send_to': 'AW-17985942356/mF8GCIbql4EcENTmroBD',
+                          'send_to': 'AW-17985942356/o6JlCPTc6oEcENTmroBD',
                           'value': amount / 100,
                           'currency': currency.toUpperCase(),
                           'transaction_id': paymentIntent.id
@@ -439,7 +445,6 @@ function PaymentForm({
                         sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
                         try { await fetch('/api/send-confirmation-email', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, customerName: orderDetails.username, orderDetails: { platform: orderDetails.platform, followers: orderDetails.followers, username: orderDetails.username, price: priceFormatted, orderId, date: orderDate }, language }) }); } catch (e) { console.error('Failed to send confirmation email:', e); }
                         try { await fetch('/api/discord-notification', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderId, email, username: orderDetails.username, platform: orderDetails.platform, followers: orderDetails.followers, price: priceFormatted, promoCode: promoCode || undefined }) }); } catch (e) { console.error('Failed to send Discord notification:', e); }
-                        setTimeout(() => { window.location.href = `/${language}/order-confirmation`; }, 1500);
                       }
                       if (onSuccess) { onSuccess(paymentIntent.id, email); }
                     }

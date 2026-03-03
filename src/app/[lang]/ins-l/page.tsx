@@ -42,7 +42,7 @@ export default function InstagramLikesSelectPage({ params }: PageProps) {
     }
 
     gtag('event', 'conversion', {
-      send_to: 'AW-17985942356/mF8GCIbql4EcENTmroBD',
+      send_to: 'AW-17985942356/o6JlCPTc6oEcENTmroBD',
       value: 1.0,
       currency: 'EUR',
       event_callback: () => router.push(href),
