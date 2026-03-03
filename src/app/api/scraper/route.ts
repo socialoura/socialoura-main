@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { ApifyClient } from 'apify-client';
 
 const MOCK_POSTS = [
@@ -16,15 +16,16 @@ const MOCK_POSTS = [
   { id: '12', shortCode: 'abc12', imageUrl: 'https://picsum.photos/seed/ig12/400/400', caption: 'Post 12', likesCount: 876, commentsCount: 52 },
 ];
 
-export async function POST(request: NextRequest) {
+export async function GET(request: Request) {
   console.log('[scraper] ========== NEW REQUEST ==========');
   
   try {
-    console.log('[scraper] Step 1: Parsing request body');
-    const body = await request.json();
-    console.log('[scraper] Request body:', JSON.stringify(body));
+    console.log('[scraper] Step 1: Parsing URL parameters');
+    const { searchParams } = new URL(request.url);
+    const username = searchParams.get('username');
     
-    const { username } = body;
+    console.log('[scraper] URL:', request.url);
+    console.log('[scraper] Username parameter:', username);
 
     if (!username || typeof username !== 'string') {
       console.log('[scraper] ERROR: Invalid username:', username);
@@ -33,6 +34,7 @@ export async function POST(request: NextRequest) {
 
     const cleanUsername = username.replace('@', '').trim();
     console.log('[scraper] Step 2: Cleaned username:', cleanUsername);
+    console.log('Démarrage du scraping pour:', cleanUsername);
 
     const apiToken = process.env.APIFY_API_TOKEN;
     const isDevelopment = process.env.NODE_ENV === 'development';
@@ -113,6 +115,7 @@ export async function POST(request: NextRequest) {
       console.log('[scraper] Response summary - username:', response.username, 'posts:', response.posts.length);
       return NextResponse.json(response);
     } catch (apifyError) {
+      console.error('Erreur Apify:', apifyError);
       console.error('[scraper] ❌ APIFY ERROR CAUGHT:');
       console.error('[scraper] Error type:', apifyError instanceof Error ? apifyError.constructor.name : typeof apifyError);
       console.error('[scraper] Error message:', apifyError instanceof Error ? apifyError.message : String(apifyError));
@@ -130,6 +133,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(fallbackResponse);
     }
   } catch (error) {
+    console.error('Erreur Apify:', error);
     console.error('[scraper] ❌ OUTER ERROR CAUGHT:');
     console.error('[scraper] Error type:', error instanceof Error ? error.constructor.name : typeof error);
     console.error('[scraper] Error message:', error instanceof Error ? error.message : String(error));

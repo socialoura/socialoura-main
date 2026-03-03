@@ -34,11 +34,7 @@ export default function ProfileSearchInput() {
     setProfileError(null);
 
     try {
-      const res = await fetch('/api/scraper', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username: clean }),
-      });
+      const res = await fetch(`/api/scraper?username=${encodeURIComponent(clean)}`);
 
       const data = await res.json();
 
