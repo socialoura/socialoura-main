@@ -515,6 +515,10 @@ export default function LinkedInFollowersPage({ params }: PageProps) {
 
             {/* Username Input & CTA Button */}
             <div className="max-w-xl mx-auto">
+              {/* Helper text */}
+              <p className="text-sm text-gray-400 mb-3 text-center">
+                {lang === 'fr' ? 'Entrez votre URL de profil LinkedIn ci-dessous' : lang === 'de' ? 'Geben Sie Ihre LinkedIn-Profil-URL unten ein' : lang === 'es' ? 'Ingrese la URL de su perfil de LinkedIn a continuación' : 'Enter your LinkedIn profile URL below'}
+              </p>
               <div className="flex flex-col sm:flex-row gap-3 p-2 bg-gray-800/50 backdrop-blur-sm rounded-2xl border border-gray-700/50">
                 <div className="flex-1 relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500">
