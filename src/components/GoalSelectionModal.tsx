@@ -372,7 +372,8 @@ export default function GoalSelectionModal({
     };
 
     fetchPricing();
-  }, [platform, serviceType]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [platform, serviceType, activeCurrency, prefetchedGoals]);
 
   // Handle animations
   useEffect(() => {

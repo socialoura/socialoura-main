@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Search, AlertCircle, Instagram, ChevronRight, Users, ShieldCheck, CheckCircle2 } from 'lucide-react';
 import useUpsellStore from '@/store/useUpsellStore';
@@ -179,10 +180,13 @@ export default function ProfileSearchInput() {
             >
               <div className="relative">
                 <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-gray-700 ring-2 ring-transparent group-hover:ring-pink-500/50 transition-all duration-300">
-                  <img
+                  <Image
                     src={searchResult.avatarUrl}
                     alt={searchResult.username}
+                    width={80}
+                    height={80}
                     className="w-full h-full object-cover"
+                    unoptimized
                   />
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 flex items-center justify-center shadow-lg">

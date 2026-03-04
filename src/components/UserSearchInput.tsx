@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import Image from 'next/image';
 import { Search, Check, Loader2 } from 'lucide-react';
 
 interface UserProfile {
@@ -46,32 +47,16 @@ export default function UserSearchInput({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
+  const getDefaultAvatar = (username: string) => {
+    const colors = ['#8B5CF6', '#EC4899', '#F97316', '#10B981', '#3B82F6'];
+    const colorIndex = username.charCodeAt(0) % colors.length;
+    const firstLetter = username.charAt(0).toUpperCase();
+    return `data:image/svg+xml,${encodeURIComponent(
+      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${colors[colorIndex]}"/><text x="50" y="50" font-size="45" text-anchor="middle" dy=".35em" fill="white" font-family="system-ui">${firstLetter}</text></svg>`
+    )}`;
+  };
 
-    if (inputValue.trim().length > 0) {
-      setIsSearching(true);
-      setError(null);
-
-      debounceTimerRef.current = setTimeout(() => {
-        searchUser(inputValue.trim());
-      }, 500);
-    } else {
-      setFoundProfile(null);
-      setShowDropdown(false);
-      setIsSearching(false);
-    }
-
-    return () => {
-      if (debounceTimerRef.current) {
-        clearTimeout(debounceTimerRef.current);
-      }
-    };
-  }, [inputValue]);
-
-  const searchUser = async (username: string) => {
+  const searchUser = useCallback(async (username: string) => {
     try {
       const response = await fetch(`/api/user/search?username=${encodeURIComponent(username)}&platform=${platform}`);
       
@@ -102,16 +87,32 @@ export default function UserSearchInput({
     } finally {
       setIsSearching(false);
     }
-  };
+  }, [platform]);
 
-  const getDefaultAvatar = (username: string) => {
-    const colors = ['#8B5CF6', '#EC4899', '#F97316', '#10B981', '#3B82F6'];
-    const colorIndex = username.charCodeAt(0) % colors.length;
-    const firstLetter = username.charAt(0).toUpperCase();
-    return `data:image/svg+xml,${encodeURIComponent(
-      `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="${colors[colorIndex]}"/><text x="50" y="50" font-size="45" text-anchor="middle" dy=".35em" fill="white" font-family="system-ui">${firstLetter}</text></svg>`
-    )}`;
-  };
+  useEffect(() => {
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    if (inputValue.trim().length > 0) {
+      setIsSearching(true);
+      setError(null);
+
+      debounceTimerRef.current = setTimeout(() => {
+        searchUser(inputValue.trim());
+      }, 500);
+    } else {
+      setFoundProfile(null);
+      setShowDropdown(false);
+      setIsSearching(false);
+    }
+
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [inputValue, searchUser]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value.replace(/@/g, '');
@@ -180,10 +181,13 @@ export default function UserSearchInput({
           <div className="p-4">
             <div className="flex items-center gap-3 mb-3">
               <div className="relative">
-                <img
+                <Image
                   src={foundProfile.profilePicture}
                   alt={foundProfile.username}
+                  width={48}
+                  height={48}
                   className="w-12 h-12 rounded-full object-cover border-2 border-gray-700"
+                  unoptimized
                 />
                 <div className="absolute -bottom-1 -right-1 w-5 h-5 bg-gray-800 rounded-full flex items-center justify-center border border-gray-700">
                   {getPlatformIcon()}

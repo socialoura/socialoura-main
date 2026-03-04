@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { Instagram, Heart, Eye, UserPlus, Tv, ExternalLink } from 'lucide-react';
 
 interface FunnelDistribution {
@@ -42,7 +43,7 @@ export default function FunnelOrderSummary({ funnelData }: FunnelOrderSummaryPro
       <div className="flex items-center gap-3 pb-3 border-b border-gray-200 dark:border-gray-700">
         <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 flex-shrink-0">
           {funnelData.avatarUrl ? (
-            <img src={funnelData.avatarUrl} alt={funnelData.username} className="w-full h-full object-cover" />
+            <Image src={funnelData.avatarUrl} alt={funnelData.username} width={40} height={40} className="w-full h-full object-cover" unoptimized />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Instagram className="w-5 h-5 text-gray-400" />
@@ -91,7 +92,7 @@ export default function FunnelOrderSummary({ funnelData }: FunnelOrderSummaryPro
                     {/* Post thumbnail */}
                     <div className="aspect-square relative">
                       {dist.imageUrl ? (
-                        <img src={dist.imageUrl} alt={`Post ${dist.shortcode}`} className="w-full h-full object-cover" />
+                        <Image src={dist.imageUrl} alt={`Post ${dist.shortcode}`} fill className="object-cover" unoptimized />
                       ) : (
                         <div className="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
                           <Instagram className="w-6 h-6 text-gray-400" />

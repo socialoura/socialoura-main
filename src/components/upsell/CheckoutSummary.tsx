@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
-import { Mail, Loader2, Lock, ArrowLeft, Instagram, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { Mail, Loader2, Lock, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import StripeProvider from '@/components/StripeProvider';
 import useUpsellStore from '@/store/useUpsellStore';
@@ -17,7 +17,7 @@ interface CheckoutPaymentFormProps {
   onPaymentIntentId?: (id: string) => void;
 }
 
-function CheckoutPaymentForm({ amount, currency, email, acceptedTerms, onSuccess, onPaymentIntentId }: CheckoutPaymentFormProps) {
+function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymentIntentId }: CheckoutPaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -202,10 +202,13 @@ export default function CheckoutSummary() {
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl overflow-hidden shadow-2xl">
             <div className="p-6 bg-gray-900/50 border-b border-gray-800 flex items-center gap-4">
               <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-800 ring-2 ring-pink-500/50 flex-shrink-0">
-                <img
+                <Image
                   src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=96`}
                   alt={username}
+                  width={96}
+                  height={96}
                   className="w-full h-full object-cover"
+                  unoptimized
                 />
               </div>
               <div>

@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, ArrowLeft, ArrowRight, Heart, Eye } from 'lucide-react';
 import useUpsellStore from '@/store/useUpsellStore';
@@ -103,10 +104,12 @@ export default function PostGrid() {
                   : 'ring-1 ring-gray-800 hover:ring-gray-600'
               }`}
             >
-              <img
+              <Image
                 src={post.imageUrl}
                 alt={post.caption || `Post ${index + 1}`}
-                className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                fill
+                className="object-cover transition-transform duration-500 group-hover:scale-110"
+                unoptimized
               />
 
               {/* Overlay */}

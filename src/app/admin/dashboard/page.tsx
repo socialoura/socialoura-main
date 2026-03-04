@@ -167,7 +167,7 @@ export default function AdminDashboard() {
   // Funnel pricing states
   type FunnelTier = { qty: number; price: number; oldPrice: number; bonus: number };
   const [funnelPricing, setFunnelPricing] = useState<Record<string, FunnelTier[]>>({});
-  const [funnelPricingLoaded, setFunnelPricingLoaded] = useState(false);
+  const [, setFunnelPricingLoaded] = useState(false);
   const [isSavingFunnel, setIsSavingFunnel] = useState(false);
   const [funnelMessage, setFunnelMessage] = useState('');
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);

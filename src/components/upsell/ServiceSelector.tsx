@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { X, UserPlus, Heart, Eye, Tv, Sparkles, ArrowRight } from 'lucide-react';
 import useUpsellStore, { ServiceType } from '@/store/useUpsellStore';
@@ -64,8 +65,6 @@ export default function ServiceSelector() {
     username,
     avatarUrl,
     fullName,
-    selectedService,
-    quantity,
     setSelectedService,
     setQuantity,
     setPrice,
@@ -73,7 +72,7 @@ export default function ServiceSelector() {
   } = useUpsellStore();
 
   const [SERVICES, setServices] = useState<ServiceConfig[]>(() => buildServices(DEFAULT_PRICING));
-  const [pricingLoaded, setPricingLoaded] = useState(false);
+  const [, setPricingLoaded] = useState(false);
 
   useEffect(() => {
     const fetchPricing = async () => {
@@ -135,8 +134,7 @@ export default function ServiceSelector() {
 
   const { total: totalPrice, savings } = calculateTotal();
   const hasActiveServices = SERVICES.some(s => sliderValues[s.type] > 0);
-  const activeCount = SERVICES.filter(s => sliderValues[s.type] > 0).length;
-
+  
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col h-full">
       {/* Profile Header Block */}
@@ -144,10 +142,13 @@ export default function ServiceSelector() {
         <div className="flex items-center gap-4">
           <div className="relative">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-gray-800 ring-2 ring-pink-500/50">
-              <img
+              <Image
                 src={avatarUrl || `https://ui-avatars.com/api/?name=${username}&background=random&size=64`}
                 alt={username}
+                width={64}
+                height={64}
                 className="w-full h-full object-cover"
+                unoptimized
               />
             </div>
           </div>
