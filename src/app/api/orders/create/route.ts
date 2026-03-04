@@ -33,10 +33,11 @@ async function getCountryFromIP(request: NextRequest): Promise<string | null> {
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, email, platform, followers, amount, paymentId } = await request.json();
+    const body = await request.json();
+    const { username, email, platform, followers, amount, paymentId, orderSource, funnelData } = body;
 
     // Validate required fields
-    if (!username || !platform || !followers || !amount || !paymentId) {
+    if (!username || !amount || !paymentId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -46,10 +47,38 @@ export async function POST(request: NextRequest) {
     // Detect client country from IP
     const country = await getCountryFromIP(request);
 
-    // Insert the order
+    // Determine order source
+    const source = orderSource === 'APP_FUNNEL' ? 'APP_FUNNEL' : 'CLASSIC';
+
+    if (source === 'APP_FUNNEL') {
+      // Funnel order: store structured funnel_data as JSONB
+      // funnelData is expected to contain: { username, avatarUrl, services: [...] }
+      const funnelJson = JSON.stringify(funnelData || {});
+      const totalFollowers = funnelData?.services?.reduce((sum: number, s: { quantity: number }) => sum + s.quantity, 0) || 0;
+
+      const result = await sql`
+        INSERT INTO orders (username, email, platform, followers, amount, price, payment_id, payment_intent_id, status, payment_status, country, order_source, funnel_data) 
+        VALUES (${username}, ${email || null}, ${'instagram'}, ${totalFollowers}, ${amount}, ${amount}, ${paymentId}, ${paymentId}, 'completed', 'completed', ${country}, ${source}, ${funnelJson}::jsonb)
+        RETURNING id
+      `;
+
+      return NextResponse.json({
+        success: true,
+        orderId: result.rows[0].id
+      });
+    }
+
+    // Classic order: backward-compatible insert (no funnel_data)
+    if (!platform || !followers) {
+      return NextResponse.json(
+        { error: 'Missing required fields for classic order' },
+        { status: 400 }
+      );
+    }
+
     const result = await sql`
-      INSERT INTO orders (username, email, platform, followers, amount, price, payment_id, payment_intent_id, status, payment_status, country) 
-      VALUES (${username}, ${email || null}, ${platform}, ${followers}, ${amount}, ${amount}, ${paymentId}, ${paymentId}, 'completed', 'completed', ${country})
+      INSERT INTO orders (username, email, platform, followers, amount, price, payment_id, payment_intent_id, status, payment_status, country, order_source) 
+      VALUES (${username}, ${email || null}, ${platform}, ${followers}, ${amount}, ${amount}, ${paymentId}, ${paymentId}, 'completed', 'completed', ${country}, 'CLASSIC')
       RETURNING id
     `;
 

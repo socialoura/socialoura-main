@@ -6,6 +6,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import "./globals.css";
 
+const GA_AW_ID = process.env.NEXT_PUBLIC_GA_AW_ID || '';
+
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
@@ -33,23 +35,27 @@ export default function RootLayout({
         <link rel="preconnect" href="https://www.googletagmanager.com" />
         <link rel="dns-prefetch" href="https://www.google-analytics.com" />
         <link rel="dns-prefetch" href="https://api.stripe.com" />
-        {/* Google Ads Global Site Tag */}
-        <Script
-          src="https://www.googletagmanager.com/gtag/js?id=AW-17985942356"
-          strategy="afterInteractive"
-        />
-        <Script
-          id="google-ads-gtag"
-          strategy="afterInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('js', new Date());
-              gtag('config', 'AW-17985942356');
-            `,
-          }}
-        />
+        {/* Google Ads Global Site Tag — ID from NEXT_PUBLIC_GA_AW_ID */}
+        {GA_AW_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_AW_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script
+              id="google-ads-gtag"
+              strategy="afterInteractive"
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', '${GA_AW_ID}');
+                `,
+              }}
+            />
+          </>
+        )}
         <Script
           id="theme-init"
           strategy="beforeInteractive"

@@ -5,6 +5,7 @@ import { PaymentElement, ExpressCheckoutElement, useStripe, useElements } from '
 import { X, Loader2, CheckCircle, AlertCircle, Tag } from 'lucide-react';
 import StripeProvider from './StripeProvider';
 import { formatCentsToDisplay, type SupportedCurrency } from '@/lib/pricing';
+import { trackGoogleAdsPurchase } from '@/lib/gtag';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -218,27 +219,12 @@ function PaymentForm({
           day: 'numeric',
         });
         
-        // Google Ads Conversion Tracking
-        if (typeof window !== 'undefined' && (window as typeof window & { gtag?: (...args: unknown[]) => void }).gtag) {
-          const gtagFn = (window as typeof window & { gtag: (...args: unknown[]) => void }).gtag;
-
-          let conversionCallbackFired = false;
-          gtagFn('event', 'conversion', {
-            send_to: 'AW-17985942356/o6JlCPTc6oEcENTmroBD',
-            value: amount / 100,
-            currency: currency.toUpperCase(),
-            transaction_id: paymentIntent.id,
-            event_callback: () => {
-              conversionCallbackFired = true;
-            },
-          });
-
-          setTimeout(() => {
-            if (!conversionCallbackFired) {
-              // no-op: best-effort; don't block purchase flow
-            }
-          }, 800);
-        }
+        // Google Ads Conversion Tracking (dynamic via env vars)
+        trackGoogleAdsPurchase({
+          value: amount / 100,
+          currency: currency.toUpperCase(),
+          transactionId: paymentIntent.id,
+        });
 
         // Send confirmation email and Discord notification
         if (email && orderDetails) {

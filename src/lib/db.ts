@@ -52,6 +52,8 @@ export async function initDatabase() {
       await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS notes TEXT DEFAULT ''`;
       await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS cost DECIMAL(10, 2) DEFAULT 0`;
       await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS country VARCHAR(100) DEFAULT NULL`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS order_source VARCHAR(50) DEFAULT 'CLASSIC'`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS funnel_data JSONB DEFAULT NULL`;
     } catch (e) {
       // Columns might already exist
       console.log('Columns may already exist:', e);
@@ -142,6 +144,35 @@ export async function setPricing(data: { instagram: Array<{ followers: string; p
   }
 }
 
+export async function getFunnelPricing() {
+  try {
+    const result = await sql`
+      SELECT data FROM pricing WHERE id = 'funnel-pricing'
+    `;
+    if (result.rows.length > 0) {
+      return result.rows[0].data;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching funnel pricing:', error);
+    return null;
+  }
+}
+
+export async function setFunnelPricing(data: Record<string, Array<{ qty: number; price: number; oldPrice: number; bonus: number }>>) {
+  try {
+    await sql`
+      INSERT INTO pricing (id, data) 
+      VALUES ('funnel-pricing', ${JSON.stringify(data)}::jsonb)
+      ON CONFLICT (id) 
+      DO UPDATE SET data = ${JSON.stringify(data)}::jsonb, updated_at = CURRENT_TIMESTAMP
+    `;
+  } catch (error) {
+    console.error('Error setting funnel pricing:', error);
+    throw error;
+  }
+}
+
 export async function getAdminByUsername(username: string) {
   try {
     const result = await sql`
@@ -207,7 +238,11 @@ export async function updateOrderPaymentStatus(payment_intent_id: string, status
 export async function getAllOrders() {
   try {
     const result = await sql`
-      SELECT * FROM orders ORDER BY created_at DESC
+      SELECT *,
+        COUNT(*) OVER (PARTITION BY LOWER(COALESCE(email, username))) AS customer_total_orders,
+        ROW_NUMBER() OVER (PARTITION BY LOWER(COALESCE(email, username)) ORDER BY created_at ASC) AS customer_order_number
+      FROM orders 
+      ORDER BY created_at DESC
     `;
     return result.rows;
   } catch (error) {

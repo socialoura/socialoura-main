@@ -1,5 +1,35 @@
 import { NextResponse } from 'next/server';
 
+// Utility function to fetch and encode image to Base64
+async function fetchAndEncodeImage(url: string): Promise<string> {
+  try {
+    console.log('[fetchAndEncodeImage] Fetching:', url.substring(0, 100) + '...');
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+      },
+    });
+
+    if (!response.ok) {
+      console.error('[fetchAndEncodeImage] Failed to fetch:', response.status);
+      throw new Error(`Failed to fetch image: ${response.status}`);
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    const base64 = buffer.toString('base64');
+    const dataUri = `data:${contentType};base64,${base64}`;
+    
+    console.log('[fetchAndEncodeImage] Success - encoded to Base64 (length:', base64.length, ')');
+    return dataUri;
+  } catch (error) {
+    console.error('[fetchAndEncodeImage] Error:', error);
+    // Return a placeholder on error
+    return `https://ui-avatars.com/api/?name=User&background=random&size=200`;
+  }
+}
+
 export async function GET(request: Request) {
   console.log('[scraper] ========== NEW REQUEST ==========');
   
@@ -117,19 +147,35 @@ export async function GET(request: Request) {
                        (profile.profilePicUrl as string) || 
                        '';
 
+      console.log('[scraper] Step 8: Encoding images to Base64...');
+      
+      // Encode avatar and all post images to Base64 in parallel
+      const [avatarBase64, ...postsBase64] = await Promise.all([
+        fetchAndEncodeImage(avatarUrl),
+        ...latestPosts.map(post => fetchAndEncodeImage(post.imageUrl))
+      ]);
+
+      console.log('[scraper] Step 9: All images encoded successfully');
+
+      // Update posts with Base64 encoded images
+      const postsWithBase64 = latestPosts.map((post, index) => ({
+        ...post,
+        imageUrl: postsBase64[index],
+      }));
+
       const response = {
         username: (profile.username as string) || cleanUsername,
         fullName: (profile.fullName as string) || cleanUsername,
-        avatarUrl,
+        avatarUrl: avatarBase64,
         followersCount: (profile.followersCount as number) || 0,
-        posts: latestPosts,
+        posts: postsWithBase64,
       };
       
-      console.log('[scraper] Step 8: Returning Apify response');
+      console.log('[scraper] Step 10: Returning response with Base64 images');
       console.log('[scraper] Response summary:');
       console.log('[scraper] - username:', response.username);
       console.log('[scraper] - fullName:', response.fullName);
-      console.log('[scraper] - avatarUrl:', response.avatarUrl ? 'present' : 'missing');
+      console.log('[scraper] - avatarUrl:', response.avatarUrl.substring(0, 50) + '...');
       console.log('[scraper] - followersCount:', response.followersCount);
       console.log('[scraper] - posts count:', response.posts.length);
       

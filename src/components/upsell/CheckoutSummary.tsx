@@ -1,226 +1,448 @@
 'use client';
 
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, ChevronRight, Mail, Shield, X, Loader2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
+import { Mail, Loader2, Lock, ArrowLeft, Instagram, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import StripeProvider from '@/components/StripeProvider';
 import useUpsellStore from '@/store/useUpsellStore';
+import { trackGoogleAdsPurchase } from '@/lib/gtag';
+
+interface CheckoutPaymentFormProps {
+  amount: number;
+  currency: string;
+  email: string;
+  acceptedTerms: boolean;
+  onSuccess?: () => void;
+  onPaymentIntentId?: (id: string) => void;
+}
+
+function CheckoutPaymentForm({ amount, currency, email, acceptedTerms, onSuccess, onPaymentIntentId }: CheckoutPaymentFormProps) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [elementsReady, setElementsReady] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!stripe || !elements || isProcessing || !acceptedTerms) return;
+
+    setIsProcessing(true);
+    setPaymentError(null);
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/payment-success`,
+        receipt_email: email,
+      },
+      redirect: 'if_required',
+    });
+
+    if (error) {
+      setPaymentError(error.message || 'Une erreur est survenue lors du paiement.');
+      setIsProcessing(false);
+      return;
+    }
+
+    if (paymentIntent && paymentIntent.status === 'succeeded') {
+      onPaymentIntentId?.(paymentIntent.id);
+      onSuccess?.();
+    }
+    setIsProcessing(false);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="relative min-h-[180px] bg-gray-900 rounded-2xl p-5 border border-gray-800 shadow-inner">
+        {!elementsReady && (
+          <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-gray-900 z-10">
+            <div className="text-center flex flex-col items-center">
+              <Loader2 className="animate-spin h-8 w-8 text-pink-500 mb-3" />
+              <p className="text-sm text-gray-400 font-medium">Connexion sécurisée en cours...</p>
+            </div>
+          </div>
+        )}
+        <div className={elementsReady ? 'opacity-100 transition-opacity duration-500' : 'opacity-0'}>
+          <PaymentElement
+            onReady={() => setElementsReady(true)}
+            options={{
+              layout: 'tabs',
+              wallets: { applePay: 'never', googlePay: 'never' },
+            }}
+          />
+        </div>
+      </div>
+
+      {paymentError && (
+        <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 flex items-start gap-3">
+          <div className="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center flex-shrink-0">
+            <Lock className="w-4 h-4 text-red-400" />
+          </div>
+          <p className="text-sm text-red-400 mt-1">{paymentError}</p>
+        </div>
+      )}
+
+      <button
+        type="submit"
+        disabled={!stripe || !elements || isProcessing || !elementsReady || !acceptedTerms}
+        className="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 px-8 py-4 text-lg font-black text-white shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/40 transition-all duration-300 uppercase tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+      >
+        {isProcessing ? (
+          <>
+            <Loader2 className="w-6 h-6 animate-spin relative z-10" />
+            <span className="relative z-10">Traitement en cours...</span>
+          </>
+        ) : (
+          <>
+            <Lock className="w-5 h-5 relative z-10 group-hover:-translate-y-0.5 transition-transform" />
+            <span className="relative z-10">Payer {(amount / 100).toFixed(2)} €</span>
+          </>
+        )}
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      </button>
+
+      <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+        <ShieldCheck className="w-4 h-4 text-emerald-500" />
+        <span>Paiement chiffré et sécurisé par Stripe</span>
+      </div>
+    </form>
+  );
+}
 
 export default function CheckoutSummary() {
   const {
+    selectedServices,
+    selectedPostsByService,
     selectedService,
     quantity,
     price,
-    selectedPostIds,
+    avatarUrl,
     username,
     email,
     setEmail,
     acceptedTerms,
     setAcceptedTerms,
-    isCheckoutOpen,
-    setIsCheckoutOpen,
+    currentStep,
+    prevStep,
   } = useUpsellStore();
 
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [isPaymentLoading, setIsPaymentLoading] = useState(false);
+  const [paymentInitError, setPaymentInitError] = useState<string | null>(null);
+  const [orderSaved, setOrderSaved] = useState(false);
+  const paymentIntentIdRef = useRef<string | null>(null);
 
-  const serviceLabel = selectedService === 'followers' ? 'abonnés' : selectedService === 'likes' ? 'likes' : 'vues';
-  const isDistributable = selectedService === 'likes' || selectedService === 'views';
-  const canProceed = isDistributable ? selectedPostIds.length > 0 : true;
-  const oldPrice = (price * 1.3).toFixed(2);
-
-  const handlePay = async () => {
-    if (!email || !acceptedTerms) return;
-    setIsProcessing(true);
-    // Placeholder for payment integration
-    await new Promise((r) => setTimeout(r, 2000));
-    setIsProcessing(false);
-    alert('Paiement simulé avec succès ! Intégrez ici votre PaymentModal Stripe.');
+  const serviceLabelMap: Record<string, string> = {
+    followers: 'abonnés',
+    likes: 'likes',
+    views: 'vues',
+    'story-views': 'vues de story',
   };
 
-  if (!selectedService) return null;
+  const services = Object.values(selectedServices || {});
+  const fallbackServices = selectedService
+    ? [{ type: selectedService, quantity, price }]
+    : [];
+  const activeServices = services.length > 0 ? services : fallbackServices;
+
+  const totalPrice = activeServices.reduce((sum, service) => sum + service.price, 0);
+  const oldPrice = (totalPrice * 1.3).toFixed(2);
+
+  useEffect(() => {
+    if (currentStep !== 3) return;
+
+    const createPaymentIntent = async () => {
+      const amountInCents = Math.max(1, Math.round(totalPrice * 100));
+      setIsPaymentLoading(true);
+      setPaymentInitError(null);
+
+      try {
+        const response = await fetch('/api/create-payment-intent', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ amount: amountInCents, currency: 'eur' }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Impossible de créer le paiement Stripe');
+        }
+
+        setClientSecret(data.clientSecret);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'Erreur de paiement Stripe';
+        setPaymentInitError(message);
+      } finally {
+        setIsPaymentLoading(false);
+      }
+    };
+
+    createPaymentIntent();
+  }, [currentStep, totalPrice]);
+
+  if (activeServices.length === 0) return null;
 
   return (
-    <>
-      {/* Sticky bottom bar */}
-      <motion.div
-        initial={{ y: 100 }}
-        animate={{ y: 0 }}
-        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-        className="fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-100 shadow-[0_-4px_24px_rgba(0,0,0,0.08)]"
+    <div className="w-full max-w-5xl mx-auto pb-20">
+      <button
+        onClick={prevStep}
+        className="inline-flex items-center gap-2 text-gray-400 hover:text-pink-400 mb-8 transition-colors duration-200 text-sm font-medium"
       >
-        <div className="max-w-2xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-fuchsia-100 flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5 text-fuchsia-600" />
+        <ArrowLeft className="w-4 h-4" />
+        Retour à la sélection
+      </button>
+
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        {/* Left Column: Summary */}
+        <div className="lg:col-span-5 space-y-6">
+          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl overflow-hidden shadow-2xl">
+            <div className="p-6 bg-gray-900/50 border-b border-gray-800 flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-800 ring-2 ring-pink-500/50 flex-shrink-0">
+                <img
+                  src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=96`}
+                  alt={username}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div>
+                <p className="text-sm text-gray-400 font-medium">Commande pour</p>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <h3 className="text-xl font-bold text-white tracking-tight">@{username}</h3>
+                  <CheckCircle2 className="w-5 h-5 text-pink-500" />
+                </div>
+              </div>
             </div>
-            <div>
-              <p className="text-sm font-semibold text-gray-900">
-                {quantity.toLocaleString()} {serviceLabel}
-              </p>
-              <div className="flex items-center gap-2">
-                <span className="text-xs text-gray-400 line-through">{oldPrice} €</span>
-                <span className="text-sm font-bold text-fuchsia-600">{price.toFixed(2)} €</span>
+
+            <div className="p-6 space-y-4">
+              <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Détail des services</h4>
+              
+              {activeServices.map((service) => {
+                const label = serviceLabelMap[service.type];
+                const selectedPosts = selectedPostsByService[service.type] || [];
+                const isDistributable = service.type === 'likes' || service.type === 'views';
+
+                return (
+                  <div key={service.type} className="flex items-start justify-between p-4 rounded-xl bg-gray-900/50 border border-gray-800">
+                    <div>
+                      <span className="font-bold text-white text-lg block">{service.quantity.toLocaleString()} {label}</span>
+                      {isDistributable && selectedPosts.length > 0 && (
+                        <span className="text-xs font-medium text-pink-400 mt-1 inline-block bg-pink-500/10 px-2 py-0.5 rounded-full">
+                          Sur {selectedPosts.length} publication{selectedPosts.length > 1 ? 's' : ''}
+                        </span>
+                      )}
+                    </div>
+                    <span className="font-bold text-white">{service.price.toFixed(2)} €</span>
+                  </div>
+                );
+              })}
+            </div>
+
+            <div className="p-6 bg-gradient-to-br from-gray-900 to-gray-950 border-t border-gray-800">
+              <div className="flex justify-between items-end">
+                <div>
+                  <p className="text-sm text-gray-400 font-medium mb-1">Montant total</p>
+                  <p className="text-sm text-gray-500 line-through">{oldPrice} €</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-4xl font-black tracking-tight text-white">{totalPrice.toFixed(2)} €</span>
+                </div>
               </div>
             </div>
           </div>
 
-          <button
-            onClick={() => setIsCheckoutOpen(true)}
-            disabled={!canProceed}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 text-white font-semibold rounded-xl shadow-lg shadow-fuchsia-500/25 hover:shadow-xl disabled:shadow-none transition-all disabled:cursor-not-allowed"
-          >
-            Continuer
-            <ChevronRight className="w-4 h-4" />
-          </button>
+          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl">
+            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-pink-500" />
+              Garanties incluses
+            </h4>
+            <ul className="space-y-3">
+              {[
+                "Livraison 100% sécurisée",
+                "Comptes réels et actifs",
+                "Aucun mot de passe requis",
+                "Support client 24/7"
+              ].map((text, i) => (
+                <li key={i} className="flex items-center gap-3 text-sm text-gray-300 font-medium">
+                  <div className="w-5 h-5 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-pink-400" />
+                  </div>
+                  {text}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
 
-        {!canProceed && isDistributable && (
-          <div className="max-w-2xl mx-auto px-4 pb-3">
-            <p className="text-xs text-amber-600 text-center">
-              Sélectionnez au moins une publication pour continuer
-            </p>
-          </div>
-        )}
-      </motion.div>
+        {/* Right Column: Payment */}
+        <div className="lg:col-span-7">
+          <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 rounded-full blur-3xl" />
+            
+            <h2 className="text-2xl font-black text-white tracking-tight mb-8 relative z-10">Paiement sécurisé</h2>
 
-      {/* Checkout overlay */}
-      <AnimatePresence>
-        {isCheckoutOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
-          >
-            {/* Backdrop */}
-            <div
-              className="absolute inset-0 bg-black/40 backdrop-blur-sm"
-              onClick={() => setIsCheckoutOpen(false)}
-            />
-
-            {/* Panel */}
-            <motion.div
-              initial={{ y: '100%', opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: '100%', opacity: 0 }}
-              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-              className="relative w-full max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl p-6 sm:p-8 z-10"
-            >
-              <button
-                onClick={() => setIsCheckoutOpen(false)}
-                className="absolute top-4 right-4 p-2 rounded-full hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-400" />
-              </button>
-
-              <h3 className="text-xl font-bold text-gray-900 mb-1">Finaliser la commande</h3>
-              <p className="text-sm text-gray-500 mb-6">
-                {quantity.toLocaleString()} {serviceLabel} pour @{username}
-              </p>
-
-              {/* Order summary */}
-              <div className="bg-gray-50 rounded-2xl p-4 mb-6">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm text-gray-600">
-                    {quantity.toLocaleString()} {serviceLabel}
-                  </span>
-                  <span className="text-sm font-semibold text-gray-900">{price.toFixed(2)} €</span>
-                </div>
-                {isDistributable && selectedPostIds.length > 0 && (
-                  <p className="text-xs text-gray-400">
-                    Répartis sur {selectedPostIds.length} publication{selectedPostIds.length > 1 ? 's' : ''}
-                  </p>
-                )}
-                <div className="border-t border-gray-200 mt-3 pt-3 flex justify-between items-center">
-                  <span className="text-sm font-bold text-gray-900">Total</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm text-gray-400 line-through">{oldPrice} €</span>
-                    <span className="text-lg font-bold text-fuchsia-600">{price.toFixed(2)} €</span>
-                  </div>
-                </div>
-              </div>
-
+            <div className="space-y-8 relative z-10">
               {/* Email input */}
-              <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Adresse e-mail</label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <div>
+                <label className="block text-sm font-bold text-gray-300 mb-3 uppercase tracking-wider">Adresse e-mail pour le reçu</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-500 group-focus-within:text-pink-500 transition-colors" />
+                  </div>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="votre@email.com"
-                    className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-fuchsia-500/40 focus:border-fuchsia-500 transition-all"
+                    className="block w-full pl-12 pr-4 py-4 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 transition-all text-lg font-medium"
                   />
                 </div>
               </div>
 
-              {/* Terms */}
-              <div className="mb-6">
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    checked={acceptedTerms}
-                    onChange={(e) => setAcceptedTerms(e.target.checked)}
-                    className="mt-0.5 h-4 w-4 text-fuchsia-600 focus:ring-fuchsia-500 border-gray-300 rounded"
-                  />
-                  <span className="text-xs text-gray-500 group-hover:text-gray-700 transition-colors">
-                    J&apos;accepte les{' '}
-                    <a href="#" className="text-fuchsia-600 hover:underline font-medium">
-                      conditions générales de vente
-                    </a>{' '}
-                    et la{' '}
-                    <a href="#" className="text-fuchsia-600 hover:underline font-medium">
-                      politique de confidentialité
-                    </a>
-                    .
-                  </span>
-                </label>
-              </div>
+              <div className="w-full h-px bg-gray-800" />
 
-              {/* Pay button */}
-              <button
-                onClick={handlePay}
-                disabled={!email || !acceptedTerms || isProcessing}
-                className="w-full flex items-center justify-center gap-2 py-4 bg-gradient-to-r from-fuchsia-600 to-purple-600 hover:from-fuchsia-700 hover:to-purple-700 disabled:from-gray-300 disabled:to-gray-400 text-white font-bold rounded-xl shadow-lg shadow-fuchsia-500/25 hover:shadow-xl disabled:shadow-none transition-all disabled:cursor-not-allowed text-lg"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Traitement...
-                  </>
-                ) : (
-                  <>
-                    <Shield className="w-5 h-5" />
-                    Payer {price.toFixed(2)} €
-                  </>
+              {/* Stripe Elements */}
+              <div>
+                <label className="block text-sm font-bold text-gray-300 mb-4 uppercase tracking-wider">Informations de carte</label>
+                
+                {paymentInitError && (
+                  <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 mb-4">
+                    <p className="text-sm font-medium text-red-400">{paymentInitError}</p>
+                  </div>
                 )}
-              </button>
 
-              {/* Trust */}
-              <div className="flex items-center justify-center gap-4 mt-4 text-xs text-gray-400">
-                <span className="flex items-center gap-1">
-                  <svg className="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Paiement sécurisé
-                </span>
-                <span className="flex items-center gap-1">
-                  <svg className="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                  </svg>
-                  SSL sécurisé
-                </span>
-                <span className="flex items-center gap-1">
-                  <svg className="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  Service garanti
-                </span>
+                {isPaymentLoading && (
+                  <div className="flex flex-col items-center justify-center py-12 gap-4">
+                    <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+                    <p className="text-gray-400 font-medium">Préparation de l&apos;environnement sécurisé...</p>
+                  </div>
+                )}
+
+                {clientSecret && (
+                  <div className="mt-2">
+                    <StripeProvider clientSecret={clientSecret}>
+                      <CheckoutPaymentForm
+                        amount={Math.round(totalPrice * 100)}
+                        currency="eur"
+                        email={email}
+                        acceptedTerms={acceptedTerms}
+                        onPaymentIntentId={(id) => { paymentIntentIdRef.current = id; }}
+                        onSuccess={async () => {
+                          if (orderSaved) return;
+                          setOrderSaved(true);
+                          try {
+                            const { posts, selectedPostsByService } = useUpsellStore.getState();
+                            const postsMap = Object.fromEntries(posts.map(p => [p.id, p]));
+
+                            const funnelServices = activeServices.map((service) => {
+                              const isDistributable = service.type === 'likes' || service.type === 'views';
+                              const selectedPostIds = selectedPostsByService[service.type] || [];
+                              const qty = service.quantity;
+                              const perPost = selectedPostIds.length > 0 ? Math.floor(qty / selectedPostIds.length) : 0;
+                              const remainder = selectedPostIds.length > 0 ? qty % selectedPostIds.length : 0;
+
+                              return {
+                                type: service.type,
+                                quantity: service.quantity,
+                                price: service.price,
+                                ...(isDistributable && selectedPostIds.length > 0 ? {
+                                  distribution: selectedPostIds.map((postId, idx) => {
+                                    const post = postsMap[postId];
+                                    return {
+                                      postId,
+                                      shortcode: post?.shortCode || '',
+                                      imageUrl: post?.imageUrl || '',
+                                      quantityAllocated: perPost + (idx < remainder ? 1 : 0),
+                                    };
+                                  }),
+                                } : {}),
+                              };
+                            });
+
+                            const funnelData = {
+                              username,
+                              avatarUrl,
+                              services: funnelServices,
+                            };
+
+                            const orderRes = await fetch('/api/orders/create', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({
+                                username,
+                                email,
+                                amount: totalPrice,
+                                paymentId: paymentIntentIdRef.current || 'unknown',
+                                orderSource: 'APP_FUNNEL',
+                                funnelData,
+                              }),
+                            });
+                            const orderResult = await orderRes.json();
+
+                            try {
+                              await fetch('/api/discord-notification', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  orderSource: 'APP_FUNNEL',
+                                  orderId: String(orderResult.orderId || paymentIntentIdRef.current?.slice(-8).toUpperCase() || 'N/A'),
+                                  email,
+                                  username,
+                                  totalPrice: `${totalPrice.toFixed(2)} €`,
+                                  services: funnelServices,
+                                }),
+                              });
+                            } catch (discordErr) {
+                              console.error('Failed to send Discord notification:', discordErr);
+                            }
+
+                            trackGoogleAdsPurchase({
+                              value: totalPrice,
+                              currency: 'EUR',
+                              transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
+                            });
+                          } catch (err) {
+                            console.error('Failed to save order:', err);
+                          }
+                        }}
+                      />
+                    </StripeProvider>
+                  </div>
+                )}
               </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
+
+              {/* Terms */}
+              <label className="flex items-start gap-3 cursor-pointer group mt-6 p-4 rounded-xl hover:bg-gray-800/50 transition-colors">
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-0.5 h-5 w-5 text-pink-500 focus:ring-pink-500/50 border-gray-600 rounded bg-gray-900 shrink-0"
+                />
+                <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed">
+                  J&apos;accepte les{' '}
+                  <a href="#" className="text-white hover:text-pink-400 underline decoration-gray-600 hover:decoration-pink-400 transition-all font-medium">conditions générales de vente</a>{' '}
+                  et la{' '}
+                  <a href="#" className="text-white hover:text-pink-400 underline decoration-gray-600 hover:decoration-pink-400 transition-all font-medium">politique de confidentialité</a>.
+                </span>
+              </label>
+
+              {/* Payment methods */}
+              <div className="pt-8 mt-4 border-t border-gray-800 flex justify-center">
+                <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                  <Image src="/images/visa.svg" alt="Visa" width={40} height={20} className="h-6 w-auto" />
+                  <Image src="/images/mastercard.webp" alt="Mastercard" width={40} height={20} className="h-6 w-auto" />
+                  <Image src="/images/apple-pay.svg" alt="Apple Pay" width={40} height={20} className="h-6 w-auto" />
+                  <Image src="/images/google_pay.png" alt="Google Pay" width={40} height={20} className="h-6 w-auto" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

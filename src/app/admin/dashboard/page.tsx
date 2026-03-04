@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Trash2, Plus, Save, LogOut, Instagram, Music, AlertCircle, Settings, ShoppingCart, Eye, EyeOff, BarChart3, Search, Filter, MessageSquare, X, ChevronDown, Tag, Percent, Calendar, Hash } from 'lucide-react';
+import { Trash2, Plus, Save, LogOut, Instagram, Music, AlertCircle, Settings, ShoppingCart, Eye, EyeOff, BarChart3, Search, Filter, MessageSquare, X, ChevronDown, ChevronRight, Tag, Percent, Calendar, Hash, Zap } from 'lucide-react';
 import AnalyticsDashboard from '@/components/admin/AnalyticsDashboard';
+import FunnelOrderSummary from '@/components/admin/FunnelOrderSummary';
+import CustomerLoyaltyBadge from '@/components/CustomerLoyaltyBadge';
 
 interface Goal {
   followers: string;
@@ -35,6 +37,24 @@ interface Order {
   order_status?: string;
   notes?: string;
   country?: string;
+  order_source?: string;
+  customer_total_orders?: number;
+  customer_order_number?: number;
+  funnel_data?: {
+    username: string;
+    avatarUrl: string;
+    services: Array<{
+      type: string;
+      quantity: number;
+      price: number;
+      distribution?: Array<{
+        postId: string;
+        shortcode: string;
+        imageUrl: string;
+        quantityAllocated: number;
+      }>;
+    }>;
+  };
 }
 
 type OrderStatus = 'pending' | 'processing' | 'completed' | 'cancelled';
@@ -86,7 +106,7 @@ type PromoBarConfig = {
   size: 'sm' | 'md' | 'lg';
 };
 
-type TabType = 'pricing' | 'settings' | 'orders' | 'analytics' | 'promo';
+type TabType = 'pricing' | 'settings' | 'orders' | 'analytics' | 'promo' | 'funnel';
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -142,6 +162,14 @@ export default function AdminDashboard() {
   const [tempNotes, setTempNotes] = useState('');
   const [editingCost, setEditingCost] = useState<number | null>(null);
   const [tempCost, setTempCost] = useState('');
+  const [expandedOrderId, setExpandedOrderId] = useState<number | null>(null);
+
+  // Funnel pricing states
+  type FunnelTier = { qty: number; price: number; oldPrice: number; bonus: number };
+  const [funnelPricing, setFunnelPricing] = useState<Record<string, FunnelTier[]>>({});
+  const [funnelPricingLoaded, setFunnelPricingLoaded] = useState(false);
+  const [isSavingFunnel, setIsSavingFunnel] = useState(false);
+  const [funnelMessage, setFunnelMessage] = useState('');
   const [updatingOrderId, setUpdatingOrderId] = useState<number | null>(null);
 
   // Promo codes states
@@ -218,6 +246,8 @@ export default function AdminDashboard() {
       fetchPromoCodes();
       fetchPromoFieldEnabled();
       fetchPromoBarConfig();
+    } else if (activeTab === 'funnel') {
+      fetchFunnelPricing();
     } else {
       setIsLoading(false);
     }
@@ -372,6 +402,88 @@ export default function AdminDashboard() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const fetchFunnelPricing = async () => {
+    setIsLoading(true);
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/funnel-pricing', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setFunnelPricing(data);
+        setFunnelPricingLoaded(true);
+      }
+    } catch (error) {
+      console.error('Error fetching funnel pricing:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const saveFunnelPricing = async () => {
+    setIsSavingFunnel(true);
+    setFunnelMessage('');
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/funnel-pricing', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(funnelPricing),
+      });
+      if (response.ok) {
+        setFunnelMessage('Funnel pricing saved successfully!');
+      } else {
+        setFunnelMessage('Failed to save funnel pricing.');
+      }
+    } catch (error) {
+      console.error('Error saving funnel pricing:', error);
+      setFunnelMessage('Error saving funnel pricing.');
+    } finally {
+      setIsSavingFunnel(false);
+      setTimeout(() => setFunnelMessage(''), 3000);
+    }
+  };
+
+  const updateFunnelTier = (serviceType: string, tierIndex: number, field: keyof FunnelTier, value: number) => {
+    setFunnelPricing(prev => {
+      const updated = { ...prev };
+      const tiers = [...(updated[serviceType] || [])];
+      tiers[tierIndex] = { ...tiers[tierIndex], [field]: value };
+      updated[serviceType] = tiers;
+      return updated;
+    });
+  };
+
+  const addFunnelTier = (serviceType: string) => {
+    setFunnelPricing(prev => {
+      const updated = { ...prev };
+      const tiers = [...(updated[serviceType] || [])];
+      const lastTier = tiers[tiers.length - 1];
+      tiers.push({
+        qty: lastTier ? lastTier.qty * 2 : 100,
+        price: lastTier ? lastTier.price * 1.8 : 2.99,
+        oldPrice: lastTier ? lastTier.oldPrice * 1.8 : 9.99,
+        bonus: lastTier ? lastTier.bonus * 2 : 10,
+      });
+      updated[serviceType] = tiers;
+      return updated;
+    });
+  };
+
+  const removeFunnelTier = (serviceType: string, tierIndex: number) => {
+    setFunnelPricing(prev => {
+      const updated = { ...prev };
+      const tiers = [...(updated[serviceType] || [])];
+      tiers.splice(tierIndex, 1);
+      updated[serviceType] = tiers;
+      return updated;
+    });
   };
 
   const fetchPromoFieldEnabled = async () => {
@@ -1002,6 +1114,17 @@ export default function AdminDashboard() {
             >
               <Tag className="w-5 h-5" />
               Promo Codes
+            </button>
+            <button
+              onClick={() => setActiveTab('funnel')}
+              className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
+                activeTab === 'funnel'
+                  ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'
+              }`}
+            >
+              <Zap className="w-5 h-5" />
+              Funnel Pricing
             </button>
           </div>
         </div>
@@ -2193,12 +2316,44 @@ export default function AdminDashboard() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredOrders.map((order) => (
-                      <tr key={order.id} className="border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-                        <td className="py-4 px-4 text-sm text-gray-900 dark:text-white font-medium">#{order.id}</td>
+                    {filteredOrders.map((order) => {
+                      const isFunnel = order.order_source === 'APP_FUNNEL' && order.funnel_data;
+                      const isExpanded = expandedOrderId === order.id;
+                      return (
+                      <React.Fragment key={order.id}>
+                      <tr className={`border-b border-gray-100 dark:border-gray-700/50 hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors ${isExpanded ? 'bg-gray-50 dark:bg-gray-700/30' : ''}`}>
+                        <td className="py-4 px-4">
+                          <div className="flex items-center gap-2">
+                            {isFunnel && (
+                              <button
+                                onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
+                                className="p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                              >
+                                {isExpanded ? <ChevronDown className="w-4 h-4 text-gray-500" /> : <ChevronRight className="w-4 h-4 text-gray-500" />}
+                              </button>
+                            )}
+                            <div>
+                              <span className="text-sm text-gray-900 dark:text-white font-medium">#{order.id}</span>
+                              {isFunnel && (
+                                <span className="ml-1.5 inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-fuchsia-100 dark:bg-fuchsia-900/30 text-fuchsia-700 dark:text-fuchsia-400">
+                                  <Zap className="w-2.5 h-2.5" />
+                                  FUNNEL
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                        </td>
                         <td className="py-4 px-4">
                           <div className="text-sm text-gray-900 dark:text-white">@{order.username}</div>
                           <div className="text-xs text-gray-500 dark:text-gray-400">{order.email || '-'}</div>
+                          {order.customer_total_orders != null && order.customer_order_number != null && (
+                            <div className="mt-1">
+                              <CustomerLoyaltyBadge
+                                customerOrderNumber={Number(order.customer_order_number)}
+                                customerTotalOrders={Number(order.customer_total_orders)}
+                              />
+                            </div>
+                          )}
                         </td>
                         <td className="py-4 px-4">
                           <span className="inline-flex items-center gap-1 text-sm font-medium text-gray-900 dark:text-white capitalize">
@@ -2325,7 +2480,19 @@ export default function AdminDashboard() {
                           </button>
                         </td>
                       </tr>
-                    ))}
+                      {/* Expanded funnel detail row */}
+                      {isFunnel && isExpanded && order.funnel_data && (
+                        <tr className="border-b border-gray-100 dark:border-gray-700/50 bg-gray-50/50 dark:bg-gray-800/50">
+                          <td colSpan={11} className="px-4 py-4">
+                            <div className="max-w-2xl ml-6">
+                              <FunnelOrderSummary funnelData={order.funnel_data} />
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                      </React.Fragment>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -2976,6 +3143,101 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'funnel' && (
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-purple-100 dark:border-purple-900/30">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 bg-gradient-to-br from-fuchsia-500 to-purple-600 rounded-xl shadow-lg">
+                  <Zap className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Funnel Pricing</h2>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Configure pricing tiers for the upsell tunnel</p>
+                </div>
+              </div>
+              <button
+                onClick={saveFunnelPricing}
+                disabled={isSavingFunnel}
+                className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-fuchsia-600 to-purple-600 text-white rounded-xl hover:from-fuchsia-700 hover:to-purple-700 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+              >
+                <Save className="w-5 h-5" />
+                {isSavingFunnel ? 'Saving...' : 'Save All'}
+              </button>
+            </div>
+
+            {funnelMessage && (
+              <div className={`mb-6 p-3 rounded-xl text-sm font-medium ${funnelMessage.includes('success') ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'}`}>
+                {funnelMessage}
+              </div>
+            )}
+
+            {isLoading ? (
+              <div className="text-center py-12 text-gray-400">Loading...</div>
+            ) : (
+              <div className="space-y-8">
+                {['followers', 'likes', 'views', 'story-views'].map((serviceType) => {
+                  const tiers = funnelPricing[serviceType] || [];
+                  const labels: Record<string, string> = { followers: 'Abonnés', likes: 'Likes', views: 'Vues', 'story-views': 'Vues de story' };
+                  return (
+                    <div key={serviceType} className="border border-gray-200 dark:border-gray-700 rounded-2xl p-6">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{labels[serviceType] || serviceType}</h3>
+                        <button
+                          onClick={() => addFunnelTier(serviceType)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-sm font-medium text-fuchsia-600 hover:bg-fuchsia-50 dark:hover:bg-fuchsia-900/20 rounded-lg transition-colors"
+                        >
+                          <Plus className="w-4 h-4" />
+                          Add Tier
+                        </button>
+                      </div>
+                      {tiers.length === 0 ? (
+                        <p className="text-sm text-gray-400 py-4">No tiers configured. Click &quot;Add Tier&quot; to start.</p>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-sm">
+                            <thead>
+                              <tr className="border-b border-gray-200 dark:border-gray-700">
+                                <th className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-400">Qty</th>
+                                <th className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-400">Price (€)</th>
+                                <th className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-400">Old Price (€)</th>
+                                <th className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-400">Bonus</th>
+                                <th className="py-2 px-2"></th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {tiers.map((tier, idx) => (
+                                <tr key={idx} className="border-b border-gray-100 dark:border-gray-700/50">
+                                  <td className="py-2 px-2">
+                                    <input type="number" value={tier.qty} onChange={(e) => updateFunnelTier(serviceType, idx, 'qty', parseFloat(e.target.value) || 0)} className="w-24 px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm" />
+                                  </td>
+                                  <td className="py-2 px-2">
+                                    <input type="number" step="0.01" value={tier.price} onChange={(e) => updateFunnelTier(serviceType, idx, 'price', parseFloat(e.target.value) || 0)} className="w-24 px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm" />
+                                  </td>
+                                  <td className="py-2 px-2">
+                                    <input type="number" step="0.01" value={tier.oldPrice} onChange={(e) => updateFunnelTier(serviceType, idx, 'oldPrice', parseFloat(e.target.value) || 0)} className="w-24 px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm" />
+                                  </td>
+                                  <td className="py-2 px-2">
+                                    <input type="number" value={tier.bonus} onChange={(e) => updateFunnelTier(serviceType, idx, 'bonus', parseFloat(e.target.value) || 0)} className="w-24 px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm" />
+                                  </td>
+                                  <td className="py-2 px-2">
+                                    <button onClick={() => removeFunnelTier(serviceType, idx)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors">
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
 

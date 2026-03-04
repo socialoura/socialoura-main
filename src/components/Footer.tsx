@@ -133,13 +133,18 @@ export default function Footer({ lang }: FooterProps) {
             <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
               {lang === 'fr' ? 'Paiement sécurisé' : lang === 'de' ? 'Sichere Zahlung' : lang === 'es' ? 'Pago seguro' : 'Secure Payment'}
             </h4>
-            <div className="flex flex-wrap gap-2">
-              <Image src="/images/visa.svg" alt="Visa" width={40} height={16} className="h-6 w-auto opacity-70" />
-              <Image src="/images/mastercard.svg" alt="Mastercard" width={40} height={24} className="h-7 w-auto opacity-70" />
-              <Image src="/images/paypal.svg" alt="PayPal" width={50} height={16} className="h-6 w-auto opacity-70" />
+            <div className="flex flex-wrap gap-3 items-center">
+              <Image src="/images/visa.svg" alt="Visa" width={40} height={20} className="h-5 w-auto opacity-70 hover:opacity-100 transition-opacity" />
+              <Image src="/images/paypal.png" alt="PayPal" width={40} height={20} className="h-5 w-auto opacity-70 hover:opacity-100 transition-opacity" />
+              <Image src="/images/mastercard.webp" alt="Mastercard" width={40} height={20} className="h-5 w-auto opacity-70 hover:opacity-100 transition-opacity" />
+              <Image src="/images/google_pay.png" alt="Google Pay" width={40} height={20} className="h-5 w-auto opacity-70 hover:opacity-100 transition-opacity" />
+              <Image src="/images/apple-pay.svg" alt="Apple Pay" width={40} height={20} className="h-5 w-auto opacity-70 hover:opacity-100 transition-opacity" />
             </div>
-            <div className="mt-6">
-              <Image src="/images/norton.svg" alt="Norton Secured" width={80} height={32} className="h-8 w-auto opacity-80" />
+            <div className="flex items-center gap-1.5 mt-4 text-xs text-gray-500 dark:text-gray-400">
+              <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+              </svg>
+              <span>SSL Encrypted</span>
             </div>
           </div>
         </div>
