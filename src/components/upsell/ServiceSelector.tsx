@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { X, UserPlus, Heart, Eye, Tv, Sparkles, ArrowRight } from 'lucide-react';
+import posthog from 'posthog-js';
 import useUpsellStore, { ServiceType } from '@/store/useUpsellStore';
+import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
 
@@ -149,6 +151,8 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
         setQuantity(tier.qty);
         setPrice(tier.price);
       }
+      posthog.capture('step2_service_selected', { service_type: service.type });
+      posthog.capture('step2_quantity_adjusted', { service_type: service.type, quantity: tier.qty, price: tier.price });
     } else {
       removeServiceFromCart(service.type);
     }
@@ -183,7 +187,7 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
           <div className="relative">
             <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden bg-gray-800 ring-2 ring-pink-500/50">
               <Image
-                src={avatarUrl || `https://ui-avatars.com/api/?name=${username}&background=random&size=64`}
+                src={proxyImageUrl(avatarUrl) || `https://ui-avatars.com/api/?name=${username}&background=random&size=64`}
                 alt={username}
                 width={64}
                 height={64}
@@ -286,7 +290,7 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
                       step="1"
                       value={sliderIndex}
                       onChange={(e) => handleSliderChange(service, parseInt(e.target.value))}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
+                      className="absolute w-full h-11 -top-4 opacity-0 cursor-pointer z-20 touch-none"
                     />
                     {/* Track fill */}
                     <div 
@@ -352,6 +356,13 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
                 } else {
                   removeServiceFromCart(service.type);
                 }
+              });
+              const activeServices = SERVICES.filter(s => sliderValues[s.type] > 0);
+              const primaryService = activeServices.find(s => s.type !== 'story-views') || activeServices[0];
+              posthog.capture('step2_completed', {
+                final_service: primaryService?.type || 'unknown',
+                final_quantity: primaryService ? primaryService.pricing[sliderValues[primaryService.type]].qty : 0,
+                total_price: totalPrice,
               });
               nextStep();
             }}

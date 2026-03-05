@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
 
-// ─── In-memory cache (2-hour TTL) ───
-interface CacheEntry {
-  data: ScraperResponse;
-  timestamp: number;
-}
-
+// ─── Types ───
 interface ScraperResponse {
   username: string;
   fullName: string;
@@ -21,47 +16,161 @@ interface ScraperResponse {
   }>;
 }
 
-const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 hours
-const profileCache = new Map<string, CacheEntry>();
+// ─── In-memory cache (2-hour TTL) ───
+interface CacheEntry {
+  data: ScraperResponse;
+  timestamp: number;
+}
+
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+export const profileCache = new Map<string, CacheEntry>();
+
+export function clearCache(username?: string) {
+  if (username) {
+    profileCache.delete(username.toLowerCase());
+  } else {
+    profileCache.clear();
+  }
+}
 
 function getCached(username: string): ScraperResponse | null {
-  const entry = profileCache.get(username.toLowerCase());
-  if (!entry) return null;
-  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
-    profileCache.delete(username.toLowerCase());
-    return null;
-  }
-  return entry.data;
+  // Cache disabled - always fetch fresh data
+  return null;
+  
+  // const entry = profileCache.get(username.toLowerCase());
+  // if (!entry) return null;
+  // if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+  //   profileCache.delete(username.toLowerCase());
+  //   return null;
+  // }
+  // return entry.data;
 }
 
 function setCache(username: string, data: ScraperResponse) {
   profileCache.set(username.toLowerCase(), { data, timestamp: Date.now() });
-  // Evict old entries if cache grows too large (max 200)
   if (profileCache.size > 200) {
     const oldest = Array.from(profileCache.entries()).sort((a, b) => a[1].timestamp - b[1].timestamp);
     for (let i = 0; i < 50; i++) profileCache.delete(oldest[i][0]);
   }
 }
 
-// ─── Image encoding ───
-async function fetchAndEncodeImage(url: string): Promise<string> {
+// ─── RapidAPI fetch with timeout ───
+const RAPIDAPI_HOST = 'instagram120.p.rapidapi.com';
+const FETCH_TIMEOUT_MS = 6000; // 6 seconds
+
+// Fetch profile info (avatar, followers, fullName)
+async function fetchProfileInfo(username: string): Promise<Response> {
+  const apiKey = process.env.RAPIDAPI_KEY;
+  if (!apiKey) throw new Error('RAPIDAPI_KEY not configured');
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
   try {
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-      },
-    });
-
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    const base64 = buffer.toString('base64');
-    return `data:${contentType};base64,${base64}`;
-  } catch {
-    return `https://ui-avatars.com/api/?name=User&background=random&size=200`;
+    const res = await fetch(
+      `https://${RAPIDAPI_HOST}/api/instagram/profile`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-rapidapi-host': RAPIDAPI_HOST,
+          'x-rapidapi-key': apiKey,
+        },
+        body: JSON.stringify({ username: username }),
+        signal: controller.signal,
+      }
+    );
+    return res;
+  } finally {
+    clearTimeout(timeout);
   }
+}
+
+// Fetch posts
+async function fetchPosts(username: string): Promise<Response> {
+  const apiKey = process.env.RAPIDAPI_KEY;
+  if (!apiKey) throw new Error('RAPIDAPI_KEY not configured');
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+
+  try {
+    const res = await fetch(
+      `https://${RAPIDAPI_HOST}/api/instagram/posts`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-rapidapi-host': RAPIDAPI_HOST,
+          'x-rapidapi-key': apiKey,
+        },
+        body: JSON.stringify({ username, maxId: '' }),
+        signal: controller.signal,
+      }
+    );
+    return res;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+// ─── Map combined responses → ScraperResponse ───
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mapCombinedData(profileData: any, postsData: any, cleanUsername: string): ScraperResponse {
+  // Profile info from POST /api/instagram/profile — data is under .result
+  const userData = profileData?.result ?? profileData?.data ?? profileData;
+  
+  const username = userData?.username ?? cleanUsername;
+  const fullName = 
+    userData?.full_name ?? 
+    userData?.fullname ?? 
+    userData?.name ??
+    cleanUsername;
+  
+  const avatarUrl =
+    userData?.profile_pic_url_hd ??
+    userData?.profile_pic_url ??
+    userData?.hd_profile_pic_url_info?.url ??
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(cleanUsername)}&background=random&size=200`;
+  
+  const followersCount = 
+    userData?.follower_count ?? 
+    userData?.edge_followed_by?.count ?? 
+    0;
+
+  // Posts from POST /api/instagram/posts
+  // Structure: postsData.result.edges[].node
+  const edges = postsData?.result?.edges ?? postsData?.data?.result?.edges ?? [];
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const posts = edges.slice(0, 12).map((edge: any, index: number) => {
+    const node = edge?.node ?? edge;
+    
+    // Image URL from image_versions2.candidates
+    const candidates = node?.image_versions2?.candidates ?? [];
+    const imageUrl = candidates[0]?.url ?? node?.display_url ?? '';
+
+    // ShortCode
+    const shortCode = node?.code ?? node?.shortcode ?? '';
+
+    // Caption/Text
+    const caption = (node?.caption?.text ?? node?.text ?? '').slice(0, 100);
+
+    // Engagement metrics
+    const likesCount = node?.like_count ?? 0;
+    const commentsCount = node?.comment_count ?? 0;
+
+    return {
+      id: String(node?.id ?? node?.pk ?? index),
+      shortCode,
+      imageUrl,
+      caption,
+      likesCount: Number(likesCount) || 0,
+      commentsCount: Number(commentsCount) || 0,
+    };
+  });
+
+  return { username, fullName, avatarUrl, followersCount, posts };
 }
 
 // ─── Main handler ───
@@ -76,7 +185,7 @@ export async function GET(request: Request) {
 
     const cleanUsername = username.replace('@', '').trim();
 
-    // ── Check cache first ──
+    // ── Check cache ──
     const cached = getCached(cleanUsername);
     if (cached) {
       console.log('[scraper] Cache HIT for:', cleanUsername);
@@ -84,84 +193,54 @@ export async function GET(request: Request) {
     }
     console.log('[scraper] Cache MISS for:', cleanUsername);
 
-    const apiToken = process.env.APIFY_API_TOKEN;
-    if (!apiToken) {
-      return NextResponse.json(
-        { error: 'API configuration error - APIFY_API_TOKEN missing' },
-        { status: 500 }
-      );
-    }
-
+    // ── Fetch from RapidAPI (two calls) ──
     try {
-      const apifyUrl = `https://api.apify.com/v2/acts/apify~instagram-profile-scraper/run-sync-get-dataset-items?token=${apiToken}`;
-      
-      const apifyResponse = await fetch(apifyUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          usernames: [cleanUsername],
-          resultsLimit: 12,
-        }),
-      });
-
-      if (!apifyResponse.ok) {
-        const errorText = await apifyResponse.text();
-        throw new Error(`Apify API returned ${apifyResponse.status}: ${errorText}`);
+      // 1. Fetch profile info (GET)
+      const profileRes = await fetchProfileInfo(cleanUsername);
+      if (!profileRes.ok) {
+        const errText = await profileRes.text().catch(() => '');
+        console.error(`[scraper] Profile API ${profileRes.status}:`, errText.slice(0, 300));
+        return NextResponse.json(
+          { error: 'Profile not found', details: `HTTP ${profileRes.status}` },
+          { status: profileRes.status === 404 ? 404 : 502 }
+        );
       }
+      const profileData = await profileRes.json();
+      console.log("RÉPONSE PROFILE API:", JSON.stringify(profileData).substring(0, 500));
 
-      const data = await apifyResponse.json();
-
-      if (!Array.isArray(data) || data.length === 0) {
-        return NextResponse.json({ error: 'Profile not found' }, { status: 404 });
+      // 2. Fetch posts (POST)
+      const postsRes = await fetchPosts(cleanUsername);
+      if (!postsRes.ok) {
+        const errText = await postsRes.text().catch(() => '');
+        console.error(`[scraper] Posts API ${postsRes.status}:`, errText.slice(0, 300));
+        return NextResponse.json(
+          { error: 'Posts not found', details: `HTTP ${postsRes.status}` },
+          { status: postsRes.status === 404 ? 404 : 502 }
+        );
       }
+      const postsData = await postsRes.json();
+      console.log("RÉPONSE POSTS API:", JSON.stringify(postsData).substring(0, 500));
 
-      const profile = data[0] as Record<string, unknown>;
-      const latestPostsRaw = profile.latestPosts as Array<Record<string, unknown>> | undefined;
-
-      // Extract posts (max 12)
-      const latestPosts = (latestPostsRaw || []).slice(0, 12).map((post, index) => ({
-        id: (post.id as string) || String(index),
-        shortCode: (post.shortCode as string) || '',
-        imageUrl: (post.displayUrl as string) || (post.videoUrl as string) || (post.url as string) || '',
-        caption: ((post.caption as string) || '').slice(0, 100),
-        likesCount: (post.likesCount as number) || 0,
-        commentsCount: (post.commentsCount as number) || 0,
-      }));
-
-      const avatarUrl = (profile.profilePicUrlHD as string) || (profile.profilePicUrl as string) || '';
-
-      // Encode all images to Base64 in parallel
-      const [avatarBase64, ...postsBase64] = await Promise.all([
-        fetchAndEncodeImage(avatarUrl),
-        ...latestPosts.map(post => fetchAndEncodeImage(post.imageUrl))
-      ]);
-
-      const postsWithBase64 = latestPosts.map((post, index) => ({
-        ...post,
-        imageUrl: postsBase64[index],
-      }));
-
-      const response: ScraperResponse = {
-        username: (profile.username as string) || cleanUsername,
-        fullName: (profile.fullName as string) || cleanUsername,
-        avatarUrl: avatarBase64,
-        followersCount: (profile.followersCount as number) || 0,
-        posts: postsWithBase64,
-      };
+      // 3. Combine both responses
+      const response = mapCombinedData(profileData, postsData, cleanUsername);
 
       // ── Store in cache ──
       setCache(cleanUsername, response);
       console.log('[scraper] Cached result for:', cleanUsername);
-      
+
       return NextResponse.json(response);
-    } catch (apifyError: unknown) {
-      console.error('[scraper] Apify error:', apifyError instanceof Error ? apifyError.message : String(apifyError));
-      const errorDetails = apifyError instanceof Error ? apifyError.message : String(apifyError);
-      return NextResponse.json({ error: 'Failed to fetch', details: errorDetails }, { status: 500 });
+    } catch (fetchError: unknown) {
+      if (fetchError instanceof DOMException && fetchError.name === 'AbortError') {
+        console.error('[scraper] RapidAPI timeout (6s) for:', cleanUsername);
+        return NextResponse.json({ error: 'Request timed out' }, { status: 504 });
+      }
+      const msg = fetchError instanceof Error ? fetchError.message : String(fetchError);
+      console.error('[scraper] RapidAPI error:', msg);
+      return NextResponse.json({ error: 'Failed to fetch', details: msg }, { status: 500 });
     }
   } catch (error: unknown) {
-    console.error('[scraper] Outer error:', error instanceof Error ? error.message : String(error));
-    const errorDetails = error instanceof Error ? error.message : String(error);
-    return NextResponse.json({ error: 'Failed to fetch', details: errorDetails }, { status: 500 });
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error('[scraper] Outer error:', msg);
+    return NextResponse.json({ error: 'Failed to fetch', details: msg }, { status: 500 });
   }
 }

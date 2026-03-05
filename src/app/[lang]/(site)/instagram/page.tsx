@@ -1,12 +1,16 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
+import posthog from 'posthog-js';
 import useUpsellStore from '@/store/useUpsellStore';
 import ProfileSearchInput from '@/components/upsell/ProfileSearchInput';
 import ServiceSelector from '@/components/upsell/ServiceSelector';
 import PostGrid from '@/components/upsell/PostGrid';
 import CheckoutSummary from '@/components/upsell/CheckoutSummary';
+import { getStripe } from '@/components/StripeProvider';
+import ChatWidget from '@/components/ChatWidget';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
 
@@ -21,6 +25,23 @@ export default function UpsellPage() {
   const lang = (params?.lang as Language) || 'fr';
   const t = getUpsellTranslations(lang);
   const { currentStep } = useUpsellStore();
+
+  // Étape 0: Track tunnel page view on mount
+  useEffect(() => {
+    posthog.capture('tunnel_page_viewed');
+  }, []);
+
+  // Scroll to top on every step change
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]);
+
+  // Preload Stripe SDK when user reaches step 2 so payment form is instant at step 3
+  useEffect(() => {
+    if (currentStep >= 2) {
+      getStripe();
+    }
+  }, [currentStep]);
 
   const steps = [
     { id: 0, title: t.steps.profile },
@@ -104,6 +125,9 @@ export default function UpsellPage() {
           )}
         </AnimatePresence>
       </main>
+
+      {/* Support Chat Widget */}
+      <ChatWidget lang={lang} />
     </div>
   );
 }

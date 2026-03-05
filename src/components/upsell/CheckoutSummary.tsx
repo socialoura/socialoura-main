@@ -6,7 +6,9 @@ import { Mail, Loader2, Lock, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucid
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import StripeProvider from '@/components/StripeProvider';
 import useUpsellStore from '@/store/useUpsellStore';
+import posthog from 'posthog-js';
 import { trackFunnelPurchase } from '@/lib/gtag';
+import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
 
@@ -40,6 +42,8 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymen
     setIsProcessing(true);
     setPaymentError(null);
 
+    posthog.capture('step4_payment_attempted', { payment_method_type: 'card' });
+
     const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
@@ -50,6 +54,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymen
     });
 
     if (error) {
+      posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown' });
       setPaymentError(error.message || i18n.paymentError);
       setIsProcessing(false);
       return;
@@ -78,7 +83,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymen
             onReady={() => setElementsReady(true)}
             options={{
               layout: 'tabs',
-              wallets: { applePay: 'never', googlePay: 'never' },
+              wallets: { applePay: 'auto', googlePay: 'auto' },
             }}
           />
         </div>
@@ -162,6 +167,12 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
   useEffect(() => {
     if (currentStep !== 3) return;
 
+    const primaryService = activeServices.find(s => s.type !== 'story-views') || activeServices[0];
+    posthog.capture('step4_checkout_viewed', {
+      final_price: totalPrice,
+      final_service: primaryService?.type || 'unknown',
+    });
+
     const createPaymentIntent = async () => {
       const amountInCents = Math.max(1, Math.round(totalPrice * 100));
       setIsPaymentLoading(true);
@@ -212,7 +223,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
             <div className="p-6 bg-gray-900/50 border-b border-gray-800 flex items-center gap-4">
               <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-800 ring-2 ring-pink-500/50 flex-shrink-0">
                 <Image
-                  src={avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=96`}
+                  src={proxyImageUrl(avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=96`}
                   alt={username}
                   width={96}
                   height={96}
@@ -418,6 +429,14 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                               currency: 'EUR',
                               transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
                             });
+
+                            const primarySvc = funnelServices.find(s => s.type !== 'story-views') || funnelServices[0];
+                            posthog.capture('purchase_completed', {
+                              revenue: totalPrice,
+                              currency: 'EUR',
+                              service: primarySvc?.type || 'unknown',
+                              quantity: primarySvc?.quantity || 0,
+                            });
                           } catch (err) {
                             console.error('Failed to save order:', err);
                           }
@@ -446,7 +465,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
 
               {/* Payment methods */}
               <div className="pt-8 mt-4 border-t border-gray-800 flex justify-center">
-                <div className="flex items-center gap-4 opacity-50 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+                <div className="flex items-center gap-4 opacity-80 hover:opacity-100 transition-all duration-500">
                   <Image src="/images/visa.svg" alt="Visa" width={40} height={20} className="h-6 w-auto" />
                   <Image src="/images/mastercard.webp" alt="Mastercard" width={40} height={20} className="h-6 w-auto" />
                   <Image src="/images/apple-pay.svg" alt="Apple Pay" width={40} height={20} className="h-6 w-auto" />

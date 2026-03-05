@@ -8,7 +8,7 @@ import { ReactNode, useMemo, useEffect, useState, useCallback } from 'react';
 let stripePromise: Promise<Stripe | null> | null = null;
 let cachedPublishableKey: string | null = null;
 
-const getStripe = async () => {
+export const getStripe = async () => {
   // Fetch publishable key from API (checks database first, then env)
   try {
     const response = await fetch('/api/stripe-config');

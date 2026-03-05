@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { Search, Check, Loader2 } from 'lucide-react';
+import { proxyImageUrl } from '@/lib/image-proxy';
 
 interface UserProfile {
   username: string;
@@ -182,7 +183,7 @@ export default function UserSearchInput({
             <div className="flex items-center gap-3 mb-3">
               <div className="relative">
                 <Image
-                  src={foundProfile.profilePicture}
+                  src={proxyImageUrl(foundProfile.profilePicture)}
                   alt={foundProfile.username}
                   width={48}
                   height={48}

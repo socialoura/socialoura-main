@@ -1,9 +1,12 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, ArrowLeft, ArrowRight, Heart, Eye } from 'lucide-react';
+import posthog from 'posthog-js';
 import useUpsellStore from '@/store/useUpsellStore';
+import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
 
@@ -23,6 +26,14 @@ export default function PostGrid({ lang }: PostGridProps) {
     prevStep,
     nextStep,
   } = useUpsellStore();
+
+  const gridViewedRef = useRef(false);
+  useEffect(() => {
+    if (!gridViewedRef.current && currentDistributionService) {
+      posthog.capture('step3_grid_viewed', { has_posts_available: posts.length > 0 });
+      gridViewedRef.current = true;
+    }
+  }, [posts.length, currentDistributionService]);
 
   if (!currentDistributionService) return null;
 
@@ -104,7 +115,14 @@ export default function PostGrid({ lang }: PostGridProps) {
               transition={{ delay: index * 0.05, duration: 0.4 }}
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => togglePostSelection(post.id)}
+              onClick={() => {
+                const willBeSelected = !currentSelectedPosts.includes(post.id);
+                togglePostSelection(post.id);
+                posthog.capture('step3_post_toggled', {
+                  action: willBeSelected ? 'selected' : 'unselected',
+                  current_total_selected: willBeSelected ? currentSelectedPosts.length + 1 : currentSelectedPosts.length - 1,
+                });
+              }}
               className={`group relative aspect-[4/5] rounded-2xl overflow-hidden transition-all duration-300 ${
                 isSelected
                   ? 'ring-2 ring-pink-500 ring-offset-4 ring-offset-gray-950 shadow-xl shadow-pink-500/20'
@@ -112,7 +130,7 @@ export default function PostGrid({ lang }: PostGridProps) {
               }`}
             >
               <Image
-                src={post.imageUrl}
+                src={proxyImageUrl(post.imageUrl)}
                 alt={post.caption || `Post ${index + 1}`}
                 fill
                 className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -195,7 +213,11 @@ export default function PostGrid({ lang }: PostGridProps) {
 
           <button
             disabled={!hasSelectedPosts}
-            onClick={() => hasSelectedPosts && nextStep()}
+            onClick={() => {
+              if (!hasSelectedPosts) return;
+              posthog.capture('step3_completed', { total_posts_selected: currentSelectedPosts.length });
+              nextStep();
+            }}
             className="w-full sm:w-auto relative overflow-hidden rounded-xl bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 px-8 py-3.5 text-sm sm:text-base font-bold text-white shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/40 transition-all duration-300 uppercase tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <span className="relative z-10">{t.grid.validateSelection}</span>

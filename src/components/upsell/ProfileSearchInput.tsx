@@ -4,7 +4,9 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Loader2, Search, AlertCircle, Instagram, ChevronRight, Users, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import posthog from 'posthog-js';
 import useUpsellStore from '@/store/useUpsellStore';
+import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
 
@@ -40,6 +42,8 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
     setProfileError(null);
     setSearchResult(null);
 
+    posthog.capture('step1_search_initiated', { target_platform: 'instagram' });
+
     try {
       const res = await fetch(`/api/scraper?username=${encodeURIComponent(clean)}`);
       const data = await res.json();
@@ -56,7 +60,9 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
         posts: data.posts,
       });
     } catch (err) {
-      setProfileError(err instanceof Error ? err.message : t.search.errorTitle);
+      const errorMsg = err instanceof Error ? err.message : t.search.errorTitle;
+      posthog.capture('step1_search_failed', { error_reason: errorMsg });
+      setProfileError(errorMsg);
     } finally {
       setProfileLoading(false);
     }
@@ -64,6 +70,7 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
 
   const handleSelectProfile = () => {
     if (!searchResult) return;
+    posthog.capture('step1_profile_found', { follower_count: searchResult.followersCount });
     setUsername(searchResult.username);
     setProfile({
       avatarUrl: searchResult.avatarUrl,
@@ -81,7 +88,7 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto mt-2 sm:mt-12">
+    <div className="w-full max-w-2xl mx-auto mt-2 sm:mt-12 min-h-[60vh]">
       {/* Hero header */}
       <div className="text-center mb-8 sm:mb-14">
         <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-yellow-500 via-pink-500 to-purple-600 mb-4 sm:mb-6 shadow-lg shadow-pink-500/20">
@@ -204,7 +211,7 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
               <div className="relative flex-shrink-0">
                 <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full overflow-hidden bg-gray-700 ring-2 ring-transparent group-hover:ring-pink-500/50 transition-all duration-300">
                   <Image
-                    src={searchResult.avatarUrl}
+                    src={proxyImageUrl(searchResult.avatarUrl)}
                     alt={searchResult.username}
                     width={80}
                     height={80}

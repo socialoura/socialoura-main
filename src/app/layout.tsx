@@ -4,6 +4,7 @@ import { Space_Grotesk } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import PostHogProvider from "@/components/PostHogProvider";
 import "./globals.css";
 
 const GA_AW_ID = process.env.NEXT_PUBLIC_GA_AW_ID || '';
@@ -76,9 +77,11 @@ export default function RootLayout({
       <body
         className={`${spaceGrotesk.variable} font-sans antialiased`}
       >
-        <CurrencyProvider>
-          {children}
-        </CurrencyProvider>
+        <PostHogProvider>
+          <CurrencyProvider>
+            {children}
+          </CurrencyProvider>
+        </PostHogProvider>
         <Analytics />
         <SpeedInsights />
       </body>
