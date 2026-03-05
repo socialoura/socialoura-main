@@ -22,18 +22,11 @@ interface CacheEntry {
   timestamp: number;
 }
 
-const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-export const profileCache = new Map<string, CacheEntry>();
+// const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes (disabled - cache is off)
+const profileCache = new Map<string, CacheEntry>();
 
-export function clearCache(username?: string) {
-  if (username) {
-    profileCache.delete(username.toLowerCase());
-  } else {
-    profileCache.clear();
-  }
-}
-
-function getCached(username: string): ScraperResponse | null {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function getCached(_username: string): ScraperResponse | null {
   // Cache disabled - always fetch fresh data
   return null;
   
