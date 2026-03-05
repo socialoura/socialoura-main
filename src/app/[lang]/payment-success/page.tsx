@@ -68,6 +68,22 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
           });
         } catch (e) { console.error('Discord notification failed:', e); }
 
+        // Send order confirmation email
+        try {
+          await fetch('/api/send-order-confirmation', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email,
+              username,
+              orderId: String(orderResult.orderId || paymentIntentId.slice(-8).toUpperCase()),
+              totalPrice: Number(totalPrice),
+              services: funnelServices,
+              lang: pending.lang || 'fr',
+            }),
+          });
+        } catch (e) { console.error('Confirmation email failed:', e); }
+
         // Tracking
         trackFunnelPurchase({
           value: totalPrice,

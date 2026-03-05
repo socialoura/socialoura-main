@@ -509,6 +509,24 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                               console.error('Failed to send Discord notification:', discordErr);
                             }
 
+                            // Send order confirmation email
+                            try {
+                              await fetch('/api/send-order-confirmation', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                  email,
+                                  username,
+                                  orderId: String(orderResult.orderId || paymentIntentIdRef.current?.slice(-8).toUpperCase() || 'N/A'),
+                                  totalPrice,
+                                  services: funnelServices,
+                                  lang,
+                                }),
+                              });
+                            } catch (emailErr) {
+                              console.error('Failed to send confirmation email:', emailErr);
+                            }
+
                             trackFunnelPurchase({
                               value: totalPrice,
                               currency: 'EUR',
