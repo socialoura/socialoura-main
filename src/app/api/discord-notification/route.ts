@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
 
     // Funnel order notification
     if (orderSource === 'APP_FUNNEL') {
-      const { orderId, email, username, totalPrice, services } = body;
+      const { orderId, email, username, totalPrice, services, isNewCustomer, customerOrderNumber } = body;
 
       if (!orderId || !username || !totalPrice || !services) {
         return NextResponse.json(
@@ -23,6 +23,8 @@ export async function POST(request: NextRequest) {
         username,
         totalPrice,
         services,
+        isNewCustomer: isNewCustomer ?? true,
+        customerOrderNumber: customerOrderNumber ?? 1,
       });
 
       if (result.success) {

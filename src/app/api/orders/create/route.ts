@@ -62,9 +62,22 @@ export async function POST(request: NextRequest) {
         RETURNING id
       `;
 
+      // Count all orders for this email to determine new vs returning customer
+      let customerOrderNumber = 1;
+      let isNewCustomer = true;
+      if (email) {
+        const countResult = await sql`
+          SELECT COUNT(*)::int AS total FROM orders WHERE email = ${email}
+        `;
+        customerOrderNumber = countResult.rows[0]?.total || 1;
+        isNewCustomer = customerOrderNumber === 1;
+      }
+
       return NextResponse.json({
         success: true,
-        orderId: result.rows[0].id
+        orderId: result.rows[0].id,
+        isNewCustomer,
+        customerOrderNumber,
       });
     }
 
@@ -82,9 +95,22 @@ export async function POST(request: NextRequest) {
       RETURNING id
     `;
 
+    // Count all orders for this email to determine new vs returning customer
+    let customerOrderNumber = 1;
+    let isNewCustomer = true;
+    if (email) {
+      const countResult = await sql`
+        SELECT COUNT(*)::int AS total FROM orders WHERE email = ${email}
+      `;
+      customerOrderNumber = countResult.rows[0]?.total || 1;
+      isNewCustomer = customerOrderNumber === 1;
+    }
+
     return NextResponse.json({
       success: true,
-      orderId: result.rows[0].id
+      orderId: result.rows[0].id,
+      isNewCustomer,
+      customerOrderNumber,
     });
   } catch (error) {
     console.error('Error saving order:', error);

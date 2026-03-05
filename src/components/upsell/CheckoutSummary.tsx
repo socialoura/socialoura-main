@@ -468,6 +468,8 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                                   username,
                                   totalPrice: `${totalPrice.toFixed(2)} €`,
                                   services: funnelServices,
+                                  isNewCustomer: orderResult.isNewCustomer ?? true,
+                                  customerOrderNumber: orderResult.customerOrderNumber ?? 1,
                                 }),
                               });
                             } catch (discordErr) {
@@ -486,6 +488,8 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                               currency: 'EUR',
                               service: primarySvc?.type || 'unknown',
                               quantity: primarySvc?.quantity || 0,
+                              is_new_customer: orderResult.isNewCustomer ?? true,
+                              customer_order_number: orderResult.customerOrderNumber ?? 1,
                             });
                           } catch (err) {
                             console.error('Failed to save order:', err);

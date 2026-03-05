@@ -28,6 +28,8 @@ interface FunnelOrderNotificationProps {
   username: string;
   totalPrice: string;
   services: FunnelService[];
+  isNewCustomer: boolean;
+  customerOrderNumber: number;
 }
 
 const SERVICE_EMOJI: Record<string, string> = {
@@ -143,6 +145,8 @@ export async function sendDiscordFunnelOrderNotification({
   username,
   totalPrice,
   services,
+  isNewCustomer,
+  customerOrderNumber,
 }: FunnelOrderNotificationProps) {
   const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
 
@@ -192,6 +196,11 @@ export async function sendDiscordFunnelOrderNotification({
       {
         name: '🆔 Order ID',
         value: `\`${orderId}\``,
+        inline: true,
+      },
+      {
+        name: '🔄 Client',
+        value: isNewCustomer ? '🆕 Nouveau client' : `🔁 Client fidèle (${customerOrderNumber}ème commande)`,
         inline: true,
       },
     ],
