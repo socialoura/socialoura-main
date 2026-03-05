@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Mail, Loader2, Lock, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { PaymentElement, ExpressCheckoutElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -35,11 +34,10 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymen
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [elementsReady, setElementsReady] = useState(false);
-  const [paymentSucceeded, setPaymentSucceeded] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!stripe || !elements || isProcessing || paymentSucceeded || !acceptedTerms || !email || !email.includes('@')) return;
+    if (!stripe || !elements || isProcessing || !acceptedTerms || !email || !email.includes('@')) return;
 
     setIsProcessing(true);
     setPaymentError(null);
@@ -63,12 +61,10 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymen
     }
 
     if (paymentIntent && paymentIntent.status === 'succeeded') {
-      setPaymentSucceeded(true);
       onPaymentIntentId?.(paymentIntent.id);
       onSuccess?.();
-    } else {
-      setIsProcessing(false);
     }
+    setIsProcessing(false);
   };
 
   const handleExpressCheckout = (event: { resolve: () => void }) => {
@@ -76,8 +72,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymen
   };
 
   const handleExpressConfirm = async () => {
-    if (!stripe || !elements || paymentSucceeded) return;
-    setIsProcessing(true);
+    if (!stripe || !elements) return;
     posthog.capture('step4_payment_attempted', { payment_method_type: 'express' });
 
     const { error, paymentIntent } = await stripe.confirmPayment({
@@ -92,33 +87,14 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymen
     if (error) {
       posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown' });
       setPaymentError(error.message || i18n.paymentError);
-      setIsProcessing(false);
       return;
     }
 
     if (paymentIntent && paymentIntent.status === 'succeeded') {
-      setPaymentSucceeded(true);
       onPaymentIntentId?.(paymentIntent.id);
       onSuccess?.();
-    } else {
-      setIsProcessing(false);
     }
   };
-
-  if (paymentSucceeded) {
-    return (
-      <div className="space-y-6 text-center py-12">
-        <div className="flex justify-center">
-          <div className="rounded-full bg-emerald-500/20 p-4">
-            <CheckCircle2 className="w-16 h-16 text-emerald-400" />
-          </div>
-        </div>
-        <h3 className="text-2xl font-bold text-white">Paiement confirmé !</h3>
-        <p className="text-gray-400">Enregistrement de votre commande en cours...</p>
-        <Loader2 className="w-8 h-8 text-pink-500 animate-spin mx-auto" />
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -173,8 +149,8 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, onSuccess, onPaymen
 
       <button
         type="submit"
-        disabled={!stripe || !elementsReady || isProcessing || paymentSucceeded || !acceptedTerms || !email || !email.includes('@')}
-        className="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold py-4 px-6 rounded-xl hover:from-pink-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 flex items-center justify-center gap-2 text-lg shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/40 transition-all duration-300 uppercase tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+        disabled={!stripe || !elements || isProcessing || !elementsReady || !acceptedTerms || !email || !email.includes('@')}
+        className="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 px-8 py-4 text-lg font-black text-white shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/40 transition-all duration-300 uppercase tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
       >
         {isProcessing ? (
           <>
@@ -203,7 +179,6 @@ interface CheckoutSummaryProps {
 }
 
 export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
-  const router = useRouter();
   const t = getUpsellTranslations(lang);
   const {
     selectedServices,
@@ -516,11 +491,6 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                               is_new_customer: orderResult.isNewCustomer ?? true,
                               customer_order_number: orderResult.customerOrderNumber ?? 1,
                             });
-
-                            // Redirect to success page after everything is saved
-                            setTimeout(() => {
-                              router.push(`/${lang}/payment-success?order=${orderResult.orderId}`);
-                            }, 1500);
                           } catch (err) {
                             console.error('Failed to save order:', err);
                           }
