@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef, memo } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { X, UserPlus, Heart, Eye, Tv, Sparkles, ArrowRight } from 'lucide-react';
@@ -68,7 +68,7 @@ interface ServiceSelectorProps {
   lang: Language;
 }
 
-export default function ServiceSelector({ lang }: ServiceSelectorProps) {
+function ServiceSelector({ lang }: ServiceSelectorProps) {
   const t = getUpsellTranslations(lang);
   const {
     username,
@@ -140,11 +140,22 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
     fetchPricingAndDefaults();
   }, []);
 
-  const handleSliderChange = (service: ServiceConfig, index: number) => {
-    const tier = service.pricing[index];
+  // Local (visual) slider values for instant feedback
+  const [localSliderValues, setLocalSliderValues] = useState(sliderValues);
+  const isDraggingRef = useRef(false);
+
+  // Sync local values when sliderValues change externally (e.g. defaults loaded)
+  useEffect(() => {
+    setLocalSliderValues(sliderValues);
+  }, [sliderValues]);
+
+  // Commit: updates global store + fires PostHog (called on pointer/mouse up)
+  const commitSliderValue = useCallback((service: ServiceConfig, index: number) => {
+    isDraggingRef.current = false;
     setSliderValues(prev => ({ ...prev, [service.type]: index }));
     const { addServiceToCart, removeServiceFromCart } = useUpsellStore.getState();
     if (index > 0) {
+      const tier = service.pricing[index];
       addServiceToCart(service.type, tier.qty, tier.price);
       if (service.type !== 'story-views') {
         setSelectedService(service.type as ServiceType);
@@ -156,22 +167,27 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
     } else {
       removeServiceFromCart(service.type);
     }
-  };
+  }, [setSelectedService, setQuantity, setPrice]);
 
-  const getCurrentTier = (service: ServiceConfig) => {
-    const index = sliderValues[service.type];
-    // When slider is at 0, return a virtual tier with 0 values
+  // Visual-only update (called on every onChange while dragging)
+  const handleSliderInput = useCallback((service: ServiceConfig, index: number) => {
+    isDraggingRef.current = true;
+    setLocalSliderValues(prev => ({ ...prev, [service.type]: index }));
+  }, []);
+
+  const getCurrentTier = useCallback((service: ServiceConfig, overrideIndex?: number) => {
+    const index = overrideIndex ?? localSliderValues[service.type];
     if (index === 0) {
       return { qty: 0, price: 0, oldPrice: 0, bonus: 0 };
     }
     return service.pricing[index];
-  };
+  }, [localSliderValues]);
 
-  const calculateTotal = () => {
+  const calculateTotal = useCallback(() => {
     let total = 0;
     let oldTotal = 0;
     SERVICES.forEach(service => {
-      const index = sliderValues[service.type];
+      const index = localSliderValues[service.type];
       if (index > 0) {
         const tier = service.pricing[index];
         total += tier.price;
@@ -179,10 +195,10 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
       }
     });
     return { total, oldTotal, savings: oldTotal - total };
-  };
+  }, [SERVICES, localSliderValues]);
 
   const { total: totalPrice, savings } = calculateTotal();
-  const hasActiveServices = SERVICES.some(s => sliderValues[s.type] > 0);
+  const hasActiveServices = SERVICES.some(s => localSliderValues[s.type] > 0);
   
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col h-full">
@@ -223,11 +239,11 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
       {/* Services Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pb-28 sm:pb-32">
         {SERVICES.map((service, i) => {
-          const tier = getCurrentTier(service);
-          const sliderIndex = sliderValues[service.type];
-          const isActive = sliderIndex > 0;
+          const localIndex = localSliderValues[service.type];
+          const tier = getCurrentTier(service, localIndex);
+          const isActive = localIndex > 0;
           const Icon = service.icon;
-          const pct = (sliderIndex / (service.pricing.length - 1)) * 100;
+          const pct = (localIndex / (service.pricing.length - 1)) * 100;
 
           return (
             <motion.div
@@ -300,8 +316,11 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
                       min="0"
                       max={service.pricing.length - 1}
                       step="1"
-                      value={sliderIndex}
-                      onChange={(e) => handleSliderChange(service, parseInt(e.target.value))}
+                      value={localIndex}
+                      onChange={(e) => handleSliderInput(service, parseInt(e.target.value))}
+                      onPointerUp={(e) => commitSliderValue(service, parseInt((e.target as HTMLInputElement).value))}
+                      onMouseUp={(e) => commitSliderValue(service, parseInt((e.target as HTMLInputElement).value))}
+                      onTouchEnd={(e) => commitSliderValue(service, parseInt((e.target as HTMLInputElement).value))}
                       draggable={false}
                       className="absolute w-full opacity-0 cursor-pointer z-20 touch-none select-none"
                       style={{ 
@@ -331,8 +350,8 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
                   <div className="flex justify-between mt-4 px-1">
                     {service.pricing.map((t, idx) => (
                       <div key={idx} className="flex flex-col items-center gap-1">
-                        <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${idx <= sliderIndex ? 'bg-pink-500/50' : 'bg-gray-800'}`} />
-                        <span className={`text-[10px] font-bold transition-colors duration-300 ${idx <= sliderIndex ? 'text-gray-300' : 'text-gray-600'}`}>
+                        <div className={`w-1 h-1 rounded-full transition-colors duration-300 ${idx <= localIndex ? 'bg-pink-500/50' : 'bg-gray-800'}`} />
+                        <span className={`text-[10px] font-bold transition-colors duration-300 ${idx <= localIndex ? 'text-gray-300' : 'text-gray-600'}`}>
                           {t.qty >= 1000 ? `${t.qty / 1000}k` : t.qty}
                         </span>
                       </div>
@@ -368,7 +387,7 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
               if (!hasActiveServices) return;
               const { addServiceToCart, removeServiceFromCart, nextStep } = useUpsellStore.getState();
               SERVICES.forEach((service) => {
-                const index = sliderValues[service.type];
+                const index = localSliderValues[service.type];
                 const tier = service.pricing[index];
                 if (index > 0) {
                   addServiceToCart(service.type, tier.qty, tier.price);
@@ -376,11 +395,11 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
                   removeServiceFromCart(service.type);
                 }
               });
-              const activeServices = SERVICES.filter(s => sliderValues[s.type] > 0);
+              const activeServices = SERVICES.filter(s => localSliderValues[s.type] > 0);
               const primaryService = activeServices.find(s => s.type !== 'story-views') || activeServices[0];
               posthog.capture('step2_completed', {
                 final_service: primaryService?.type || 'unknown',
-                final_quantity: primaryService ? primaryService.pricing[sliderValues[primaryService.type]].qty : 0,
+                final_quantity: primaryService ? primaryService.pricing[localSliderValues[primaryService.type]].qty : 0,
                 total_price: totalPrice,
               });
               nextStep();
@@ -396,3 +415,5 @@ export default function ServiceSelector({ lang }: ServiceSelectorProps) {
     </div>
   );
 }
+
+export default memo(ServiceSelector);

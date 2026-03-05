@@ -2,7 +2,7 @@
 
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
-import { ReactNode, useMemo, useEffect, useState, useCallback } from 'react';
+import { ReactNode, useMemo, useEffect, useState } from 'react';
 
 // Cache for Stripe instance
 let stripePromise: Promise<Stripe | null> | null = null;
@@ -46,16 +46,6 @@ export default function StripeProvider({
 }: StripeProviderProps) {
   const [stripePromiseState, setStripePromiseState] = useState<Promise<Stripe | null> | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDarkMode, setIsDarkMode] = useState(false);
-
-  // Detect dark mode
-  const checkDarkMode = useCallback(() => {
-    if (typeof window !== 'undefined') {
-      const isDark = document.documentElement.classList.contains('dark') ||
-        window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setIsDarkMode(isDark);
-    }
-  }, []);
 
   useEffect(() => {
     const initStripe = async () => {
@@ -64,20 +54,7 @@ export default function StripeProvider({
       setIsLoading(false);
     };
     initStripe();
-    checkDarkMode();
-
-    // Listen for dark mode changes
-    const observer = new MutationObserver(checkDarkMode);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
-    
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-    mediaQuery.addEventListener('change', checkDarkMode);
-
-    return () => {
-      observer.disconnect();
-      mediaQuery.removeEventListener('change', checkDarkMode);
-    };
-  }, [checkDarkMode]);
+  }, []);
 
   // Memoize options with dark mode support
   const options = useMemo(() => {
@@ -85,50 +62,50 @@ export default function StripeProvider({
       return {
         clientSecret,
         appearance: {
-          theme: isDarkMode ? 'night' as const : 'stripe' as const,
+          theme: 'night' as const,
           variables: {
-            colorPrimary: '#8B5CF6', // Purple-500
-            colorBackground: isDarkMode ? '#1f2937' : '#ffffff',
-            colorText: isDarkMode ? '#f3f4f6' : '#1f2937',
-            colorTextSecondary: isDarkMode ? '#d1d5db' : '#6b7280',
+            colorPrimary: '#8b5cf6',
+            colorBackground: '#1e293b',
+            colorText: '#f8fafc',
             colorDanger: '#ef4444',
             fontFamily: 'system-ui, sans-serif',
-            borderRadius: '12px',
             spacingUnit: '4px',
+            borderRadius: '8px',
           },
           rules: {
+            '.Input': {
+              border: '1px solid #334155',
+              boxShadow: 'none',
+            },
+            '.Input:focus': {
+              border: '1px solid #8b5cf6',
+            },
             '.Label': {
-              color: isDarkMode ? '#e5e7eb' : '#374151',
+              color: '#e2e8f0',
               fontWeight: '500',
               fontSize: '14px',
               marginBottom: '8px',
             },
-            '.Input': {
-              backgroundColor: isDarkMode ? '#374151' : '#ffffff',
-              borderColor: isDarkMode ? '#4b5563' : '#e5e7eb',
-              color: isDarkMode ? '#f9fafb' : '#111827',
-            },
-            '.Input:focus': {
-              borderColor: '#8B5CF6',
-              boxShadow: '0 0 0 2px rgba(139, 92, 246, 0.2)',
-            },
             '.Tab': {
-              backgroundColor: isDarkMode ? '#374151' : '#f9fafb',
-              borderColor: isDarkMode ? '#4b5563' : '#e5e7eb',
+              backgroundColor: '#1e293b',
+              borderColor: '#334155',
+              color: '#94a3b8',
             },
             '.Tab--selected': {
-              backgroundColor: isDarkMode ? '#4b5563' : '#ffffff',
-              borderColor: '#8B5CF6',
+              backgroundColor: '#334155',
+              borderColor: '#8b5cf6',
+              color: '#f8fafc',
             },
             '.Tab:hover': {
-              backgroundColor: isDarkMode ? '#4b5563' : '#f3f4f6',
+              backgroundColor: '#334155',
+              color: '#f8fafc',
             },
           },
         },
       };
     }
     return undefined;
-  }, [clientSecret, isDarkMode]);
+  }, [clientSecret]);
 
   if (isLoading) {
     return (

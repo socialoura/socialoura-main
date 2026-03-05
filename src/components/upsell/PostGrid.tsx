@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCircle, ArrowLeft, ArrowRight, Heart, Eye } from 'lucide-react';
@@ -14,7 +14,7 @@ interface PostGridProps {
   lang: Language;
 }
 
-export default function PostGrid({ lang }: PostGridProps) {
+function PostGrid({ lang }: PostGridProps) {
   const t = getUpsellTranslations(lang);
   const {
     posts,
@@ -229,3 +229,5 @@ export default function PostGrid({ lang }: PostGridProps) {
     </div>
   );
 }
+
+export default memo(PostGrid);
