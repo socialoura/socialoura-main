@@ -37,6 +37,8 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [elementsReady, setElementsReady] = useState(false);
 
+  const isEmailValid = email && email.includes('@') && email.length > 3;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!stripe || !elements || isProcessing || !acceptedTerms || !email || !email.includes('@')) return;
@@ -70,12 +72,20 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
     setIsProcessing(false);
   };
 
-  const handleExpressCheckout = (event: { resolve: () => void }) => {
+  const handleExpressCheckout = (event: { resolve: () => void; reject?: () => void }) => {
+    if (!isEmailValid || !acceptedTerms) {
+      setPaymentError('Veuillez saisir un email valide et accepter les conditions.');
+      if (event.reject) event.reject();
+      return;
+    }
     event.resolve();
   };
 
   const handleExpressConfirm = async () => {
-    if (!stripe || !elements) return;
+    if (!stripe || !elements || !isEmailValid || !acceptedTerms) {
+      setPaymentError('Veuillez saisir un email valide et accepter les conditions.');
+      return;
+    }
     posthog.capture('step4_payment_attempted', { payment_method_type: 'express' });
     onBeforePayment?.();
 
@@ -358,10 +368,12 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
             <div className="space-y-8 relative z-10">
               {/* Email input */}
               <div>
-                <label className="block text-sm font-bold text-gray-300 mb-3 uppercase tracking-wider">{t.checkout.emailLabel}</label>
+                <label className="block text-sm font-bold text-gray-300 mb-3 uppercase tracking-wider">
+                  {t.checkout.emailLabel} <span className="text-red-400">*</span>
+                </label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Mail className="h-5 w-5 text-gray-500 group-focus-within:text-pink-500 transition-colors" />
+                    <Mail className={`h-5 w-5 transition-colors ${email && !email.includes('@') ? 'text-red-400' : 'text-gray-500 group-focus-within:text-pink-500'}`} />
                   </div>
                   <input
                     type="email"
@@ -369,9 +381,16 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder={t.checkout.emailPlaceholder}
                     required
-                    className="block w-full pl-12 pr-4 py-4 bg-gray-900 border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:ring-2 focus:ring-pink-500/50 focus:border-pink-500 transition-all text-lg font-medium"
+                    className={`block w-full pl-12 pr-4 py-4 bg-gray-900 border rounded-xl text-white placeholder-gray-500 focus:ring-2 transition-all text-lg font-medium ${
+                      email && !email.includes('@') 
+                        ? 'border-red-500 focus:ring-red-500/50 focus:border-red-500' 
+                        : 'border-gray-700 focus:ring-pink-500/50 focus:border-pink-500'
+                    }`}
                   />
                 </div>
+                {email && !email.includes('@') && (
+                  <p className="mt-2 text-sm text-red-400">Veuillez saisir une adresse email valide</p>
+                )}
               </div>
 
               <div className="w-full h-px bg-gray-800" />
