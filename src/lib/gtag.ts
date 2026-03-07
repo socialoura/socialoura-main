@@ -46,8 +46,8 @@ export function trackGoogleAdsPurchase(orderData: {
 
 // ─── Tunnel-specific Google Ads conversion (route /instagram) ───
 // Hardcoded IDs — isolated from classic product pages
-const FUNNEL_AW_ID = 'AW-17979730701';
-const FUNNEL_CONVERSION_LABEL = 'CWbfCKyT4oIcEI3Ws_1C';
+const FUNNEL_AW_ID = 'AW-17998329725';
+const FUNNEL_CONVERSION_LABEL = '2xaOCNDV-IMcEP3uooZD';
 
 /**
  * Track a Google Ads Purchase conversion event for the /instagram funnel ONLY.

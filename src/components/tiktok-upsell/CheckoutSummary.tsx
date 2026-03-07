@@ -5,12 +5,12 @@ import Image from 'next/image';
 import { Mail, Loader2, Lock, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import StripeProvider from '@/components/StripeProvider';
-import useUpsellStore from '@/store/useUpsellStore';
+import useTiktokUpsellStore from '@/store/useTiktokUpsellStore';
 import posthog from 'posthog-js';
 import { trackFunnelPurchase } from '@/lib/gtag';
 import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
-import { getUpsellTranslations } from '@/i18n/upsell';
+import { getTiktokUpsellTranslations } from '@/i18n/tiktok-upsell';
 
 interface CheckoutPaymentFormProps {
   amount: number;
@@ -47,7 +47,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, emailInputRef
     setIsProcessing(true);
     setPaymentError(null);
 
-    posthog.capture('step4_payment_attempted', { payment_method_type: 'card' });
+    posthog.capture('step4_payment_attempted', { payment_method_type: 'card', target_platform: 'tiktok' });
     onBeforePayment?.();
 
     const { error, paymentIntent } = await stripe.confirmPayment({
@@ -60,7 +60,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, emailInputRef
     });
 
     if (error) {
-      posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown' });
+      posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown', target_platform: 'tiktok' });
       setPaymentError(error.message || i18n.paymentError);
       setIsProcessing(false);
       return;
@@ -80,7 +80,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, emailInputRef
         {!elementsReady && (
           <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-gray-900 z-10">
             <div className="text-center flex flex-col items-center">
-              <Loader2 className="animate-spin h-8 w-8 text-pink-500 mb-3" />
+              <Loader2 className="animate-spin h-8 w-8 text-cyan-500 mb-3" />
               <p className="text-sm text-gray-400 font-medium">{i18n.secureConnect}</p>
             </div>
           </div>
@@ -108,7 +108,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, emailInputRef
       <button
         type="submit"
         disabled={!stripe || !elements || isProcessing || !elementsReady || !acceptedTerms || !email || !email.includes('@')}
-        className="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 px-8 py-4 text-lg font-black text-white shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/40 transition-all duration-300 uppercase tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+        className="w-full relative overflow-hidden rounded-xl bg-gradient-to-r from-cyan-500 via-pink-500 to-red-500 px-8 py-4 text-lg font-black text-white shadow-lg shadow-cyan-500/25 hover:shadow-xl hover:shadow-cyan-500/40 transition-all duration-300 uppercase tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3"
       >
         {isProcessing ? (
           <>
@@ -121,7 +121,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, emailInputRef
             <span className="relative z-10">{i18n.pay.replace('{amount}', (amount / 100).toFixed(2))}</span>
           </>
         )}
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+        <div className="absolute inset-0 bg-gradient-to-r from-red-500 via-pink-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
       </button>
 
       <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
@@ -136,8 +136,8 @@ interface CheckoutSummaryProps {
   lang: Language;
 }
 
-export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
-  const t = getUpsellTranslations(lang);
+export default function TiktokCheckoutSummary({ lang }: CheckoutSummaryProps) {
+  const t = getTiktokUpsellTranslations(lang);
   const {
     selectedServices,
     selectedPostsByService,
@@ -152,7 +152,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
     setAcceptedTerms,
     currentStep,
     prevStep,
-  } = useUpsellStore();
+  } = useTiktokUpsellStore();
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [isPaymentLoading, setIsPaymentLoading] = useState(false);
@@ -175,10 +175,11 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
   useEffect(() => {
     if (currentStep !== 3) return;
 
-    const primaryService = activeServices.find(s => s.type !== 'story-views') || activeServices[0];
+    const primaryService = activeServices.find(s => s.type !== 'shares') || activeServices[0];
     posthog.capture('step4_checkout_viewed', {
       final_price: totalPrice,
       final_service: primaryService?.type || 'unknown',
+      target_platform: 'tiktok',
     });
 
     const createPaymentIntent = async () => {
@@ -217,19 +218,19 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
     <div className="w-full max-w-5xl mx-auto pb-20">
       <button
         onClick={prevStep}
-        className="inline-flex items-center gap-2 text-gray-400 hover:text-pink-400 mb-8 transition-colors duration-200 text-sm font-medium"
+        className="inline-flex items-center gap-2 text-gray-400 hover:text-cyan-400 mb-8 transition-colors duration-200 text-sm font-medium"
       >
         <ArrowLeft className="w-4 h-4" />
         {t.checkout.backToSelection}
       </button>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
+
         {/* Left Column: Summary */}
         <div className="lg:col-span-5 space-y-6">
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl overflow-hidden shadow-2xl">
             <div className="p-6 bg-gray-900/50 border-b border-gray-800 flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-800 ring-2 ring-pink-500/50 flex-shrink-0">
+              <div className="w-16 h-16 rounded-full overflow-hidden bg-gray-800 ring-2 ring-cyan-500/50 flex-shrink-0">
                 <Image
                   src={proxyImageUrl(avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=random&size=96`}
                   alt={username}
@@ -243,14 +244,14 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                 <p className="text-sm text-gray-400 font-medium">{t.checkout.orderFor}</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <h3 className="text-xl font-bold text-white tracking-tight">@{username}</h3>
-                  <CheckCircle2 className="w-5 h-5 text-pink-500" />
+                  <CheckCircle2 className="w-5 h-5 text-cyan-500" />
                 </div>
               </div>
             </div>
 
             <div className="p-6 space-y-4">
               <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">{t.checkout.serviceDetails}</h4>
-              
+
               {activeServices.map((service) => {
                 const label = serviceLabelMap[service.type];
                 const selectedPosts = selectedPostsByService[service.type] || [];
@@ -261,7 +262,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                     <div>
                       <span className="font-bold text-white text-lg block">{service.quantity.toLocaleString()} {label}</span>
                       {isDistributable && selectedPosts.length > 0 && (
-                        <span className="text-xs font-medium text-pink-400 mt-1 inline-block bg-pink-500/10 px-2 py-0.5 rounded-full">
+                        <span className="text-xs font-medium text-cyan-400 mt-1 inline-block bg-cyan-500/10 px-2 py-0.5 rounded-full">
                           {t.checkout.onPosts.replace('{count}', String(selectedPosts.length))}
                         </span>
                       )}
@@ -287,14 +288,14 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
 
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 shadow-2xl">
             <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-pink-500" />
+              <ShieldCheck className="w-5 h-5 text-cyan-500" />
               {t.checkout.guarantees}
             </h4>
             <ul className="space-y-3">
               {t.checkout.guaranteesList.map((text, i) => (
                 <li key={i} className="flex items-center gap-3 text-sm text-gray-300 font-medium">
-                  <div className="w-5 h-5 rounded-full bg-pink-500/20 flex items-center justify-center shrink-0">
-                    <CheckCircle2 className="w-3.5 h-3.5 text-pink-400" />
+                  <div className="w-5 h-5 rounded-full bg-cyan-500/20 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />
                   </div>
                   {text}
                 </li>
@@ -306,8 +307,8 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
         {/* Right Column: Payment */}
         <div className="lg:col-span-7">
           <div className="bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-pink-500/5 rounded-full blur-3xl" />
-            
+            <div className="absolute top-0 right-0 w-64 h-64 bg-cyan-500/5 rounded-full blur-3xl" />
+
             <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight mb-6 sm:mb-8 relative z-10">{t.checkout.securePayment}</h2>
 
             <div className="space-y-8 relative z-10">
@@ -318,7 +319,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                 </label>
                 <div className="relative group">
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                    <Mail className={`h-5 w-5 transition-colors ${email && !email.includes('@') ? 'text-red-400' : 'text-gray-500 group-focus-within:text-pink-500'}`} />
+                    <Mail className={`h-5 w-5 transition-colors ${email && !email.includes('@') ? 'text-red-400' : 'text-gray-500 group-focus-within:text-cyan-500'}`} />
                   </div>
                   <input
                     ref={emailInputRef}
@@ -328,9 +329,9 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                     placeholder={t.checkout.emailPlaceholder}
                     required
                     className={`block w-full pl-12 pr-4 py-4 bg-gray-900 border rounded-xl text-white placeholder-gray-500 focus:ring-2 transition-all text-lg font-medium ${
-                      email && !email.includes('@') 
-                        ? 'border-red-500 focus:ring-red-500/50 focus:border-red-500' 
-                        : 'border-gray-700 focus:ring-pink-500/50 focus:border-pink-500'
+                      email && !email.includes('@')
+                        ? 'border-red-500 focus:ring-red-500/50 focus:border-red-500'
+                        : 'border-gray-700 focus:ring-cyan-500/50 focus:border-cyan-500'
                     }`}
                   />
                 </div>
@@ -344,7 +345,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
               {/* Stripe Elements */}
               <div>
                 <label className="block text-sm font-bold text-gray-300 mb-4 uppercase tracking-wider">{t.checkout.cardInfo}</label>
-                
+
                 {paymentInitError && (
                   <div className="bg-red-900/20 border border-red-500/30 rounded-xl p-4 mb-4">
                     <p className="text-sm font-medium text-red-400">{paymentInitError}</p>
@@ -353,7 +354,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
 
                 {isPaymentLoading && (
                   <div className="flex flex-col items-center justify-center py-12 gap-4">
-                    <Loader2 className="w-8 h-8 animate-spin text-pink-500" />
+                    <Loader2 className="w-8 h-8 animate-spin text-cyan-500" />
                     <p className="text-gray-400 font-medium">{t.checkout.securePrepare}</p>
                   </div>
                 )}
@@ -377,9 +378,8 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                         }}
                         onPaymentIntentId={(id) => { paymentIntentIdRef.current = id; }}
                         onBeforePayment={() => {
-                          // Save order data to sessionStorage for redirect fallback (Apple Pay)
                           try {
-                            const { posts, selectedPostsByService: spbs } = useUpsellStore.getState();
+                            const { posts, selectedPostsByService: spbs } = useTiktokUpsellStore.getState();
                             const postsMap = Object.fromEntries(posts.map(p => [p.id, p]));
                             const funnelServices = activeServices.map((svc) => {
                               const isD = svc.type === 'likes' || svc.type === 'views';
@@ -399,6 +399,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                             });
                             sessionStorage.setItem('pendingOrder', JSON.stringify({
                               username, email, avatarUrl, totalPrice, lang,
+                              targetPlatform: 'tiktok',
                               funnelData: { username, avatarUrl, services: funnelServices },
                               funnelServices,
                             }));
@@ -408,7 +409,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                           if (orderSaved) return;
                           setOrderSaved(true);
                           try {
-                            const { posts, selectedPostsByService } = useUpsellStore.getState();
+                            const { posts, selectedPostsByService } = useTiktokUpsellStore.getState();
                             const postsMap = Object.fromEntries(posts.map(p => [p.id, p]));
 
                             const funnelServices = activeServices.map((service) => {
@@ -450,7 +451,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                                 email,
                                 amount: totalPrice,
                                 paymentId: paymentIntentIdRef.current || 'unknown',
-                                orderSource: 'APP_FUNNEL',
+                                orderSource: 'APP_FUNNEL_TIKTOK',
                                 funnelData,
                               }),
                             });
@@ -461,7 +462,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
-                                  orderSource: 'APP_FUNNEL',
+                                  orderSource: 'APP_FUNNEL_TIKTOK',
                                   orderId: String(orderResult.orderId || paymentIntentIdRef.current?.slice(-8).toUpperCase() || 'N/A'),
                                   email,
                                   username,
@@ -499,7 +500,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                               transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
                             });
 
-                            const primarySvc = funnelServices.find(s => s.type !== 'story-views') || funnelServices[0];
+                            const primarySvc = funnelServices.find(s => s.type !== 'shares') || funnelServices[0];
                             posthog.capture('purchase_completed', {
                               revenue: totalPrice,
                               currency: 'EUR',
@@ -507,6 +508,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                               quantity: primarySvc?.quantity || 0,
                               is_new_customer: orderResult.isNewCustomer ?? true,
                               customer_order_number: orderResult.customerOrderNumber ?? 1,
+                              target_platform: 'tiktok',
                             });
                           } catch (err) {
                             console.error('Failed to save order:', err);
@@ -527,13 +529,13 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                   type="checkbox"
                   checked={acceptedTerms}
                   onChange={(e) => setAcceptedTerms(e.target.checked)}
-                  className="mt-0.5 h-5 w-5 text-pink-500 focus:ring-pink-500/50 border-gray-600 rounded bg-gray-900 shrink-0"
+                  className="mt-0.5 h-5 w-5 text-cyan-500 focus:ring-cyan-500/50 border-gray-600 rounded bg-gray-900 shrink-0"
                 />
                 <span className="text-sm text-gray-400 group-hover:text-gray-300 transition-colors leading-relaxed">
                   {t.checkout.termsAccept}{' '}
-                  <a href="#" className="text-white hover:text-pink-400 underline decoration-gray-600 hover:decoration-pink-400 transition-all font-medium">{t.checkout.termsLink}</a>{' '}
+                  <a href="#" className="text-white hover:text-cyan-400 underline decoration-gray-600 hover:decoration-cyan-400 transition-all font-medium">{t.checkout.termsLink}</a>{' '}
                   {t.checkout.andThe}{' '}
-                  <a href="#" className="text-white hover:text-pink-400 underline decoration-gray-600 hover:decoration-pink-400 transition-all font-medium">{t.checkout.privacyLink}</a>.
+                  <a href="#" className="text-white hover:text-cyan-400 underline decoration-gray-600 hover:decoration-cyan-400 transition-all font-medium">{t.checkout.privacyLink}</a>.
                 </span>
               </label>
 
