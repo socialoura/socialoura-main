@@ -364,7 +364,6 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                         email={email}
                         acceptedTerms={acceptedTerms}
                         lang={lang}
-                        emailInputRef={emailInputRef}
                         i18n={{
                           paymentError: t.checkout.paymentError,
                           secureConnect: t.checkout.secureConnect,
