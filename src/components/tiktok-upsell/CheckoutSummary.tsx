@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Mail, Loader2, Lock, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
-import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { PaymentElement, ExpressCheckoutElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import StripeProvider from '@/components/StripeProvider';
 import useTiktokUpsellStore from '@/store/useTiktokUpsellStore';
 import posthog from 'posthog-js';
@@ -70,8 +70,58 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
     setIsProcessing(false);
   };
 
+  const handleExpressCheckout = (event: { resolve: () => void }) => {
+    event.resolve();
+  };
+
+  const handleExpressConfirm = async () => {
+    if (!stripe || !elements) return;
+    
+    posthog.capture('step4_payment_attempted', { payment_method_type: 'express', target_platform: 'tiktok' });
+    onBeforePayment?.();
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${window.location.origin}/${lang}/payment-success`,
+        receipt_email: email,
+      },
+      redirect: 'if_required',
+    });
+
+    if (error) {
+      posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown', target_platform: 'tiktok' });
+      setPaymentError(error.message || i18n.paymentError);
+      return;
+    }
+
+    if (paymentIntent && paymentIntent.status === 'succeeded') {
+      onPaymentIntentId?.(paymentIntent.id);
+      onSuccess?.();
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Express Checkout (Apple Pay / Google Pay) */}
+      <div>
+        <ExpressCheckoutElement
+          onConfirm={handleExpressConfirm}
+          onClick={handleExpressCheckout}
+          options={{
+            buttonType: { applePay: 'buy', googlePay: 'buy' },
+            buttonHeight: 48,
+          }}
+        />
+      </div>
+
+      {/* Separator */}
+      <div className="flex items-center my-6">
+        <div className="flex-1 border-t border-slate-700"></div>
+        <span className="px-4 text-slate-400 text-sm uppercase tracking-wider">ou</span>
+        <div className="flex-1 border-t border-slate-700"></div>
+      </div>
+
       {/* Card Payment */}
       <div className="relative min-h-[180px] bg-gray-900 rounded-2xl p-5 border border-gray-800 shadow-inner">
         {!elementsReady && (
