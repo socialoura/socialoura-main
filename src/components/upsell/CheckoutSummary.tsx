@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { Mail, Loader2, Lock, ArrowLeft, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
@@ -18,7 +18,6 @@ interface CheckoutPaymentFormProps {
   email: string;
   acceptedTerms: boolean;
   lang: string;
-  emailInputRef: React.RefObject<HTMLInputElement>;
   onSuccess?: () => void;
   onPaymentIntentId?: (id: string) => void;
   onBeforePayment?: () => void;
@@ -31,14 +30,12 @@ interface CheckoutPaymentFormProps {
   };
 }
 
-function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, emailInputRef, onSuccess, onPaymentIntentId, onBeforePayment, i18n }: CheckoutPaymentFormProps) {
+function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, onPaymentIntentId, onBeforePayment, i18n }: CheckoutPaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [elementsReady, setElementsReady] = useState(false);
-
-  const isEmailValid = email && email.includes('@') && email.length > 3;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
