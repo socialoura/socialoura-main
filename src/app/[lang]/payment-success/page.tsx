@@ -98,7 +98,7 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
         const source = getPurchaseSource(window.location.pathname, 'APP_FUNNEL');
         trackPurchase({
           revenue: convert(Number(totalPrice)).price,
-          currency: currency.toUpperCase(),
+          currency: currency.toUpperCase() as 'USD' | 'EUR' | 'GBP' | 'CHF' | 'CAD' | 'AUD' | 'NZD' | 'JPY' | 'CNY' | 'INR' | 'BRL' | 'MXN' | 'KRW' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'CZK' | 'HUF' | 'RON' | 'TRY' | 'ZAR' | 'SGD' | 'HKD',
           source,
           transactionId: String(orderResult.orderId || paymentIntentId),
           email,
