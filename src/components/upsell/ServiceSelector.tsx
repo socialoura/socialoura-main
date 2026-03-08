@@ -85,8 +85,8 @@ function ServiceSelector({ lang }: ServiceSelectorProps) {
   const [, setPricingLoaded] = useState(false);
   const [defaultsLoaded, setDefaultsLoaded] = useState(false);
 
-  // Initialize from store defaults to prevent visual jump
-  const [sliderValues, setSliderValues] = useState<Record<string, number>>(sliderDefaults);
+  // Initialize with empty values to prevent visual jump before step 2
+  const [sliderValues, setSliderValues] = useState<Record<string, number>>({});
 
   useEffect(() => {
     // Only initialize when component is actually visible (step 2)
