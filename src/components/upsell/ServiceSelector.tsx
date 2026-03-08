@@ -169,8 +169,8 @@ function ServiceSelector({ lang }: ServiceSelectorProps) {
         setQuantity(tier.qty);
         setPrice(tier.price);
       }
-      posthog.capture('step2_service_selected', { service_type: service.type });
-      posthog.capture('step2_quantity_adjusted', { service_type: service.type, quantity: tier.qty, price: tier.price });
+      posthog.capture('instagram_step2_service_selected', { service_type: service.type, target_platform: 'instagram' });
+      posthog.capture('instagram_step2_quantity_adjusted', { service_type: service.type, quantity: tier.qty, price: tier.price, target_platform: 'instagram' });
     } else {
       removeServiceFromCart(service.type);
     }
@@ -408,10 +408,11 @@ function ServiceSelector({ lang }: ServiceSelectorProps) {
               });
               const activeServices = SERVICES.filter(s => localSliderValues[s.type] > 0);
               const primaryService = activeServices.find(s => s.type !== 'story-views') || activeServices[0];
-              posthog.capture('step2_completed', {
+              posthog.capture('instagram_step2_completed', {
                 final_service: primaryService?.type || 'unknown',
                 final_quantity: primaryService ? primaryService.pricing[localSliderValues[primaryService.type]].qty : 0,
                 total_price: totalPrice,
+                target_platform: 'instagram',
               });
               nextStep();
             }}

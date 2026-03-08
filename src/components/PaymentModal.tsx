@@ -6,6 +6,7 @@ import { X, Loader2, CheckCircle, AlertCircle, Tag } from 'lucide-react';
 import StripeProvider from './StripeProvider';
 import { formatCentsToDisplay, type SupportedCurrency } from '@/lib/pricing';
 import { trackTiktokClassicPurchase } from '@/lib/gtag';
+import { trackPurchase, getPurchaseSource } from '@/lib/posthog-tracking';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -226,6 +227,23 @@ function PaymentForm({
           transactionId: paymentIntent.id,
         });
 
+        // PostHog revenue tracking
+        const source = getPurchaseSource(window.location.pathname, 'TIKTOK_SINGLE');
+        trackPurchase({
+          revenue: amount / 100, // Convert from cents to euros
+          currency: 'EUR',
+          source,
+          transactionId: paymentIntent.id,
+          email,
+          username: orderDetails?.username,
+          services: orderDetails ? [{
+            type: 'followers',
+            quantity: orderDetails.followers,
+            price: amount / 100,
+          }] : undefined,
+          paymentMethod: 'card',
+        });
+
         // Send confirmation email and Discord notification
         if (email && orderDetails) {
           // Store order details in sessionStorage for the confirmation page
@@ -426,6 +444,23 @@ function PaymentForm({
                           'transaction_id': paymentIntent.id
                         });
                       }
+
+                      // PostHog revenue tracking for express payment
+                      const source = getPurchaseSource(window.location.pathname, 'TIKTOK_SINGLE');
+                      trackPurchase({
+                        revenue: amount / 100, // Convert from cents to euros
+                        currency: 'EUR',
+                        source,
+                        transactionId: paymentIntent.id,
+                        email,
+                        username: orderDetails?.username,
+                        services: orderDetails ? [{
+                          type: 'followers',
+                          quantity: orderDetails.followers,
+                          price: amount / 100,
+                        }] : undefined,
+                        paymentMethod: 'express',
+                      });
                       if (email && orderDetails) {
                         const orderData = { orderId, platform: orderDetails.platform, followers: orderDetails.followers, price: priceFormatted, email, username: orderDetails.username, date: orderDate };
                         sessionStorage.setItem('lastOrder', JSON.stringify(orderData));

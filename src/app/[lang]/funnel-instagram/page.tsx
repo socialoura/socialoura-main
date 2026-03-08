@@ -14,11 +14,11 @@ export default function FunnelLandingPage({ params }: { params: { lang: string }
   const t = getLandingTranslations(lang);
 
   useEffect(() => {
-    posthog.capture('landing_funnel_viewed');
+    posthog.capture('instagram_landing_funnel_viewed');
   }, []);
 
   const handleCta = () => {
-    posthog.capture('landing_funnel_cta_clicked');
+    posthog.capture('instagram_landing_funnel_cta_clicked');
     router.push(`/${lang}/instagram`);
   };
 

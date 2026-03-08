@@ -27,7 +27,7 @@ export default function UpsellPage() {
 
   // Étape 0: Track tunnel page view on mount
   useEffect(() => {
-    posthog.capture('tunnel_page_viewed');
+    posthog.capture('instagram_tunnel_page_viewed');
   }, []);
 
   // Scroll to top on every step change

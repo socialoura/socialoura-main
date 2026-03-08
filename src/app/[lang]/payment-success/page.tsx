@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
 import posthog from 'posthog-js';
 import { trackFunnelPurchase } from '@/lib/gtag';
+import { trackPurchase, getPurchaseSource } from '@/lib/posthog-tracking';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 export default function PaymentSuccessPage({ params }: { params: { lang: string } }) {
   const router = useRouter();
@@ -12,6 +14,7 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
   const lang = params.lang || 'fr';
   const [countdown, setCountdown] = useState(10);
   const orderProcessedRef = useRef(false);
+  const { currency, convert } = useCurrency();
 
   // Handle redirect-based payments (Apple Pay full redirect)
   // Stripe appends ?payment_intent=xxx&redirect_status=succeeded
@@ -84,22 +87,26 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
           });
         } catch (e) { console.error('Confirmation email failed:', e); }
 
-        // Tracking
+        // Google Analytics tracking
         trackFunnelPurchase({
-          value: totalPrice,
-          currency: 'EUR',
+          value: convert(Number(totalPrice)).price,
+          currency: currency.toUpperCase() as any,
           transactionId: String(orderResult.orderId || paymentIntentId),
         });
 
-        const primarySvc = funnelServices?.find((s: { type: string }) => s.type !== 'story-views') || funnelServices?.[0];
-        posthog.capture('purchase_completed', {
-          revenue: totalPrice,
-          currency: 'EUR',
-          service: primarySvc?.type || 'unknown',
-          quantity: primarySvc?.quantity || 0,
-          is_new_customer: orderResult.isNewCustomer ?? true,
-          customer_order_number: orderResult.customerOrderNumber ?? 1,
-          payment_method: 'express_redirect',
+        // PostHog revenue tracking with source detection
+        const source = getPurchaseSource(window.location.pathname, 'APP_FUNNEL');
+        trackPurchase({
+          revenue: convert(Number(totalPrice)).price,
+          currency: currency.toUpperCase() as any,
+          source,
+          transactionId: String(orderResult.orderId || paymentIntentId),
+          email,
+          username,
+          services: funnelServices,
+          isNewCustomer: orderResult.isNewCustomer,
+          customerOrderNumber: orderResult.customerOrderNumber,
+          paymentMethod: 'express_redirect',
         });
       } catch (err) {
         console.error('Failed to process redirect order:', err);

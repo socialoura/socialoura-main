@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
+import posthog from 'posthog-js';
 import { Language } from '@/i18n/config';
 import { Bot, Clock, Shield, Package, Megaphone, BarChart3 } from 'lucide-react';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -31,6 +32,14 @@ interface FollowerGoal {
 export default function TikTokPage({ params }: PageProps) {
   const lang = params.lang as Language;
   
+  // Track page view
+  useEffect(() => {
+    posthog.capture('tiktok_single_page_viewed', { 
+      target_platform: 'tiktok',
+      page_type: 'single_product'
+    });
+  }, []);
+  
   // State management
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
@@ -48,15 +57,35 @@ export default function TikTokPage({ params }: PageProps) {
     // Remove any @ symbols from the input
     value = value.replace(/@/g, '');
     setUsername(value);
+    
+    // Track first username input
+    if (value.length > 0 && username.length === 0) {
+      posthog.capture('tiktok_single_username_started', { 
+        target_platform: 'tiktok',
+        username_length: value.length 
+      });
+    }
   };
 
   const handleContinue = () => {
     if (username.trim().length > 0) {
+      posthog.capture('tiktok_single_username_submitted', { 
+        target_platform: 'tiktok',
+        username_length: username.trim().length 
+      });
       setIsGoalModalOpen(true);
     }
   };
 
   const handleGoalSelected = (goal: FollowerGoal, emailParam: string) => {
+    posthog.capture('tiktok_single_goal_selected', { 
+      target_platform: 'tiktok',
+      followers: goal.followers,
+      price: goal.price,
+      original_price: goal.originalPrice,
+      discount: goal.discount,
+      is_popular: goal.popular || false
+    });
     setSelectedGoal(goal);
     setEmail(emailParam);
     setIsGoalModalOpen(false);
@@ -64,6 +93,14 @@ export default function TikTokPage({ params }: PageProps) {
   };
 
   const handlePaymentSuccess = async (paymentIntentIdParam: string) => {
+    posthog.capture('tiktok_single_payment_succeeded', { 
+      target_platform: 'tiktok',
+      payment_intent_id: paymentIntentIdParam,
+      followers: selectedGoal?.followers || 0,
+      price: selectedGoal?.price || 0,
+      username: username,
+      email: email
+    });
     setPaymentIntentId(paymentIntentIdParam);
     setIsPaymentModalOpen(false);
     setIsSuccessModalOpen(true);
@@ -96,14 +133,28 @@ export default function TikTokPage({ params }: PageProps) {
   };
 
   const handleClosePaymentModal = () => {
+    posthog.capture('tiktok_single_payment_modal_closed', { 
+      target_platform: 'tiktok',
+      had_selected_goal: selectedGoal !== null,
+      had_username: username.length > 0,
+      had_email: email.length > 0
+    });
     setIsPaymentModalOpen(false);
   };
 
   const handleCloseSuccessModal = () => {
+    posthog.capture('tiktok_single_success_modal_closed', { 
+      target_platform: 'tiktok',
+      payment_intent_id: paymentIntentId
+    });
     setIsSuccessModalOpen(false);
   };
 
   const handleCloseGoalModal = () => {
+    posthog.capture('tiktok_single_goal_modal_closed', { 
+      target_platform: 'tiktok',
+      had_username: username.length > 0
+    });
     setIsGoalModalOpen(false);
   };
   

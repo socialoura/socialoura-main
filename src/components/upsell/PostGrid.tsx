@@ -29,7 +29,7 @@ function PostGrid({ lang }: PostGridProps) {
   const gridViewedRef = useRef(false);
   useEffect(() => {
     if (!gridViewedRef.current && currentDistributionService) {
-      posthog.capture('step3_grid_viewed', { has_posts_available: posts.length > 0 });
+      posthog.capture('instagram_step3_grid_viewed', { has_posts_available: posts.length > 0, target_platform: 'instagram' });
       gridViewedRef.current = true;
     }
   }, [posts.length, currentDistributionService]);
@@ -107,9 +107,10 @@ function PostGrid({ lang }: PostGridProps) {
               onClick={() => {
                 const willBeSelected = !currentSelectedPosts.includes(post.id);
                 togglePostSelection(post.id);
-                posthog.capture('step3_post_toggled', {
+                posthog.capture('instagram_step3_post_toggled', {
                   action: willBeSelected ? 'selected' : 'unselected',
                   current_total_selected: willBeSelected ? currentSelectedPosts.length + 1 : currentSelectedPosts.length - 1,
+                  target_platform: 'instagram',
                 });
               }}
               className={`group relative aspect-[4/5] rounded-xl sm:rounded-2xl overflow-hidden transition-colors duration-200 ${
@@ -183,7 +184,7 @@ function PostGrid({ lang }: PostGridProps) {
             disabled={!canContinue}
             onClick={() => {
               if (!canContinue) return;
-              posthog.capture('step3_completed', { total_posts_selected: currentSelectedPosts.length });
+              posthog.capture('instagram_step3_completed', { total_posts_selected: currentSelectedPosts.length, target_platform: 'instagram' });
               nextStep();
             }}
             className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 px-8 py-3.5 text-sm sm:text-base font-bold text-white shadow-lg hover:opacity-90 transition-opacity duration-200 uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"

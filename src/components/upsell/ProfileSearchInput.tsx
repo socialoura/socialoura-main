@@ -42,7 +42,7 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
     setProfileError(null);
     setSearchResult(null);
 
-    posthog.capture('step1_search_initiated', { target_platform: 'instagram' });
+    posthog.capture('instagram_step1_search_initiated', { target_platform: 'instagram' });
 
     try {
       const res = await fetch(`/api/scraper?username=${encodeURIComponent(clean)}`);
@@ -61,7 +61,7 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
       });
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : t.search.errorTitle;
-      posthog.capture('step1_search_failed', { error_reason: errorMsg });
+      posthog.capture('instagram_step1_search_failed', { error_reason: errorMsg, target_platform: 'instagram' });
       setProfileError(errorMsg);
     } finally {
       setProfileLoading(false);
@@ -70,7 +70,7 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
 
   const handleSelectProfile = () => {
     if (!searchResult) return;
-    posthog.capture('step1_profile_found', { follower_count: searchResult.followersCount });
+    posthog.capture('instagram_step1_profile_found', { follower_count: searchResult.followersCount, target_platform: 'instagram' });
     setUsername(searchResult.username);
     setProfile({
       avatarUrl: searchResult.avatarUrl,

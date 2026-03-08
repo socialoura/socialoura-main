@@ -8,9 +8,11 @@ import StripeProvider from '@/components/StripeProvider';
 import useUpsellStore from '@/store/useUpsellStore';
 import posthog from 'posthog-js';
 import { trackInstaFunnelPurchase } from '@/lib/gtag';
+import { trackPurchase, getPurchaseSource } from '@/lib/posthog-tracking';
 import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface CheckoutPaymentFormProps {
   amount: number;
@@ -45,7 +47,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
     setIsProcessing(true);
     setPaymentError(null);
 
-    posthog.capture('step4_payment_attempted', { payment_method_type: 'card' });
+    posthog.capture('instagram_step4_payment_attempted', { payment_method_type: 'card', target_platform: 'instagram' });
     onBeforePayment?.();
 
     const { error, paymentIntent } = await stripe.confirmPayment({
@@ -58,7 +60,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
     });
 
     if (error) {
-      posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown' });
+      posthog.capture('instagram_step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown', target_platform: 'instagram' });
       setPaymentError(error.message || i18n.paymentError);
       setIsProcessing(false);
       return;
@@ -78,7 +80,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
   const handleExpressConfirm = async () => {
     if (!stripe || !elements) return;
     
-    posthog.capture('step4_payment_attempted', { payment_method_type: 'express' });
+    posthog.capture('instagram_step4_payment_attempted', { payment_method_type: 'express', target_platform: 'instagram' });
     onBeforePayment?.();
 
     const { error, paymentIntent } = await stripe.confirmPayment({
@@ -91,7 +93,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
     });
 
     if (error) {
-      posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown' });
+      posthog.capture('instagram_step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown', target_platform: 'instagram' });
       setPaymentError(error.message || i18n.paymentError);
       return;
     }
@@ -197,6 +199,7 @@ interface CheckoutSummaryProps {
 
 export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
   const t = getUpsellTranslations(lang);
+  const { currency, convert } = useCurrency();
   const {
     selectedServices,
     selectedPostsByService,
@@ -235,9 +238,10 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
     if (currentStep !== 3) return;
 
     const primaryService = activeServices.find(s => s.type !== 'story-views') || activeServices[0];
-    posthog.capture('step4_checkout_viewed', {
+    posthog.capture('instagram_step4_checkout_viewed', {
       final_price: totalPrice,
       final_service: primaryService?.type || 'unknown',
+      target_platform: 'instagram',
     });
 
     const createPaymentIntent = async () => {
@@ -249,7 +253,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
         const response = await fetch('/api/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: amountInCents, currency: 'eur', email: email || undefined }),
+          body: JSON.stringify({ amount: amountInCents, currency: currency, email: email || undefined }),
         });
 
         const data = await response.json();
@@ -420,8 +424,8 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                   <div className="mt-2">
                     <StripeProvider clientSecret={clientSecret}>
                       <CheckoutPaymentForm
-                        amount={Math.round(totalPrice * 100)}
-                        currency="eur"
+                        amount={Math.round(convert(totalPrice).amountInCents)}
+                        currency={currency}
                         email={email}
                         acceptedTerms={acceptedTerms}
                         lang={lang}
@@ -551,20 +555,26 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                               console.error('Failed to send confirmation email:', emailErr);
                             }
 
+                            // Google Analytics tracking
                             trackInstaFunnelPurchase({
-                              value: totalPrice,
-                              currency: 'EUR',
+                              value: convert(totalPrice).price,
+                              currency: currency.toUpperCase() as any,
                               transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
                             });
 
-                            const primarySvc = funnelServices.find(s => s.type !== 'story-views') || funnelServices[0];
-                            posthog.capture('purchase_completed', {
-                              revenue: totalPrice,
-                              currency: 'EUR',
-                              service: primarySvc?.type || 'unknown',
-                              quantity: primarySvc?.quantity || 0,
-                              is_new_customer: orderResult.isNewCustomer ?? true,
-                              customer_order_number: orderResult.customerOrderNumber ?? 1,
+                            // PostHog revenue tracking with source detection
+                            const source = getPurchaseSource(window.location.pathname, 'APP_FUNNEL');
+                            trackPurchase({
+                              revenue: convert(totalPrice).price,
+                              currency: currency.toUpperCase() as any,
+                              source,
+                              transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
+                              email,
+                              username,
+                              services: funnelServices,
+                              isNewCustomer: orderResult.isNewCustomer,
+                              customerOrderNumber: orderResult.customerOrderNumber,
+                              paymentMethod: 'card',
                             });
                           } catch (err) {
                             console.error('Failed to save order:', err);

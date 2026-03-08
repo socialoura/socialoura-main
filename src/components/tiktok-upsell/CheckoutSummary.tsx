@@ -8,9 +8,11 @@ import StripeProvider from '@/components/StripeProvider';
 import useTiktokUpsellStore from '@/store/useTiktokUpsellStore';
 import posthog from 'posthog-js';
 import { trackTiktokFunnelPurchase } from '@/lib/gtag';
+import { trackPurchase, getPurchaseSource } from '@/lib/posthog-tracking';
 import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
 import { getTiktokUpsellTranslations } from '@/i18n/tiktok-upsell';
+import { useCurrency } from '@/contexts/CurrencyContext';
 
 interface CheckoutPaymentFormProps {
   amount: number;
@@ -197,6 +199,7 @@ interface CheckoutSummaryProps {
 
 export default function TiktokCheckoutSummary({ lang }: CheckoutSummaryProps) {
   const t = getTiktokUpsellTranslations(lang);
+  const { currency, convert } = useCurrency();
   const {
     selectedServices,
     selectedPostsByService,
@@ -250,7 +253,7 @@ export default function TiktokCheckoutSummary({ lang }: CheckoutSummaryProps) {
         const response = await fetch('/api/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: amountInCents, currency: 'eur', email: email || undefined }),
+          body: JSON.stringify({ amount: amountInCents, currency: currency, email: email || undefined }),
         });
 
         const data = await response.json();
@@ -421,8 +424,8 @@ export default function TiktokCheckoutSummary({ lang }: CheckoutSummaryProps) {
                   <div className="mt-2">
                     <StripeProvider clientSecret={clientSecret}>
                       <CheckoutPaymentForm
-                        amount={Math.round(totalPrice * 100)}
-                        currency="eur"
+                        amount={Math.round(convert(totalPrice).amountInCents)}
+                        currency={currency}
                         email={email}
                         acceptedTerms={acceptedTerms}
                         lang={lang}
@@ -552,21 +555,26 @@ export default function TiktokCheckoutSummary({ lang }: CheckoutSummaryProps) {
                               console.error('Failed to send confirmation email:', emailErr);
                             }
 
+                            // Google Analytics tracking
                             trackTiktokFunnelPurchase({
-                              value: totalPrice,
-                              currency: 'EUR',
+                              value: convert(totalPrice).price,
+                              currency: currency.toUpperCase() as any,
                               transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
                             });
 
-                            const primarySvc = funnelServices.find(s => s.type !== 'shares') || funnelServices[0];
-                            posthog.capture('tiktok_purchase_completed', {
-                              revenue: totalPrice,
-                              currency: 'EUR',
-                              service: primarySvc?.type || 'unknown',
-                              quantity: primarySvc?.quantity || 0,
-                              is_new_customer: orderResult.isNewCustomer ?? true,
-                              customer_order_number: orderResult.customerOrderNumber ?? 1,
-                              target_platform: 'tiktok',
+                            // PostHog revenue tracking with source detection
+                            const source = getPurchaseSource(window.location.pathname, 'APP_FUNNEL_TIKTOK');
+                            trackPurchase({
+                              revenue: convert(totalPrice).price,
+                              currency: currency.toUpperCase() as any,
+                              source,
+                              transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
+                              email,
+                              username,
+                              services: funnelServices,
+                              isNewCustomer: orderResult.isNewCustomer,
+                              customerOrderNumber: orderResult.customerOrderNumber,
+                              paymentMethod: 'card',
                             });
                           } catch (err) {
                             console.error('Failed to save order:', err);
