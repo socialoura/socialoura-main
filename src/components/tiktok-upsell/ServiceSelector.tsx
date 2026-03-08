@@ -72,11 +72,9 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
     username,
     avatarUrl,
     fullName,
-    sliderDefaults,
     setSelectedService,
     setQuantity,
     setPrice,
-    setSliderDefaults,
     resetProfile,
   } = useTiktokUpsellStore();
 
@@ -151,7 +149,7 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
     const timeoutId = setTimeout(initializeServices, 100);
     
     return () => clearTimeout(timeoutId);
-  }, [defaultsLoaded, setPrice, setQuantity, setSelectedService, setSliderDefaults, t.service]);
+  }, [defaultsLoaded, setPrice, setQuantity, setSelectedService, t.service]);
 
   const [localSliderValues, setLocalSliderValues] = useState(sliderValues);
   const isDraggingRef = useRef(false);
