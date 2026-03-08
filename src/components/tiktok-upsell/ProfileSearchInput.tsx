@@ -43,7 +43,7 @@ export default function TiktokProfileSearchInput({ lang }: ProfileSearchInputPro
     setProfileError(null);
     setSearchResult(null);
 
-    posthog.capture('step1_search_initiated', { target_platform: 'tiktok' });
+    posthog.capture('tiktok_step1_search_initiated', { target_platform: 'tiktok' });
 
     try {
       const res = await fetch(`/api/scraper-tiktok?username=${encodeURIComponent(clean)}`);
@@ -62,7 +62,7 @@ export default function TiktokProfileSearchInput({ lang }: ProfileSearchInputPro
       });
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : t.search.errorTitle;
-      posthog.capture('step1_search_failed', { error_reason: errorMsg, target_platform: 'tiktok' });
+      posthog.capture('tiktok_step1_search_failed', { error_reason: errorMsg, target_platform: 'tiktok' });
       setProfileError(errorMsg);
     } finally {
       setProfileLoading(false);
@@ -71,7 +71,7 @@ export default function TiktokProfileSearchInput({ lang }: ProfileSearchInputPro
 
   const handleSelectProfile = () => {
     if (!searchResult) return;
-    posthog.capture('step1_profile_found', { follower_count: searchResult.followersCount, target_platform: 'tiktok' });
+    posthog.capture('tiktok_step1_profile_found', { follower_count: searchResult.followersCount, target_platform: 'tiktok' });
     setUsername(searchResult.username);
     setProfile({
       avatarUrl: searchResult.avatarUrl,

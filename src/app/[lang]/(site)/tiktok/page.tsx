@@ -26,7 +26,7 @@ export default function TiktokUpsellPage() {
   const { currentStep } = useTiktokUpsellStore();
 
   useEffect(() => {
-    posthog.capture('tunnel_page_viewed', { target_platform: 'tiktok' });
+    posthog.capture('tiktok_tunnel_page_viewed', { target_platform: 'tiktok' });
   }, []);
 
   useEffect(() => {

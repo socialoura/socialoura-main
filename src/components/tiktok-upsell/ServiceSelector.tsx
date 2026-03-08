@@ -163,8 +163,8 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
         setQuantity(tier.qty);
         setPrice(tier.price);
       }
-      posthog.capture('step2_service_selected', { service_type: service.type, target_platform: 'tiktok' });
-      posthog.capture('step2_quantity_adjusted', { service_type: service.type, quantity: tier.qty, price: tier.price, target_platform: 'tiktok' });
+      posthog.capture('tiktok_step2_service_selected', { service_type: service.type, target_platform: 'tiktok' });
+      posthog.capture('tiktok_step2_quantity_adjusted', { service_type: service.type, quantity: tier.qty, price: tier.price, target_platform: 'tiktok' });
     } else {
       removeServiceFromCart(service.type);
     }
@@ -383,7 +383,7 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
               });
               const activeServices = SERVICES.filter(s => localSliderValues[s.type] > 0);
               const primaryService = activeServices.find(s => s.type !== 'shares') || activeServices[0];
-              posthog.capture('step2_completed', {
+              posthog.capture('tiktok_step2_completed', {
                 final_service: primaryService?.type || 'unknown',
                 final_quantity: primaryService ? primaryService.pricing[localSliderValues[primaryService.type]].qty : 0,
                 total_price: totalPrice,

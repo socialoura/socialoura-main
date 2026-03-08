@@ -45,7 +45,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
     setIsProcessing(true);
     setPaymentError(null);
 
-    posthog.capture('step4_payment_attempted', { payment_method_type: 'card', target_platform: 'tiktok' });
+    posthog.capture('tiktok_step4_payment_attempted', { payment_method_type: 'card', target_platform: 'tiktok' });
     onBeforePayment?.();
 
     const { error, paymentIntent } = await stripe.confirmPayment({
@@ -58,7 +58,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
     });
 
     if (error) {
-      posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown', target_platform: 'tiktok' });
+      posthog.capture('tiktok_step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown', target_platform: 'tiktok' });
       setPaymentError(error.message || i18n.paymentError);
       setIsProcessing(false);
       return;
@@ -78,7 +78,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
   const handleExpressConfirm = async () => {
     if (!stripe || !elements) return;
     
-    posthog.capture('step4_payment_attempted', { payment_method_type: 'express', target_platform: 'tiktok' });
+    posthog.capture('tiktok_step4_payment_attempted', { payment_method_type: 'express', target_platform: 'tiktok' });
     onBeforePayment?.();
 
     const { error, paymentIntent } = await stripe.confirmPayment({
@@ -91,7 +91,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
     });
 
     if (error) {
-      posthog.capture('step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown', target_platform: 'tiktok' });
+      posthog.capture('tiktok_step4_payment_failed', { error_code: error.code || 'unknown', error_message: error.message || 'unknown', target_platform: 'tiktok' });
       setPaymentError(error.message || i18n.paymentError);
       return;
     }
@@ -235,7 +235,7 @@ export default function TiktokCheckoutSummary({ lang }: CheckoutSummaryProps) {
     if (currentStep !== 3) return;
 
     const primaryService = activeServices.find(s => s.type !== 'shares') || activeServices[0];
-    posthog.capture('step4_checkout_viewed', {
+    posthog.capture('tiktok_step4_checkout_viewed', {
       final_price: totalPrice,
       final_service: primaryService?.type || 'unknown',
       target_platform: 'tiktok',
@@ -559,7 +559,7 @@ export default function TiktokCheckoutSummary({ lang }: CheckoutSummaryProps) {
                             });
 
                             const primarySvc = funnelServices.find(s => s.type !== 'shares') || funnelServices[0];
-                            posthog.capture('purchase_completed', {
+                            posthog.capture('tiktok_purchase_completed', {
                               revenue: totalPrice,
                               currency: 'EUR',
                               service: primarySvc?.type || 'unknown',

@@ -29,7 +29,7 @@ function TiktokPostGrid({ lang }: PostGridProps) {
   const gridViewedRef = useRef(false);
   useEffect(() => {
     if (!gridViewedRef.current && currentDistributionService) {
-      posthog.capture('step3_grid_viewed', { has_posts_available: posts.length > 0, target_platform: 'tiktok' });
+      posthog.capture('tiktok_step3_grid_viewed', { has_posts_available: posts.length > 0, target_platform: 'tiktok' });
       gridViewedRef.current = true;
     }
   }, [posts.length, currentDistributionService]);
@@ -105,7 +105,7 @@ function TiktokPostGrid({ lang }: PostGridProps) {
               onClick={() => {
                 const willBeSelected = !currentSelectedPosts.includes(post.id);
                 togglePostSelection(post.id);
-                posthog.capture('step3_post_toggled', {
+                posthog.capture('tiktok_step3_post_toggled', {
                   action: willBeSelected ? 'selected' : 'unselected',
                   current_total_selected: willBeSelected ? currentSelectedPosts.length + 1 : currentSelectedPosts.length - 1,
                   target_platform: 'tiktok',
@@ -182,7 +182,7 @@ function TiktokPostGrid({ lang }: PostGridProps) {
             disabled={!hasSelectedPosts}
             onClick={() => {
               if (!hasSelectedPosts) return;
-              posthog.capture('step3_completed', { total_posts_selected: currentSelectedPosts.length, target_platform: 'tiktok' });
+              posthog.capture('tiktok_step3_completed', { total_posts_selected: currentSelectedPosts.length, target_platform: 'tiktok' });
               nextStep();
             }}
             className="w-full sm:w-auto rounded-xl bg-gradient-to-r from-cyan-500 via-pink-500 to-red-500 px-8 py-3.5 text-sm sm:text-base font-bold text-white shadow-lg hover:opacity-90 transition-opacity duration-200 uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
