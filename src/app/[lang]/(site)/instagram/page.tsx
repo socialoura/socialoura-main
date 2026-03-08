@@ -10,8 +10,6 @@ import ServiceSelector from '@/components/upsell/ServiceSelector';
 import PostGrid from '@/components/upsell/PostGrid';
 import CheckoutSummary from '@/components/upsell/CheckoutSummary';
 import { getStripe } from '@/components/StripeProvider';
-import ChatWidget from '@/components/ChatWidget';
-import LiveDeliveryNotification from '@/components/LiveDeliveryNotification';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
 
@@ -124,14 +122,6 @@ export default function UpsellPage() {
         </AnimatePresence>
       </main>
 
-      {/* Support Chat Widget */}
-      <ChatWidget lang={lang} />
-
-      {/* Live Delivery Notification - Fixed bottom-left */}
-      <LiveDeliveryNotification 
-        variant="instagram" 
-        translations={t.notification}
-      />
     </div>
   );
 }

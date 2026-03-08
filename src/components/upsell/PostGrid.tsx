@@ -158,7 +158,7 @@ function PostGrid({ lang }: PostGridProps) {
 
       {/* Solid Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-100 border-t border-gray-800 z-50">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="max-w-5xl mx-auto px-6 pt-4 pb-6 sm:pb-4 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4 w-full sm:w-auto">
             <div className="hidden sm:flex w-12 h-12 rounded-xl bg-gray-800 items-center justify-center">
               <ServiceIcon className={`w-6 h-6 ${hasSelectedPosts ? 'text-pink-400' : 'text-gray-500'}`} />

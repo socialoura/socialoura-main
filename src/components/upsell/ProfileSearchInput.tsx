@@ -127,7 +127,7 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
           <button
             type="submit"
             disabled={!inputValue.trim() || isProfileLoading}
-            className="relative overflow-hidden rounded-xl bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-white shadow-lg shadow-pink-500/25 hover:shadow-xl hover:shadow-pink-500/40 transition-all duration-300 uppercase tracking-wide group disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="rounded-xl bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-600 px-6 sm:px-8 py-3.5 sm:py-4 text-sm sm:text-base font-bold text-white shadow-lg hover:opacity-90 transition-opacity duration-200 uppercase tracking-wide disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {isProfileLoading ? (
               <>
@@ -136,11 +136,10 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
               </>
             ) : (
               <>
-                <span className="relative z-10">{t.search.continue}</span>
-                <Search className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+                <span>{t.search.continue}</span>
+                <Search className="w-5 h-5" />
               </>
             )}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-500 to-yellow-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </button>
         </form>
       </div>
@@ -171,49 +170,6 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
               </span>
             ))}
           </span>
-        </div>
-      </div>
-
-      {/* Before/After visual with real images */}
-      <div className="mt-8 sm:mt-10 mx-auto max-w-2xl w-full px-4">
-        <div className="text-center mb-6">
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-2">
-            {t.search.resultsTitle}
-          </h2>
-          <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t.search.beforeAfterLabel}</span>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-          {/* Before Image */}
-          <div className="relative">
-            <Image
-              src="/before.png"
-              alt="Avant - Profil Instagram"
-              width={400}
-              height={400}
-              className="w-full h-auto rounded-xl shadow-lg"
-              loading="lazy"
-              sizes="(max-width: 640px) 100vw, 50vw"
-            />
-            <div className="absolute top-2 left-2 bg-gray-900/80 px-2 py-1 rounded-lg">
-              <span className="text-xs font-bold text-gray-300">Avant</span>
-            </div>
-          </div>
-
-          {/* After Image */}
-          <div className="relative">
-            <Image
-              src="/after.png"
-              alt="Après - Profil Instagram boosté"
-              width={400}
-              height={400}
-              className="w-full h-auto rounded-xl shadow-lg ring-2 ring-pink-500/30"
-              loading="lazy"
-              sizes="(max-width: 640px) 100vw, 50vw"
-            />
-            <div className="absolute top-2 left-2 bg-gradient-to-r from-pink-500 to-purple-600 px-2 py-1 rounded-lg">
-              <span className="text-xs font-bold text-white">Après</span>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -327,6 +283,51 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Before/After visual - only show when no search result and no loading */}
+      {!searchResult && !isProfileLoading && !profileError && (
+        <div className="mt-8 sm:mt-10 mx-auto max-w-2xl w-full px-4">
+          <div className="text-center mb-6">
+            <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white mb-2">
+              {t.search.resultsTitle}
+            </h2>
+            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">{t.search.beforeAfterLabel}</span>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            {/* Before Image */}
+            <div className="relative">
+              <Image
+                src="/before.png"
+                alt="Avant - Profil Instagram"
+                width={400}
+                height={400}
+                className="w-full h-auto rounded-xl shadow-lg"
+                loading="lazy"
+                sizes="(max-width: 640px) 100vw, 50vw"
+              />
+              <div className="absolute top-2 left-2 bg-gray-900/80 px-2 py-1 rounded-lg">
+                <span className="text-xs font-bold text-gray-300">Avant</span>
+              </div>
+            </div>
+
+            {/* After Image */}
+            <div className="relative">
+              <Image
+                src="/after.png"
+                alt="Après - Profil Instagram boosté"
+                width={400}
+                height={400}
+                className="w-full h-auto rounded-xl shadow-lg ring-2 ring-pink-500/30"
+                loading="lazy"
+                sizes="(max-width: 640px) 100vw, 50vw"
+              />
+              <div className="absolute top-2 left-2 bg-gradient-to-r from-pink-500 to-purple-600 px-2 py-1 rounded-lg">
+                <span className="text-xs font-bold text-white">Après</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

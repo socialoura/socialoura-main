@@ -257,8 +257,8 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
               )}
 
               {service.type === 'followers' && (
-                <div className="absolute top-3 right-3 z-20 bg-gradient-to-r from-cyan-500 to-pink-500 text-white text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-lg shadow-cyan-500/30 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
+                <div className="absolute top-3 right-3 z-20 border border-cyan-500/50 text-cyan-400 bg-transparent text-[10px] sm:text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5" />
                   {t.service.mostPopular}
                 </div>
               )}
@@ -352,9 +352,9 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
         })}
       </div>
 
-      {/* Sticky Footer */}
+      {/* Solid Sticky Footer */}
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900 bg-opacity-100 border-t border-gray-800 z-50">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-3 sm:pt-4 pb-6 sm:pb-4 flex items-center justify-between gap-3">
           <div className="flex items-center gap-6 w-full sm:w-auto">
             <div>
               <p className="text-xs sm:text-sm font-medium text-gray-400 mb-0.5">{t.service.orderTotal}</p>

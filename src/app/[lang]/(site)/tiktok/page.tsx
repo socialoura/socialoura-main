@@ -10,8 +10,6 @@ import TiktokServiceSelector from '@/components/tiktok-upsell/ServiceSelector';
 import TiktokPostGrid from '@/components/tiktok-upsell/PostGrid';
 import TiktokCheckoutSummary from '@/components/tiktok-upsell/CheckoutSummary';
 import { getStripe } from '@/components/StripeProvider';
-import ChatWidget from '@/components/ChatWidget';
-import LiveDeliveryNotification from '@/components/LiveDeliveryNotification';
 import { type Language } from '@/i18n/config';
 import { getTiktokUpsellTranslations } from '@/i18n/tiktok-upsell';
 
@@ -121,14 +119,6 @@ export default function TiktokUpsellPage() {
         </AnimatePresence>
       </main>
 
-      {/* Support Chat Widget */}
-      <ChatWidget lang={lang} />
-
-      {/* Live Delivery Notification - Fixed bottom-left */}
-      <LiveDeliveryNotification 
-        variant="tiktok" 
-        translations={t.notification}
-      />
     </div>
   );
 }
