@@ -90,7 +90,7 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
         // Google Analytics tracking
         trackFunnelPurchase({
           value: convert(Number(totalPrice)).price,
-          currency: currency.toUpperCase() as any,
+          currency: currency.toUpperCase(),
           transactionId: String(orderResult.orderId || paymentIntentId),
         });
 
@@ -98,7 +98,7 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
         const source = getPurchaseSource(window.location.pathname, 'APP_FUNNEL');
         trackPurchase({
           revenue: convert(Number(totalPrice)).price,
-          currency: currency.toUpperCase() as any,
+          currency: currency.toUpperCase(),
           source,
           transactionId: String(orderResult.orderId || paymentIntentId),
           email,
@@ -115,7 +115,7 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
 
     posthog.capture('payment_success_page_viewed');
     processRedirectOrder();
-  }, [searchParams]);
+  }, [searchParams, convert, currency]);
 
   // Auto-redirect countdown
   useEffect(() => {

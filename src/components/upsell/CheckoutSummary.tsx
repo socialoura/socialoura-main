@@ -272,7 +272,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
     };
 
     createPaymentIntent();
-  }, [currentStep, totalPrice, activeServices, email, t.checkout.stripeError]);
+  }, [currentStep, totalPrice, activeServices, email, t.checkout.stripeError, currency]);
 
   if (activeServices.length === 0) return null;
 
@@ -558,7 +558,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                             // Google Analytics tracking
                             trackInstaFunnelPurchase({
                               value: convert(totalPrice).price,
-                              currency: currency.toUpperCase() as any,
+                              currency: currency.toUpperCase(),
                               transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
                             });
 
@@ -566,7 +566,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                             const source = getPurchaseSource(window.location.pathname, 'APP_FUNNEL');
                             trackPurchase({
                               revenue: convert(totalPrice).price,
-                              currency: currency.toUpperCase() as any,
+                              currency: currency.toUpperCase(),
                               source,
                               transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
                               email,

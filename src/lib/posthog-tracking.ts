@@ -1,8 +1,8 @@
 import posthog from 'posthog-js';
 
 export interface PurchaseTrackingData {
-  revenue: number; // en euros
-  currency: 'EUR';
+  revenue: number; // dans la devise locale
+  currency: 'USD' | 'EUR' | 'GBP' | 'CHF' | 'CAD' | 'AUD' | 'NZD' | 'JPY' | 'CNY' | 'INR' | 'BRL' | 'MXN' | 'KRW' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'CZK' | 'HUF' | 'RON' | 'TRY' | 'ZAR' | 'SGD' | 'HKD';
   source: 'instagram' | 'tiktok' | 'tiktok-single';
   transactionId?: string;
   email?: string;
@@ -36,7 +36,7 @@ export function trackPurchase(data: PurchaseTrackingData) {
     return;
   }
 
-  const properties: any = {
+  const properties: Record<string, string | number | boolean | Array<{type: string; quantity: number; price: number;}>> = {
     revenue: revenue, // PostHog expects revenue as a number
     currency: data.currency || 'EUR',
     source: data.source,
