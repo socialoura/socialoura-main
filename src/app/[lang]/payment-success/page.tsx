@@ -6,7 +6,6 @@ import { CheckCircle2, ArrowRight, Loader2 } from 'lucide-react';
 import posthog from 'posthog-js';
 import { trackFunnelPurchase } from '@/lib/gtag';
 import { trackPurchase, getPurchaseSource } from '@/lib/posthog-tracking';
-import { useCurrency } from '@/contexts/CurrencyContext';
 
 export default function PaymentSuccessPage({ params }: { params: { lang: string } }) {
   const router = useRouter();
@@ -14,7 +13,6 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
   const lang = params.lang || 'fr';
   const [countdown, setCountdown] = useState(10);
   const orderProcessedRef = useRef(false);
-  const { currency, convert } = useCurrency();
 
   // Handle redirect-based payments (Apple Pay full redirect)
   // Stripe appends ?payment_intent=xxx&redirect_status=succeeded
@@ -89,16 +87,16 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
 
         // Google Analytics tracking
         trackFunnelPurchase({
-          value: convert(Number(totalPrice)).price,
-          currency: currency.toUpperCase(),
+          value: Number(totalPrice),
+          currency: 'EUR',
           transactionId: String(orderResult.orderId || paymentIntentId),
         });
 
         // PostHog revenue tracking with source detection
         const source = getPurchaseSource(window.location.pathname, 'APP_FUNNEL');
         trackPurchase({
-          revenue: convert(Number(totalPrice)).price,
-          currency: currency.toUpperCase() as 'USD' | 'EUR' | 'GBP' | 'CHF' | 'CAD' | 'AUD' | 'NZD' | 'JPY' | 'CNY' | 'INR' | 'BRL' | 'MXN' | 'KRW' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'CZK' | 'HUF' | 'RON' | 'TRY' | 'ZAR' | 'SGD' | 'HKD',
+          revenue: Number(totalPrice),
+          currency: 'EUR',
           source,
           transactionId: String(orderResult.orderId || paymentIntentId),
           email,
@@ -115,7 +113,7 @@ export default function PaymentSuccessPage({ params }: { params: { lang: string 
 
     posthog.capture('payment_success_page_viewed');
     processRedirectOrder();
-  }, [searchParams, convert, currency]);
+  }, [searchParams]);
 
   // Auto-redirect countdown
   useEffect(() => {

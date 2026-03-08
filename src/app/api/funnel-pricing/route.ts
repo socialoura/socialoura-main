@@ -1,5 +1,5 @@
-import { NextResponse } from 'next/server';
-import { getFunnelPricing, initDatabase } from '@/lib/db';
+import { NextRequest, NextResponse } from 'next/server';
+import { getFunnelPricing, getFunnelCurrencyPricing, initDatabase } from '@/lib/db';
 
 // Initialize database on module load
 initDatabase().catch(console.error);
@@ -36,15 +36,35 @@ const DEFAULT_FUNNEL_PRICING = {
 };
 
 // Public GET - no auth required (frontend fetches this)
-export async function GET() {
+// Accepts optional ?currency=usd param to get currency-specific pricing
+export async function GET(request: NextRequest) {
   try {
     const isDBConfigured = !!(process.env.DB_HOST || process.env.DATABASE_URL);
+    const currency = request.nextUrl.searchParams.get('currency')?.toLowerCase();
 
+    // If a specific currency is requested (not eur), try to fetch currency-specific pricing
+    if (currency && currency !== 'eur' && isDBConfigured) {
+      try {
+        const currencyData = await getFunnelCurrencyPricing();
+        if (currencyData && currencyData[currency]) {
+          // Return currency-specific pricing with _currency metadata
+          return NextResponse.json({
+            ...currencyData[currency],
+            _currency: currency,
+          });
+        }
+      } catch (error) {
+        console.error('DB error fetching currency pricing:', error);
+      }
+      // Fall through to EUR pricing if currency not configured
+    }
+
+    // Default: return EUR pricing
     if (isDBConfigured) {
       try {
         const data = await getFunnelPricing();
         if (data) {
-          return NextResponse.json(data);
+          return NextResponse.json({ ...data, _currency: 'eur' });
         }
       } catch (error) {
         console.error('DB error fetching funnel pricing:', error);
@@ -52,9 +72,9 @@ export async function GET() {
     }
 
     // Fallback to defaults
-    return NextResponse.json(DEFAULT_FUNNEL_PRICING);
+    return NextResponse.json({ ...DEFAULT_FUNNEL_PRICING, _currency: 'eur' });
   } catch (error) {
     console.error('Error in funnel-pricing GET:', error);
-    return NextResponse.json(DEFAULT_FUNNEL_PRICING);
+    return NextResponse.json({ ...DEFAULT_FUNNEL_PRICING, _currency: 'eur' });
   }
 }

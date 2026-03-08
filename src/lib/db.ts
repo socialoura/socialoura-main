@@ -107,6 +107,27 @@ export async function initDatabase() {
     } catch (e) {
       console.log('Promo columns may already exist:', e);
     }
+
+    // Add Google Ads tracking columns to orders
+    try {
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS ads_keyword VARCHAR(255) DEFAULT NULL`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS ads_campaign VARCHAR(255) DEFAULT NULL`;
+      await sql`ALTER TABLE orders ADD COLUMN IF NOT EXISTS ads_device VARCHAR(50) DEFAULT NULL`;
+    } catch (e) {
+      console.log('Ads columns may already exist:', e);
+    }
+
+    // Create operating_expenses table
+    await sql`
+      CREATE TABLE IF NOT EXISTS operating_expenses (
+        id SERIAL PRIMARY KEY,
+        month VARCHAR(7) NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        amount DECIMAL(10, 2) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
     
     console.log('Database initialized successfully');
   } catch (error) {
@@ -169,6 +190,39 @@ export async function setFunnelPricing(data: Record<string, Array<{ qty: number;
     `;
   } catch (error) {
     console.error('Error setting funnel pricing:', error);
+    throw error;
+  }
+}
+
+// Currency-specific funnel pricing
+// Structure: { "usd": { "followers": [...tiers], "likes": [...], ... }, "gbp": { ... } }
+export type FunnelCurrencyPricing = Record<string, Record<string, Array<{ qty: number; price: number; oldPrice: number; bonus: number }>>>;
+
+export async function getFunnelCurrencyPricing(): Promise<FunnelCurrencyPricing | null> {
+  try {
+    const result = await sql`
+      SELECT data FROM pricing WHERE id = 'funnel-currency-pricing'
+    `;
+    if (result.rows.length > 0) {
+      return result.rows[0].data as FunnelCurrencyPricing;
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching funnel currency pricing:', error);
+    return null;
+  }
+}
+
+export async function setFunnelCurrencyPricing(data: FunnelCurrencyPricing) {
+  try {
+    await sql`
+      INSERT INTO pricing (id, data) 
+      VALUES ('funnel-currency-pricing', ${JSON.stringify(data)}::jsonb)
+      ON CONFLICT (id) 
+      DO UPDATE SET data = ${JSON.stringify(data)}::jsonb, updated_at = CURRENT_TIMESTAMP
+    `;
+  } catch (error) {
+    console.error('Error setting funnel currency pricing:', error);
     throw error;
   }
 }
@@ -502,6 +556,58 @@ export async function upsertGoogleAdsExpense(month: string, amount: number): Pro
     console.error('Error upserting Google Ads expense:', error);
     throw error;
   }
+}
+
+// Operating Expenses Functions
+export interface OperatingExpense {
+  id: number;
+  month: string;
+  name: string;
+  amount: number;
+  created_at?: string;
+  updated_at?: string;
+}
+
+export async function getOperatingExpenses(): Promise<OperatingExpense[]> {
+  try {
+    const result = await sql`
+      SELECT id, month, name, amount, created_at, updated_at
+      FROM operating_expenses
+      ORDER BY month DESC, name ASC
+    `;
+    return result.rows as OperatingExpense[];
+  } catch (error) {
+    console.error('Error fetching operating expenses:', error);
+    return [];
+  }
+}
+
+export async function addOperatingExpense(month: string, name: string, amount: number): Promise<number> {
+  try {
+    const result = await sql`
+      INSERT INTO operating_expenses (month, name, amount)
+      VALUES (${month}, ${name}, ${amount})
+      RETURNING id
+    `;
+    return result.rows[0].id;
+  } catch (error) {
+    console.error('Error adding operating expense:', error);
+    throw error;
+  }
+}
+
+export async function deleteOperatingExpense(id: number): Promise<void> {
+  try {
+    await sql`DELETE FROM operating_expenses WHERE id = ${id}`;
+  } catch (error) {
+    console.error('Error deleting operating expense:', error);
+    throw error;
+  }
+}
+
+// Stripe fee calculation: European pricing (1.5% + 0.25€)
+export function calculateStripeFee(amount: number): number {
+  return Number(((amount * 0.015) + 0.25).toFixed(2));
 }
 
 export async function getOrderById(orderId: number) {

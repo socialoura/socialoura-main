@@ -15,6 +15,9 @@ export interface PurchaseTrackingData {
   isNewCustomer?: boolean;
   customerOrderNumber?: number;
   paymentMethod?: 'card' | 'express' | 'express_redirect';
+  adsKeyword?: string;
+  adsCampaign?: string;
+  adsDevice?: string;
 }
 
 /**
@@ -58,6 +61,9 @@ export function trackPurchase(data: PurchaseTrackingData) {
   if (data.isNewCustomer !== undefined) properties.is_new_customer = data.isNewCustomer;
   if (data.customerOrderNumber !== undefined) properties.customer_order_number = data.customerOrderNumber;
   if (data.paymentMethod) properties.payment_method = data.paymentMethod;
+  if (data.adsKeyword) properties.ads_keyword = data.adsKeyword;
+  if (data.adsCampaign) properties.ads_campaign = data.adsCampaign;
+  if (data.adsDevice) properties.ads_device = data.adsDevice;
 
   console.log('PostHog tracking: purchase_completed', properties);
   

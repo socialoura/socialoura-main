@@ -12,7 +12,8 @@ import { trackPurchase, getPurchaseSource } from '@/lib/posthog-tracking';
 import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
-import { useCurrency } from '@/contexts/CurrencyContext';
+import { formatPrice, type SupportedCurrency } from '@/lib/pricing';
+import { getStoredAdsParams } from '@/hooks/useAdsParams';
 
 interface CheckoutPaymentFormProps {
   amount: number;
@@ -33,7 +34,7 @@ interface CheckoutPaymentFormProps {
   };
 }
 
-function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, onPaymentIntentId, onBeforePayment, i18n }: CheckoutPaymentFormProps) {
+function CheckoutPaymentForm({ amount, currency, email, acceptedTerms, lang, onSuccess, onPaymentIntentId, onBeforePayment, i18n }: CheckoutPaymentFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
@@ -167,7 +168,7 @@ function CheckoutPaymentForm({ amount, email, acceptedTerms, lang, onSuccess, on
         ) : (
           <>
             <Lock className="w-5 h-5" />
-            <span>{i18n.pay.replace('{amount}', (amount / 100).toFixed(2))}</span>
+            <span>{i18n.pay.replace('{amount} €', formatPrice(amount / 100, currency as SupportedCurrency)).replace('{amount}', formatPrice(amount / 100, currency as SupportedCurrency))}</span>
           </>
         )}
       </button>
@@ -199,7 +200,6 @@ interface CheckoutSummaryProps {
 
 export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
   const t = getUpsellTranslations(lang);
-  const { currency, convert } = useCurrency();
   const {
     selectedServices,
     selectedPostsByService,
@@ -214,6 +214,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
     setAcceptedTerms,
     currentStep,
     prevStep,
+    pricingCurrency,
   } = useUpsellStore();
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -248,7 +249,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
     });
 
     const createPaymentIntent = async () => {
-      const amountInCents = Math.max(1, Math.round(convert(totalPrice).amountInCents));
+      const amountInCents = Math.max(1, Math.round(totalPrice * 100));
       setIsPaymentLoading(true);
       setPaymentInitError(null);
 
@@ -256,7 +257,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
         const response = await fetch('/api/create-payment-intent', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ amount: amountInCents, currency: currency, email: email || undefined }),
+          body: JSON.stringify({ amount: amountInCents, currency: pricingCurrency, email: email || undefined }),
         });
 
         const data = await response.json();
@@ -275,7 +276,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
     };
 
     createPaymentIntent();
-  }, [currentStep, totalPrice, activeServices, email, t.checkout.stripeError, currency, clientSecret, convert]);
+  }, [currentStep, totalPrice, activeServices, email, t.checkout.stripeError, pricingCurrency, clientSecret]);
 
   if (activeServices.length === 0) return null;
 
@@ -332,7 +333,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                         </span>
                       )}
                     </div>
-                    <span className="font-bold text-white">{service.price.toFixed(2)} €</span>
+                    <span className="font-bold text-white">{formatPrice(service.price, pricingCurrency as SupportedCurrency)}</span>
                   </div>
                 );
               })}
@@ -342,10 +343,10 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
               <div className="flex justify-between items-end">
                 <div>
                   <p className="text-sm text-gray-400 font-medium mb-1">{t.checkout.totalAmount}</p>
-                  <p className="text-sm text-gray-500 line-through">{oldPrice} €</p>
+                  <p className="text-sm text-gray-500 line-through">{formatPrice(Number(oldPrice), pricingCurrency as SupportedCurrency)}</p>
                 </div>
                 <div className="text-right">
-                  <span className="text-4xl font-black tracking-tight text-white">{totalPrice.toFixed(2)} €</span>
+                  <span className="text-4xl font-black tracking-tight text-white">{formatPrice(totalPrice, pricingCurrency as SupportedCurrency)}</span>
                 </div>
               </div>
             </div>
@@ -427,8 +428,8 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                   <div className="mt-2">
                     <StripeProvider clientSecret={clientSecret}>
                       <CheckoutPaymentForm
-                        amount={Math.round(convert(totalPrice).amountInCents)}
-                        currency={currency}
+                        amount={Math.round(totalPrice * 100)}
+                        currency={pricingCurrency}
                         email={email}
                         acceptedTerms={acceptedTerms}
                         lang={lang}
@@ -517,6 +518,7 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                                 paymentId: paymentIntentIdRef.current || 'unknown',
                                 orderSource: 'APP_FUNNEL',
                                 funnelData,
+                                ...(() => { const ads = getStoredAdsParams(); return { adsKeyword: ads.keyword, adsCampaign: ads.campaign, adsDevice: ads.device }; })(),
                               }),
                             });
                             const orderResult = await orderRes.json();
@@ -560,16 +562,17 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
 
                             // Google Analytics tracking
                             trackInstaFunnelPurchase({
-                              value: convert(totalPrice).price,
-                              currency: currency.toUpperCase(),
+                              value: totalPrice,
+                              currency: pricingCurrency.toUpperCase(),
                               transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
                             });
 
                             // PostHog revenue tracking with source detection
                             const source = getPurchaseSource(window.location.pathname, 'APP_FUNNEL');
+                            const adsData = getStoredAdsParams();
                             trackPurchase({
-                              revenue: convert(totalPrice).price,
-                              currency: currency.toUpperCase() as 'USD' | 'EUR' | 'GBP' | 'CHF' | 'CAD' | 'AUD' | 'NZD' | 'JPY' | 'CNY' | 'INR' | 'BRL' | 'MXN' | 'KRW' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'CZK' | 'HUF' | 'RON' | 'TRY' | 'ZAR' | 'SGD' | 'HKD',
+                              revenue: totalPrice,
+                              currency: pricingCurrency.toUpperCase() as 'USD' | 'EUR' | 'GBP' | 'CHF' | 'CAD' | 'AUD' | 'NZD' | 'JPY' | 'CNY' | 'INR' | 'BRL' | 'MXN' | 'KRW' | 'SEK' | 'NOK' | 'DKK' | 'PLN' | 'CZK' | 'HUF' | 'RON' | 'TRY' | 'ZAR' | 'SGD' | 'HKD',
                               source,
                               transactionId: String(orderResult.orderId || paymentIntentIdRef.current || 'unknown'),
                               email,
@@ -578,6 +581,9 @@ export default function CheckoutSummary({ lang }: CheckoutSummaryProps) {
                               isNewCustomer: orderResult.isNewCustomer,
                               customerOrderNumber: orderResult.customerOrderNumber,
                               paymentMethod: 'card',
+                              adsKeyword: adsData.keyword,
+                              adsCampaign: adsData.campaign,
+                              adsDevice: adsData.device,
                             });
                           } catch (err) {
                             console.error('Failed to save order:', err);

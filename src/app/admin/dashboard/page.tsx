@@ -182,6 +182,18 @@ export default function AdminDashboard() {
   const [isSavingDefaults, setIsSavingDefaults] = useState(false);
   const [defaultsMessage, setDefaultsMessage] = useState('');
 
+  // Currency pricing states
+  const SUPPORTED_CURRENCIES = ['usd', 'gbp', 'chf', 'cad', 'aud', 'brl', 'mxn', 'sek', 'pln', 'dkk'] as const;
+  const CURRENCY_LABELS: Record<string, string> = {
+    usd: '🇺🇸 USD ($)', gbp: '🇬🇧 GBP (£)', chf: '🇨🇭 CHF', cad: '🇨🇦 CAD ($)',
+    aud: '🇦🇺 AUD ($)', brl: '🇧🇷 BRL (R$)', mxn: '🇲🇽 MXN ($)', sek: '🇸🇪 SEK (kr)',
+    pln: '🇵🇱 PLN (zł)', dkk: '🇩🇰 DKK (kr)',
+  };
+  const [currencyPricing, setCurrencyPricing] = useState<Record<string, Record<string, FunnelTier[]>>>({});
+  const [activeCurrency, setActiveCurrency] = useState<string>('usd');
+  const [isSavingCurrency, setIsSavingCurrency] = useState(false);
+  const [currencyMessage, setCurrencyMessage] = useState('');
+
   // Promo codes states
   const [promoCodes, setPromoCodes] = useState<PromoCode[]>([]);
   const [showPromoForm, setShowPromoForm] = useState(false);
@@ -235,6 +247,10 @@ export default function AdminDashboard() {
   const [googleAdsMonth, setGoogleAdsMonth] = useState('');
   const [googleAdsAmount, setGoogleAdsAmount] = useState('');
 
+  // Operating expenses state
+  interface OperatingExpenseItem { id: number; month: string; name: string; amount: number; }
+  const [operatingExpenses, setOperatingExpenses] = useState<OperatingExpenseItem[]>([]);
+
   useEffect(() => {
     const token = localStorage.getItem('adminToken');
     if (!token) {
@@ -248,6 +264,7 @@ export default function AdminDashboard() {
       fetchOrders();
       if (activeTab === 'analytics') {
         fetchGoogleAdsExpenses();
+        fetchOperatingExpenses();
       }
     } else if (activeTab === 'settings') {
       fetchStripeSettings();
@@ -259,6 +276,7 @@ export default function AdminDashboard() {
     } else if (activeTab === 'funnel') {
       fetchFunnelPricing();
       fetchFunnelDefaults();
+      fetchCurrencyPricing();
     } else {
       setIsLoading(false);
     }
@@ -305,6 +323,44 @@ export default function AdminDashboard() {
       console.error('Error updating Google Ads expense:', error);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const fetchOperatingExpenses = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/operating-expenses', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setOperatingExpenses(Array.isArray(data) ? data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching operating expenses:', error);
+    }
+  };
+
+  const handleAddOperatingExpense = async (month: string, name: string, amount: number) => {
+    const token = localStorage.getItem('adminToken');
+    const response = await fetch('/api/admin/operating-expenses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ month, name, amount }),
+    });
+    if (response.ok) {
+      await fetchOperatingExpenses();
+    }
+  };
+
+  const handleDeleteOperatingExpense = async (id: number) => {
+    const token = localStorage.getItem('adminToken');
+    const response = await fetch(`/api/admin/operating-expenses?id=${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` },
+    });
+    if (response.ok) {
+      await fetchOperatingExpenses();
     }
   };
 
@@ -538,6 +594,73 @@ export default function AdminDashboard() {
       const tiers = [...(updated[serviceType] || [])];
       tiers.splice(tierIndex, 1);
       updated[serviceType] = tiers;
+      return updated;
+    });
+  };
+
+  // Currency pricing functions
+  const fetchCurrencyPricing = async () => {
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/funnel-currency-pricing', {
+        headers: { 'Authorization': `Bearer ${token}` },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setCurrencyPricing(data);
+      }
+    } catch (error) {
+      console.error('Error fetching currency pricing:', error);
+    }
+  };
+
+  const saveCurrencyPricing = async () => {
+    setIsSavingCurrency(true);
+    setCurrencyMessage('');
+    try {
+      const token = localStorage.getItem('adminToken');
+      const response = await fetch('/api/admin/funnel-currency-pricing', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        body: JSON.stringify(currencyPricing),
+      });
+      if (response.ok) {
+        setCurrencyMessage('Currency pricing saved successfully!');
+      } else {
+        setCurrencyMessage('Failed to save currency pricing.');
+      }
+    } catch (error) {
+      console.error('Error saving currency pricing:', error);
+      setCurrencyMessage('Error saving currency pricing.');
+    } finally {
+      setIsSavingCurrency(false);
+      setTimeout(() => setCurrencyMessage(''), 3000);
+    }
+  };
+
+  const initCurrencyFromEur = (cur: string) => {
+    setCurrencyPricing(prev => ({
+      ...prev,
+      [cur]: JSON.parse(JSON.stringify(funnelPricing)),
+    }));
+  };
+
+  const updateCurrencyTier = (cur: string, serviceType: string, tierIndex: number, field: keyof FunnelTier, value: number) => {
+    setCurrencyPricing(prev => {
+      const updated = JSON.parse(JSON.stringify(prev));
+      if (!updated[cur]) updated[cur] = {};
+      if (!updated[cur][serviceType]) updated[cur][serviceType] = [];
+      if (updated[cur][serviceType][tierIndex]) {
+        updated[cur][serviceType][tierIndex][field] = value;
+      }
+      return updated;
+    });
+  };
+
+  const removeCurrencyConfig = (cur: string) => {
+    setCurrencyPricing(prev => {
+      const updated = { ...prev };
+      delete updated[cur];
       return updated;
     });
   };
@@ -2624,7 +2747,7 @@ export default function AdminDashboard() {
               </div>
             </div>
 
-            <AnalyticsDashboard orders={orders} totalVisitors={1000} googleAdsExpenses={googleAdsExpenses} />
+            <AnalyticsDashboard orders={orders} totalVisitors={1000} googleAdsExpenses={googleAdsExpenses} operatingExpenses={operatingExpenses} onAddOperatingExpense={handleAddOperatingExpense} onDeleteOperatingExpense={handleDeleteOperatingExpense} />
           </div>
         )}
 
@@ -3394,6 +3517,158 @@ export default function AdminDashboard() {
                     <p className="text-blue-700 dark:text-blue-400">
                       L&apos;indice sélectionné correspond au tier qui sera pré-sélectionné quand le client arrive sur l&apos;étape 2 du tunnel. 
                       <strong> 0 = aucune sélection</strong>, <strong>1 = premier pack</strong>, <strong>2 = deuxième pack</strong>, etc.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Currency-Specific Pricing Section */}
+            <div className="mt-8 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/10 dark:to-teal-900/10 rounded-2xl p-8 border border-emerald-200 dark:border-emerald-800">
+              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl shadow-lg">
+                    <span className="text-xl">💱</span>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900 dark:text-white">Prix par devise</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">Définissez des prix personnalisés pour chaque devise (funnels Instagram &amp; TikTok)</p>
+                  </div>
+                </div>
+                <button
+                  onClick={saveCurrencyPricing}
+                  disabled={isSavingCurrency}
+                  className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-xl hover:from-emerald-700 hover:to-teal-700 disabled:opacity-50 transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
+                >
+                  <Save className="w-5 h-5" />
+                  {isSavingCurrency ? 'Saving...' : 'Save Currency Pricing'}
+                </button>
+              </div>
+
+              {currencyMessage && (
+                <div className={`mb-6 p-3 rounded-xl text-sm font-medium ${currencyMessage.includes('success') ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border border-green-200 dark:border-green-800' : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-800'}`}>
+                  {currencyMessage}
+                </div>
+              )}
+
+              {/* Currency tabs */}
+              <div className="flex flex-wrap gap-2 mb-6">
+                {SUPPORTED_CURRENCIES.map((cur) => {
+                  const isConfigured = !!currencyPricing[cur];
+                  return (
+                    <button
+                      key={cur}
+                      onClick={() => setActiveCurrency(cur)}
+                      className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                        activeCurrency === cur
+                          ? 'bg-emerald-600 text-white shadow-lg'
+                          : isConfigured
+                            ? 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-200 dark:hover:bg-emerald-900/50 border border-emerald-300 dark:border-emerald-700'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      {CURRENCY_LABELS[cur] || cur.toUpperCase()}
+                      {isConfigured && <span className="ml-1.5 text-xs">✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Active currency content */}
+              {(() => {
+                const cur = activeCurrency;
+                const isConfigured = !!currencyPricing[cur];
+                const curData = currencyPricing[cur] || {};
+
+                if (!isConfigured) {
+                  return (
+                    <div className="text-center py-12 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-2xl">
+                      <span className="text-4xl mb-4 block">💰</span>
+                      <p className="text-gray-500 dark:text-gray-400 mb-2">
+                        Aucun prix configuré pour <strong>{CURRENCY_LABELS[cur]}</strong>
+                      </p>
+                      <p className="text-sm text-gray-400 dark:text-gray-500 mb-6">
+                        Les utilisateurs dans cette zone verront les prix en EUR par défaut
+                      </p>
+                      <button
+                        onClick={() => initCurrencyFromEur(cur)}
+                        className="px-6 py-3 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition-all shadow-md font-medium"
+                      >
+                        Copier les prix EUR et adapter
+                      </button>
+                    </div>
+                  );
+                }
+
+                return (
+                  <div className="space-y-6">
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm font-medium text-emerald-700 dark:text-emerald-400">
+                        Prix pour {CURRENCY_LABELS[cur]} — modifiez les montants dans la devise locale
+                      </p>
+                      <button
+                        onClick={() => removeCurrencyConfig(cur)}
+                        className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        Supprimer cette devise
+                      </button>
+                    </div>
+
+                    {['followers', 'likes', 'views', 'story-views'].map((serviceType) => {
+                      const tiers = curData[serviceType] || [];
+                      const labels: Record<string, string> = { followers: 'Abonnés', likes: 'Likes', views: 'Vues', 'story-views': 'Vues de story' };
+                      if (tiers.length === 0) return null;
+
+                      return (
+                        <div key={serviceType} className="border border-gray-200 dark:border-gray-700 rounded-xl p-5 bg-white dark:bg-gray-800">
+                          <h4 className="text-base font-bold text-gray-900 dark:text-white mb-3">{labels[serviceType] || serviceType}</h4>
+                          <div className="overflow-x-auto">
+                            <table className="w-full text-sm">
+                              <thead>
+                                <tr className="border-b border-gray-200 dark:border-gray-700">
+                                  <th className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-400">Qty</th>
+                                  <th className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-400">Price ({cur.toUpperCase()})</th>
+                                  <th className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-400">Old Price ({cur.toUpperCase()})</th>
+                                  <th className="text-left py-2 px-2 font-medium text-gray-600 dark:text-gray-400">Bonus</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {tiers.map((tier, idx) => (
+                                  <tr key={idx} className="border-b border-gray-100 dark:border-gray-700/50">
+                                    <td className="py-2 px-2">
+                                      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{tier.qty.toLocaleString()}</span>
+                                    </td>
+                                    <td className="py-2 px-2">
+                                      <input type="number" step="0.01" value={tier.price} onChange={(e) => updateCurrencyTier(cur, serviceType, idx, 'price', parseFloat(e.target.value) || 0)} className="w-24 px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm" />
+                                    </td>
+                                    <td className="py-2 px-2">
+                                      <input type="number" step="0.01" value={tier.oldPrice} onChange={(e) => updateCurrencyTier(cur, serviceType, idx, 'oldPrice', parseFloat(e.target.value) || 0)} className="w-24 px-2 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white text-sm" />
+                                    </td>
+                                    <td className="py-2 px-2">
+                                      <span className="text-sm text-gray-500">{tier.bonus}</span>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })()}
+
+              <div className="mt-6 p-4 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <AlertCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <div className="text-sm text-emerald-800 dark:text-emerald-300">
+                    <p className="font-semibold mb-1">Comment ça marche ?</p>
+                    <p className="text-emerald-700 dark:text-emerald-400">
+                      Si une devise est configurée, les utilisateurs de cette zone verront ces prix et paieront dans leur devise locale via Stripe.
+                      Si une devise n&apos;est pas configurée, les prix EUR seront affichés et le paiement sera en EUR.
+                      Les quantités et bonus sont repris depuis les prix EUR — seuls les montants changent.
                     </p>
                   </div>
                 </div>

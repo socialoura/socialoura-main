@@ -6,6 +6,7 @@ import posthog from 'posthog-js';
 import { Language } from '@/i18n/config';
 import { Bot, Clock, Shield, Package, Megaphone, BarChart3 } from 'lucide-react';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useAdsParams } from '@/hooks/useAdsParams';
 import Image from 'next/image';
 import TrustpilotBadge from '@/components/TrustpilotBadge';
 
@@ -31,6 +32,7 @@ interface FollowerGoal {
 
 export default function TikTokPage({ params }: PageProps) {
   const lang = params.lang as Language;
+  useAdsParams();
   
   // Track page view
   useEffect(() => {

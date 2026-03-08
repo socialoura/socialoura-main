@@ -12,6 +12,7 @@ import TiktokCheckoutSummary from '@/components/tiktok-upsell/CheckoutSummary';
 import { getStripe } from '@/components/StripeProvider';
 import { type Language } from '@/i18n/config';
 import { getTiktokUpsellTranslations } from '@/i18n/tiktok-upsell';
+import { useAdsParams } from '@/hooks/useAdsParams';
 
 const stepVariants = {
   initial: { opacity: 0 },
@@ -24,6 +25,7 @@ export default function TiktokUpsellPage() {
   const lang = (params?.lang as Language) || 'fr';
   const t = getTiktokUpsellTranslations(lang);
   const { currentStep } = useTiktokUpsellStore();
+  useAdsParams();
 
   useEffect(() => {
     posthog.capture('tiktok_tunnel_page_viewed', { target_platform: 'tiktok' });

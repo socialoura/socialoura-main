@@ -8,6 +8,7 @@ import useTiktokUpsellStore, { TiktokServiceType } from '@/store/useTiktokUpsell
 import { proxyImageUrl } from '@/lib/image-proxy';
 import { type Language } from '@/i18n/config';
 import { getTiktokUpsellTranslations } from '@/i18n/tiktok-upsell';
+import { formatPrice, type SupportedCurrency } from '@/lib/pricing';
 
 type PricingTier = {
   qty: number;
@@ -76,6 +77,8 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
     setQuantity,
     setPrice,
     setSliderDefaults,
+    setPricingCurrency,
+    pricingCurrency,
     resetProfile,
   } = useTiktokUpsellStore();
 
@@ -91,12 +94,19 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
     // This prevents sliders from moving when user is on previous steps
     const initializeServices = async () => {
       try {
-        const pricingRes = await fetch('/api/funnel-pricing');
+        // Fetch pricing (with currency param if not EUR)
+        const detectedCurrency = document.cookie.match(/user_currency=([^;]+)/)?.[1]?.toLowerCase() || 'eur';
+        const pricingUrl = detectedCurrency !== 'eur' ? `/api/funnel-pricing?currency=${detectedCurrency}` : '/api/funnel-pricing';
+        const pricingRes = await fetch(pricingUrl);
         let pricingData = DEFAULT_PRICING;
         if (pricingRes.ok) {
           const raw = await pricingRes.json();
+          const activeCur = raw._currency || 'eur';
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { _currency, ...pricing } = raw;
           // Use TikTok pricing if available, otherwise fallback to Instagram pricing
-          pricingData = { ...DEFAULT_PRICING, ...raw };
+          pricingData = { ...DEFAULT_PRICING, ...pricing };
+          setPricingCurrency(activeCur);
           setServices(buildServices(pricingData, t.service));
         }
 
@@ -150,7 +160,7 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
     const timeoutId = setTimeout(initializeServices, 100);
     
     return () => clearTimeout(timeoutId);
-  }, [defaultsLoaded, setPrice, setQuantity, setSelectedService, setSliderDefaults, t.service]);
+  }, [defaultsLoaded, setPrice, setQuantity, setSelectedService, setSliderDefaults, setPricingCurrency, t.service]);
 
   const [localSliderValues, setLocalSliderValues] = useState(sliderValues);
   const isDraggingRef = useRef(false);
@@ -294,10 +304,10 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
 
                   <div className="text-right">
                     <div className={`text-2xl font-black tracking-tight transition-colors duration-200 ${isActive ? 'text-white' : 'text-gray-500'}`}>
-                      {isActive ? tier.price.toFixed(2) : '0.00'} €
+                      {isActive ? formatPrice(tier.price, pricingCurrency as SupportedCurrency) : formatPrice(0, pricingCurrency as SupportedCurrency)}
                     </div>
                     {isActive && tier.oldPrice > tier.price && (
-                      <div className="text-sm font-medium text-gray-500 line-through">{tier.oldPrice.toFixed(2)} €</div>
+                      <div className="text-sm font-medium text-gray-500 line-through">{formatPrice(tier.oldPrice, pricingCurrency as SupportedCurrency)}</div>
                     )}
                   </div>
                 </div>
@@ -367,9 +377,9 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
             <div>
               <p className="text-xs sm:text-sm font-medium text-gray-400 mb-0.5">{t.service.orderTotal}</p>
               <div className="flex items-baseline gap-3">
-                <span className="text-2xl font-black text-white tracking-tight">{totalPrice.toFixed(2)} €</span>
+                <span className="text-2xl font-black text-white tracking-tight">{formatPrice(totalPrice, pricingCurrency as SupportedCurrency)}</span>
                 {savings > 0 && (
-                  <span className="text-xs font-bold text-green-400 line-through opacity-70">{(totalPrice + savings).toFixed(2)} €</span>
+                  <span className="text-xs font-bold text-green-400 line-through opacity-70">{formatPrice(totalPrice + savings, pricingCurrency as SupportedCurrency)}</span>
                 )}
               </div>
             </div>

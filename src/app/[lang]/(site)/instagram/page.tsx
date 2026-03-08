@@ -12,6 +12,7 @@ import CheckoutSummary from '@/components/upsell/CheckoutSummary';
 import { getStripe } from '@/components/StripeProvider';
 import { type Language } from '@/i18n/config';
 import { getUpsellTranslations } from '@/i18n/upsell';
+import { useAdsParams } from '@/hooks/useAdsParams';
 
 const stepVariants = {
   initial: { opacity: 0 },
@@ -24,6 +25,7 @@ export default function UpsellPage() {
   const lang = (params?.lang as Language) || 'fr';
   const t = getUpsellTranslations(lang);
   const { currentStep } = useUpsellStore();
+  useAdsParams();
 
   // Étape 0: Track tunnel page view on mount
   useEffect(() => {

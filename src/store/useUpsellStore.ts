@@ -48,6 +48,9 @@ interface UpsellState {
   email: string;
   acceptedTerms: boolean;
 
+  // Currency (set by ServiceSelector based on detected currency pricing)
+  pricingCurrency: string; // 'eur' by default, or 'usd', 'gbp', etc.
+
   // Current step
   currentStep: number;
 
@@ -66,6 +69,7 @@ interface UpsellState {
   setCurrentDistributionService: (service: DistributableService | null) => void;
   getDistributableServices: () => { type: DistributableService; quantity: number }[];
   moveToNextDistributableService: () => boolean;
+  setPricingCurrency: (currency: string) => void;
   setEmail: (email: string) => void;
   setAcceptedTerms: (accepted: boolean) => void;
   setCurrentStep: (step: number) => void;
@@ -105,6 +109,7 @@ const useUpsellStore = create<UpsellState>((set, get) => ({
   selectedPostIds: [],
   email: '',
   acceptedTerms: false,
+  pricingCurrency: 'eur',
   currentStep: 0,
 
   // Actions
@@ -194,6 +199,7 @@ const useUpsellStore = create<UpsellState>((set, get) => ({
 
     return false;
   },
+  setPricingCurrency: (currency) => set({ pricingCurrency: currency }),
   setEmail: (email) => set({ email }),
   setAcceptedTerms: (accepted) => set({ acceptedTerms: accepted }),
   setCurrentStep: (step) => set({ currentStep: step }),

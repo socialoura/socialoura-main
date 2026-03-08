@@ -34,7 +34,7 @@ async function getCountryFromIP(request: NextRequest): Promise<string | null> {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { username, email, platform, followers, amount, paymentId, orderSource, funnelData } = body;
+    const { username, email, platform, followers, amount, paymentId, orderSource, funnelData, adsKeyword, adsCampaign, adsDevice } = body;
 
     // Validate required fields
     if (!username || !amount || !paymentId) {
@@ -57,8 +57,8 @@ export async function POST(request: NextRequest) {
       const totalFollowers = funnelData?.services?.reduce((sum: number, s: { quantity: number }) => sum + s.quantity, 0) || 0;
 
       const result = await sql`
-        INSERT INTO orders (username, email, platform, followers, amount, price, payment_id, payment_intent_id, status, payment_status, country, order_source, funnel_data) 
-        VALUES (${username}, ${email || null}, ${'instagram'}, ${totalFollowers}, ${amount}, ${amount}, ${paymentId}, ${paymentId}, 'completed', 'completed', ${country}, ${source}, ${funnelJson}::jsonb)
+        INSERT INTO orders (username, email, platform, followers, amount, price, payment_id, payment_intent_id, status, payment_status, country, order_source, funnel_data, ads_keyword, ads_campaign, ads_device) 
+        VALUES (${username}, ${email || null}, ${'instagram'}, ${totalFollowers}, ${amount}, ${amount}, ${paymentId}, ${paymentId}, 'completed', 'completed', ${country}, ${source}, ${funnelJson}::jsonb, ${adsKeyword || null}, ${adsCampaign || null}, ${adsDevice || null})
         RETURNING id
       `;
 
@@ -90,8 +90,8 @@ export async function POST(request: NextRequest) {
     }
 
     const result = await sql`
-      INSERT INTO orders (username, email, platform, followers, amount, price, payment_id, payment_intent_id, status, payment_status, country, order_source) 
-      VALUES (${username}, ${email || null}, ${platform}, ${followers}, ${amount}, ${amount}, ${paymentId}, ${paymentId}, 'completed', 'completed', ${country}, 'CLASSIC')
+      INSERT INTO orders (username, email, platform, followers, amount, price, payment_id, payment_intent_id, status, payment_status, country, order_source, ads_keyword, ads_campaign, ads_device) 
+      VALUES (${username}, ${email || null}, ${platform}, ${followers}, ${amount}, ${amount}, ${paymentId}, ${paymentId}, 'completed', 'completed', ${country}, 'CLASSIC', ${adsKeyword || null}, ${adsCampaign || null}, ${adsDevice || null})
       RETURNING id
     `;
 

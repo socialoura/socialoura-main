@@ -49,6 +49,9 @@ interface TiktokUpsellState {
   email: string;
   acceptedTerms: boolean;
 
+  // Currency (set by ServiceSelector based on detected currency pricing)
+  pricingCurrency: string;
+
   // Current step
   currentStep: number;
 
@@ -67,6 +70,7 @@ interface TiktokUpsellState {
   setCurrentDistributionService: (service: TiktokDistributableService | null) => void;
   getDistributableServices: () => { type: TiktokDistributableService; quantity: number }[];
   moveToNextDistributableService: () => boolean;
+  setPricingCurrency: (currency: string) => void;
   setEmail: (email: string) => void;
   setAcceptedTerms: (accepted: boolean) => void;
   setCurrentStep: (step: number) => void;
@@ -105,6 +109,7 @@ const useTiktokUpsellStore = create<TiktokUpsellState>((set, get) => ({
   selectedPostIds: [],
   email: '',
   acceptedTerms: false,
+  pricingCurrency: 'eur',
   currentStep: 0,
 
   setUsername: (username) => set({ username }),
@@ -183,6 +188,7 @@ const useTiktokUpsellStore = create<TiktokUpsellState>((set, get) => ({
     return false;
   },
 
+  setPricingCurrency: (currency) => set({ pricingCurrency: currency }),
   setEmail: (email) => set({ email }),
   setAcceptedTerms: (accepted) => set({ acceptedTerms: accepted }),
   setCurrentStep: (step) => set({ currentStep: step }),
