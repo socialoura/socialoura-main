@@ -217,7 +217,10 @@ export default function Header({ lang }: HeaderProps) {
         </div>
       )}
 
-      <header className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950">
+      <header 
+        className="w-full border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950"
+        style={{ backgroundColor: 'var(--background)', borderColor: 'var(--border)' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center h-14 sm:h-20 md:h-24">
             {/* Logo - Left */}

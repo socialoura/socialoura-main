@@ -34,7 +34,7 @@ export default function ProfileSearchInput({ lang }: ProfileSearchInputProps) {
   } = useUpsellStore();
 
   const handleSearch = async (searchUsername: string) => {
-    const clean = searchUsername.replace('@', '').trim();
+    const clean = searchUsername.replace('@', '').trim().toLowerCase();
     if (!clean) return;
 
     setUsername(clean);

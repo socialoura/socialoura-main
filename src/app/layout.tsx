@@ -61,14 +61,10 @@ export default function RootLayout({
             __html: `
               try {
                 const theme = localStorage.getItem('theme') || 'dark';
-                if (theme === 'dark') {
-                  document.documentElement.classList.add('dark');
-                } else {
-                  document.documentElement.classList.remove('dark');
-                }
+                document.documentElement.setAttribute('data-theme', theme);
               } catch (e) {
                 // Default to dark theme if there's an error
-                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
               }
             `,
           }}
@@ -76,6 +72,7 @@ export default function RootLayout({
       </head>
       <body
         className={`${spaceGrotesk.variable} font-sans antialiased`}
+        style={{ backgroundColor: '#0a0a0a', color: '#ededed' }}
       >
         <PostHogProvider>
           <CurrencyProvider>

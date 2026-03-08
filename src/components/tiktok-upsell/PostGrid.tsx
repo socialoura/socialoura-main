@@ -45,6 +45,8 @@ function TiktokPostGrid({ lang }: PostGridProps) {
   const ServiceIcon = currentDistributionService === 'likes' ? Heart : Eye;
   const currentSelectedPosts = selectedPostsByService[currentDistributionService] || [];
   const hasSelectedPosts = currentSelectedPosts.length > 0;
+  // Allow continuation if no posts are available or if posts are selected
+  const canContinue = posts.length === 0 || hasSelectedPosts;
 
   return (
     <div className="w-full max-w-5xl mx-auto flex flex-col h-full pb-28 sm:pb-32">
@@ -179,9 +181,9 @@ function TiktokPostGrid({ lang }: PostGridProps) {
           </div>
 
           <button
-            disabled={!hasSelectedPosts}
+            disabled={!canContinue}
             onClick={() => {
-              if (!hasSelectedPosts) return;
+              if (!canContinue) return;
               posthog.capture('tiktok_step3_completed', { total_posts_selected: currentSelectedPosts.length, target_platform: 'tiktok' });
               nextStep();
             }}

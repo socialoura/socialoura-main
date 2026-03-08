@@ -20,36 +20,36 @@ interface TiktokScraperResponse {
   }>;
 }
 
-// ─── In-memory cache (DISABLED - always fetch fresh data) ───
-// interface CacheEntry {
-//   data: TiktokScraperResponse;
-//   timestamp: number;
-// }
+// ─── In-memory cache (ENABLED for performance) ───
+interface CacheEntry {
+  data: TiktokScraperResponse;
+  timestamp: number;
+}
 
-// const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
-// const profileCache = new Map<string, CacheEntry>();
+const CACHE_TTL_MS = 3 * 60 * 1000; // 3 minutes for faster refresh
+const profileCache = new Map<string, CacheEntry>();
 
-// function getCached(username: string): TiktokScraperResponse | null {
-//   const entry = profileCache.get(username.toLowerCase());
-//   if (!entry) return null;
-//   if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
-//     profileCache.delete(username.toLowerCase());
-//     return null;
-//   }
-//   return entry.data;
-// }
+function getCached(username: string): TiktokScraperResponse | null {
+  const entry = profileCache.get(username.toLowerCase());
+  if (!entry) return null;
+  if (Date.now() - entry.timestamp > CACHE_TTL_MS) {
+    profileCache.delete(username.toLowerCase());
+    return null;
+  }
+  return entry.data;
+}
 
-// function setCache(username: string, data: TiktokScraperResponse) {
-//   profileCache.set(username.toLowerCase(), { data, timestamp: Date.now() });
-//   if (profileCache.size > 200) {
-//     const oldest = Array.from(profileCache.entries()).sort((a, b) => a[1].timestamp - b[1].timestamp);
-//     for (let i = 0; i < 50; i++) profileCache.delete(oldest[i][0]);
-//   }
-// }
+function setCache(username: string, data: TiktokScraperResponse) {
+  profileCache.set(username.toLowerCase(), { data, timestamp: Date.now() });
+  if (profileCache.size > 100) { // Reduced cache size for memory efficiency
+    const oldest = Array.from(profileCache.entries()).sort((a, b) => a[1].timestamp - b[1].timestamp);
+    for (let i = 0; i < 25; i++) profileCache.delete(oldest[i][0]);
+  }
+}
 
 // ─── RapidAPI fetch ───
 const RAPIDAPI_HOST = 'tiktok-scraper2.p.rapidapi.com';
-const FETCH_TIMEOUT_MS = 10000;
+const FETCH_TIMEOUT_MS = 6000; // Reduced from 10s to 6s for faster response
 
 async function fetchTiktokProfile(username: string): Promise<Response> {
   const apiKey = process.env.RAPIDAPI_KEY;
@@ -165,10 +165,17 @@ export async function GET(request: Request) {
 
     const cleanUsername = username.replace('@', '').trim().toLowerCase();
 
+    // 1. Check cache first for instant response
+    const cached = getCached(cleanUsername);
+    if (cached) {
+      console.log('[scraper-tiktok] Cache hit for:', cleanUsername);
+      return NextResponse.json(cached);
+    }
+
     console.log('[scraper-tiktok] Fetching fresh data for:', cleanUsername);
 
     try {
-      // 1. Fetch profile
+      // 2. Fetch profile (required)
       const profileRes = await fetchTiktokProfile(cleanUsername);
       if (!profileRes.ok) {
         const errText = await profileRes.text().catch(() => '');
@@ -191,7 +198,7 @@ export async function GET(request: Request) {
       const userId = userNode?.id ?? '';
       const secUid = userNode?.secUid ?? '';
 
-      // 2. Fetch posts (best effort - don't fail if posts unavailable)
+      // 3. Fetch posts (best effort - don't fail if posts unavailable)
       let postsData = {};
       if (secUid && userId) {
         try {
@@ -209,8 +216,9 @@ export async function GET(request: Request) {
         console.warn('[scraper-tiktok] Missing secUid or userId, skipping posts fetch');
       }
 
-      // 3. Combine
+      // 4. Combine and cache
       const response = mapTiktokData(profileData, postsData, cleanUsername);
+      setCache(cleanUsername, response);
 
       console.log('[scraper-tiktok] Returning fresh data for:', cleanUsername);
 
