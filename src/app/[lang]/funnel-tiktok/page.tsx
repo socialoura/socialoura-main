@@ -5,7 +5,6 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import posthog from 'posthog-js';
 import { ArrowRight } from 'lucide-react';
-import TikTokIcon from '@/components/icons/TikTokIcon';
 import { type Language } from '@/i18n/config';
 import { getLandingTiktokTranslations } from '@/i18n/landing-tiktok';
 

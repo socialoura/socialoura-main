@@ -269,7 +269,7 @@ export default function TiktokCheckoutSummary({ lang }: CheckoutSummaryProps) {
     };
 
     createPaymentIntent();
-  }, [currentStep, totalPrice]);
+  }, [currentStep, totalPrice, activeServices, email, t.checkout.stripeError]);
 
   if (activeServices.length === 0) return null;
 

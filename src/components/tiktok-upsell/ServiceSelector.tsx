@@ -151,7 +151,7 @@ function TiktokServiceSelector({ lang }: ServiceSelectorProps) {
     const timeoutId = setTimeout(initializeServices, 100);
     
     return () => clearTimeout(timeoutId);
-  }, [defaultsLoaded]);
+  }, [defaultsLoaded, setPrice, setQuantity, setSelectedService, setSliderDefaults, t.service]);
 
   const [localSliderValues, setLocalSliderValues] = useState(sliderValues);
   const isDraggingRef = useRef(false);
