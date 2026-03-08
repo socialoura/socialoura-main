@@ -76,6 +76,7 @@ function ServiceSelector({ lang }: ServiceSelectorProps) {
     setSelectedService,
     setQuantity,
     setPrice,
+    setSliderDefaults,
     resetProfile,
   } = useUpsellStore();
 
@@ -144,7 +145,7 @@ function ServiceSelector({ lang }: ServiceSelectorProps) {
     const timeoutId = setTimeout(initializeServices, 100);
     
     return () => clearTimeout(timeoutId);
-  }, [defaultsLoaded, setPrice, setQuantity, setSelectedService, t.service]);
+  }, [defaultsLoaded, setPrice, setQuantity, setSelectedService, setSliderDefaults, t.service]);
 
   // Local (visual) slider values for instant feedback
   const [localSliderValues, setLocalSliderValues] = useState(sliderValues);
