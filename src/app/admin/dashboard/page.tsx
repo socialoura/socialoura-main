@@ -183,10 +183,10 @@ export default function AdminDashboard() {
   const [defaultsMessage, setDefaultsMessage] = useState('');
 
   // Currency pricing states
-  const SUPPORTED_CURRENCIES = ['usd', 'gbp', 'chf', 'cad', 'aud', 'brl', 'mxn', 'sek', 'pln', 'dkk'] as const;
+  const SUPPORTED_CURRENCIES = ['usd', 'gbp', 'chf', 'cad', 'aud', 'nzd', 'brl', 'mxn', 'sek', 'pln', 'dkk'] as const;
   const CURRENCY_LABELS: Record<string, string> = {
     usd: '🇺🇸 USD ($)', gbp: '🇬🇧 GBP (£)', chf: '🇨🇭 CHF', cad: '🇨🇦 CAD ($)',
-    aud: '🇦🇺 AUD ($)', brl: '🇧🇷 BRL (R$)', mxn: '🇲🇽 MXN ($)', sek: '🇸🇪 SEK (kr)',
+    aud: '🇦🇺 AUD ($)', nzd: '🇳🇿 NZD ($)', brl: '🇧🇷 BRL (R$)', mxn: '🇲🇽 MXN ($)', sek: '🇸🇪 SEK (kr)',
     pln: '🇵🇱 PLN (zł)', dkk: '🇩🇰 DKK (kr)',
   };
   const [currencyPricing, setCurrencyPricing] = useState<Record<string, Record<string, FunnelTier[]>>>({});
