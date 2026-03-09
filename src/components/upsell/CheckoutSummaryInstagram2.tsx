@@ -27,10 +27,10 @@ interface ServiceSelection {
 interface CheckoutSummaryProps {
   lang: Language;
   onBeforePayment?: () => void;
-  onClientSecretCreated?: (secret: string) => void;
+  initialPaymentIntentId?: string | null;
 }
 
-function CheckoutPaymentFormInstagram2({ lang, onBeforePayment, onClientSecretCreated }: CheckoutSummaryProps) {
+function CheckoutPaymentFormInstagram2({ lang, onBeforePayment, initialPaymentIntentId }: CheckoutSummaryProps) {
   const router = useRouter();
   const stripe = useStripe();
   const elements = useElements();
@@ -44,8 +44,7 @@ function CheckoutPaymentFormInstagram2({ lang, onBeforePayment, onClientSecretCr
     setEmail,
   } = useUpsellStore();
 
-  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId] = useState<string | null>(initialPaymentIntentId || null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
@@ -69,59 +68,17 @@ function CheckoutPaymentFormInstagram2({ lang, onBeforePayment, onClientSecretCr
 
   const totalPrice = calculateTotal();
 
-  const createPaymentIntent = useCallback(async () => {
-    try {
-      const primaryService = Object.values(selectedServices).find(s => s.type !== 'story-views') || Object.values(selectedServices)[0];
-      posthog.capture('instagram_step4_checkout_viewed', {
-        variant: 'instagram-2',
-        final_price: totalPrice,
-        final_service: primaryService?.type || 'unknown',
-        target_platform: 'instagram',
-        currency: pricingCurrency,
-      });
-
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amount: Math.round(totalPrice * 100),
-          currency: pricingCurrency.toLowerCase(),
-          metadata: {
-            username,
-            services: JSON.stringify(selectedServices),
-            lang,
-            source: 'APP_FUNNEL_INSTAGRAM',
-            variant: 'instagram-2',
-          },
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.error) {
-        setPaymentError(data.error);
-        return;
-      }
-
-      setClientSecret(data.clientSecret);
-      setPaymentIntentId(data.paymentIntentId);
-      
-      // Notify parent component of client secret
-      if (onClientSecretCreated) {
-        onClientSecretCreated(data.clientSecret);
-      }
-    } catch (error) {
-      console.error('Error creating payment intent:', error);
-      setPaymentError(t.checkout?.paymentError || 'Payment error');
-    }
-  }, [selectedServices, pricingCurrency, username, lang, t, totalPrice, onClientSecretCreated]);
-
-  // Create payment intent on component mount
+  // Track checkout viewed on mount
   useEffect(() => {
-    if (!clientSecret && Object.keys(selectedServices).length > 0) {
-      createPaymentIntent();
-    }
-  }, [selectedServices, clientSecret, createPaymentIntent]);
+    const primaryService = Object.values(selectedServices).find(s => s.type !== 'story-views') || Object.values(selectedServices)[0];
+    posthog.capture('instagram_step4_checkout_viewed', {
+      variant: 'instagram-2',
+      final_price: totalPrice,
+      final_service: primaryService?.type || 'unknown',
+      target_platform: 'instagram',
+      currency: pricingCurrency,
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -289,8 +246,7 @@ function CheckoutPaymentFormInstagram2({ lang, onBeforePayment, onClientSecretCr
       </div>
 
       {/* Payment Form */}
-      {clientSecret && (
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+      <form onSubmit={handleSubmit} className="mt-6 space-y-4">
           {/* Email */}
           <div>
             <LinkAuthenticationElement
@@ -355,7 +311,6 @@ function CheckoutPaymentFormInstagram2({ lang, onBeforePayment, onClientSecretCr
             )}
           </button>
         </form>
-      )}
 
       {/* Trust Badges */}
       <div className="mt-6 grid grid-cols-3 gap-4">
@@ -377,14 +332,76 @@ function CheckoutPaymentFormInstagram2({ lang, onBeforePayment, onClientSecretCr
 }
 
 export default function CheckoutSummaryInstagram2({ lang, onBeforePayment }: CheckoutSummaryProps) {
+  const { username, selectedServices, pricingCurrency } = useUpsellStore();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
+
+  // Calculate total price
+  const calculateTotal = () => {
+    let total = 0;
+    Object.values(selectedServices).forEach((service) => {
+      if (service.quantity > 0) {
+        total += service.price * service.quantity;
+      }
+    });
+    return total;
+  };
+
+  const totalPrice = calculateTotal();
+
+  // Create payment intent on mount
+  useEffect(() => {
+    if (!clientSecret && Object.keys(selectedServices).length > 0) {
+      const createPaymentIntent = async () => {
+        try {
+          const response = await fetch('/api/create-payment-intent', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              amount: Math.round(totalPrice * 100),
+              currency: pricingCurrency.toLowerCase(),
+              metadata: {
+                username,
+                services: JSON.stringify(selectedServices),
+                lang,
+                source: 'APP_FUNNEL_INSTAGRAM',
+                variant: 'instagram-2',
+              },
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!data.error) {
+            setClientSecret(data.clientSecret);
+            setPaymentIntentId(data.paymentIntentId);
+          }
+        } catch (error) {
+          console.error('Error creating payment intent:', error);
+        }
+      };
+
+      createPaymentIntent();
+    }
+  }, [selectedServices, clientSecret, pricingCurrency, username, lang, totalPrice]);
+
+  if (!clientSecret) {
+    return (
+      <div className="max-w-md mx-auto">
+        <div className="bg-gray-900/50 backdrop-blur rounded-2xl p-8 text-center border border-gray-800">
+          <div className="w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400">Loading payment system...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <StripeProvider clientSecret={clientSecret || undefined}>
+    <StripeProvider clientSecret={clientSecret}>
       <CheckoutPaymentFormInstagram2 
         lang={lang} 
         onBeforePayment={onBeforePayment}
-        onClientSecretCreated={setClientSecret}
+        initialPaymentIntentId={paymentIntentId}
       />
     </StripeProvider>
   );
