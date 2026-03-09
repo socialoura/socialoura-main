@@ -1204,18 +1204,18 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 dark:bg-black py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               Admin Dashboard
             </h1>
-            <p className="text-gray-400 dark:text-gray-500 mt-2">Manage your settings and orders</p>
+            <p className="text-gray-400 mt-2">Manage your settings and orders</p>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-300 dark:text-gray-400 bg-gray-800 dark:bg-black border border-gray-700 dark:border-gray-800 rounded-xl hover:bg-gray-700 dark:hover:bg-gray-800 transition-all shadow-sm hover:shadow-md"
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-300 bg-black border border-gray-700 rounded-xl hover:bg-gray-800 transition-all shadow-sm hover:shadow-md"
           >
             <LogOut className="w-4 h-4" />
             Logout
@@ -1237,14 +1237,14 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <div className="mb-8 bg-gray-800 dark:bg-black rounded-2xl shadow-xl border border-gray-700 dark:border-gray-800">
-          <div className="flex flex-col sm:flex-row border-b border-gray-700 dark:border-gray-800">
+        <div className="mb-8 bg-black rounded-2xl shadow-xl border border-gray-800">
+          <div className="flex flex-col sm:flex-row border-b border-gray-800">
             <button
               onClick={() => setActiveTab('pricing')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'pricing'
-                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
+                  ? 'text-purple-400 border-b-2 border-purple-400 bg-purple-900/30'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
               }`}
             >
               <Instagram className="w-5 h-5" />
@@ -1254,19 +1254,19 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('settings')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'settings'
-                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
+                  ? 'text-purple-400 border-b-2 border-purple-400 bg-purple-900/30'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
               }`}
             >
               <Settings className="w-5 h-5" />
-              Admin Settings
+              Settings
             </button>
             <button
               onClick={() => setActiveTab('orders')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'orders'
-                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
+                  ? 'text-purple-400 border-b-2 border-purple-400 bg-purple-900/30'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
               }`}
             >
               <ShoppingCart className="w-5 h-5" />
@@ -1276,8 +1276,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('analytics')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'analytics'
-                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
+                  ? 'text-purple-400 border-b-2 border-purple-400 bg-purple-900/30'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
               }`}
             >
               <BarChart3 className="w-5 h-5" />
@@ -1287,8 +1287,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('promo')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'promo'
-                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
+                  ? 'text-purple-400 border-b-2 border-purple-400 bg-purple-900/30'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
               }`}
             >
               <Tag className="w-5 h-5" />
@@ -1298,8 +1298,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('funnel')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'funnel'
-                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
-                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
+                  ? 'text-purple-400 border-b-2 border-purple-400 bg-purple-900/30'
+                  : 'text-gray-400 hover:text-gray-200 hover:bg-gray-800'
               }`}
             >
               <Zap className="w-5 h-5" />
@@ -1310,17 +1310,17 @@ export default function AdminDashboard() {
 
         {activeTab === 'pricing' && (
           <>
-            <div className="mb-8 bg-gray-800 dark:bg-black rounded-2xl shadow-xl p-8 border border-gray-700 dark:border-gray-800">
+            <div className="mb-8 bg-black rounded-2xl shadow-xl p-8 border border-gray-800">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg">
                     <Instagram className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-100 dark:text-white">
+                    <h2 className="text-2xl font-bold text-white">
                       Instagram Pricing
                     </h2>
-                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
+                    <p className="text-sm text-gray-400 mt-0.5">
                       {pricing.instagram.length} option{pricing.instagram.length !== 1 ? 's' : ''} available
                     </p>
                   </div>
@@ -1338,11 +1338,11 @@ export default function AdminDashboard() {
                 {pricing.instagram.map((goal, index) => (
                   <div
                     key={index}
-                    className="group relative bg-gradient-to-br from-gray-50 to-purple-50/30 dark:from-gray-700/50 dark:to-purple-900/10 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all"
+                    className="group relative bg-gray-900/50 rounded-xl p-5 border border-gray-700 hover:shadow-lg transition-all"
                   >
                     <div className="flex gap-4 items-end">
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Followers
                         </label>
                         <input
@@ -1352,12 +1352,12 @@ export default function AdminDashboard() {
                             handleUpdateGoal('instagram', index, 'followers', e.target.value)
                           }
                           placeholder="e.g., 100"
-                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-600 rounded-xl bg-black text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
                         />
                       </div>
 
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Price (€)
                         </label>
                         <input
@@ -1367,13 +1367,13 @@ export default function AdminDashboard() {
                             handleUpdateGoal('instagram', index, 'price', e.target.value)
                           }
                           placeholder="e.g., 1.90"
-                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-600 rounded-xl bg-black text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
                         />
                       </div>
 
                       <button
                         onClick={() => handleRemoveGoal('instagram', index)}
-                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        className="p-3 text-red-400 hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
                         title="Delete this pricing option"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -1384,8 +1384,8 @@ export default function AdminDashboard() {
 
                 {pricing.instagram.length === 0 && (
                   <div className="text-center py-12 px-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
-                    <Instagram className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                    <Instagram className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                    <p className="text-gray-400 font-medium">
                       No pricing goals yet. Click &quot;Add Goal&quot; to create one.
                     </p>
                   </div>
@@ -1396,13 +1396,13 @@ export default function AdminDashboard() {
               {pricing.instagram.length > 0 && (
                 <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl border border-purple-200 dark:border-purple-800/50">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
                       &quot;Most Popular&quot; badge on:
                     </span>
                     <select
                       value={popularPackInstagram}
                       onChange={(e) => setPopularPackInstagram(e.target.value)}
-                      className="flex-1 px-4 py-2.5 border-2 border-purple-300 dark:border-purple-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm font-medium"
+                      className="flex-1 px-4 py-2.5 border-2 border-purple-700 rounded-xl bg-black text-white focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-sm font-medium"
                     >
                       <option value="">None</option>
                       {pricing.instagram.map((goal) => (
@@ -1416,17 +1416,17 @@ export default function AdminDashboard() {
               )}
             </div>
 
-            <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-pink-100 dark:border-pink-900/30">
+            <div className="mb-8 bg-black rounded-2xl shadow-xl p-8 border border-gray-800">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-br from-pink-500 to-purple-500 rounded-xl shadow-lg">
                     <Music className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-white">
                       TikTok Pricing
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-sm text-gray-400 mt-0.5">
                       {pricing.tiktok.length} option{pricing.tiktok.length !== 1 ? 's' : ''} available
                     </p>
                   </div>
@@ -1444,11 +1444,11 @@ export default function AdminDashboard() {
                 {pricing.tiktok.map((goal, index) => (
                   <div
                     key={index}
-                    className="group relative bg-gradient-to-br from-gray-50 to-pink-50/30 dark:from-gray-700/50 dark:to-pink-900/10 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all"
+                    className="group relative bg-gray-900/50 rounded-xl p-5 border border-gray-700 hover:shadow-lg transition-all"
                   >
                     <div className="flex gap-4 items-end">
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Followers
                         </label>
                         <input
@@ -1458,12 +1458,12 @@ export default function AdminDashboard() {
                             handleUpdateGoal('tiktok', index, 'followers', e.target.value)
                           }
                           placeholder="e.g., 100"
-                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-600 rounded-xl bg-black text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all"
                         />
                       </div>
 
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Price (€)
                         </label>
                         <input
@@ -1473,13 +1473,13 @@ export default function AdminDashboard() {
                             handleUpdateGoal('tiktok', index, 'price', e.target.value)
                           }
                           placeholder="e.g., 2.90"
-                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-600 rounded-xl bg-black text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all"
                         />
                       </div>
 
                       <button
                         onClick={() => handleRemoveGoal('tiktok', index)}
-                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        className="p-3 text-red-400 hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
                         title="Delete this pricing option"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -1490,8 +1490,8 @@ export default function AdminDashboard() {
 
                 {pricing.tiktok.length === 0 && (
                   <div className="text-center py-12 px-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
-                    <Music className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" />
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                    <Music className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                    <p className="text-gray-400 font-medium">
                       No pricing goals yet. Click &quot;Add Goal&quot; to create one.
                     </p>
                   </div>
@@ -1502,13 +1502,13 @@ export default function AdminDashboard() {
               {pricing.tiktok.length > 0 && (
                 <div className="mt-6 p-4 bg-gradient-to-r from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 rounded-xl border border-pink-200 dark:border-pink-800/50">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
                       &quot;Most Popular&quot; badge on:
                     </span>
                     <select
                       value={popularPackTiktok}
                       onChange={(e) => setPopularPackTiktok(e.target.value)}
-                      className="flex-1 px-4 py-2.5 border-2 border-pink-300 dark:border-pink-700 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all text-sm font-medium"
+                      className="flex-1 px-4 py-2.5 border-2 border-pink-700 rounded-xl bg-black text-white focus:ring-2 focus:ring-pink-500 focus:border-pink-500 transition-all text-sm font-medium"
                     >
                       <option value="">None</option>
                       {pricing.tiktok.map((goal) => (
@@ -1522,7 +1522,7 @@ export default function AdminDashboard() {
               )}
             </div>
 
-            <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700/30">
+            <div className="mb-8 bg-black rounded-2xl shadow-xl p-8 border border-gray-800">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-br from-gray-700 to-black rounded-xl shadow-lg">
@@ -1531,10 +1531,10 @@ export default function AdminDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-white">
                       X (Twitter) Pricing
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-sm text-gray-400 mt-0.5">
                       {pricing.twitter.length} option{pricing.twitter.length !== 1 ? 's' : ''} available
                     </p>
                   </div>
@@ -1552,11 +1552,11 @@ export default function AdminDashboard() {
                 {pricing.twitter.map((goal, index) => (
                   <div
                     key={index}
-                    className="group relative bg-gradient-to-br from-gray-50 to-gray-100/30 dark:from-gray-700/50 dark:to-gray-800/10 rounded-xl p-5 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all"
+                    className="group relative bg-gray-900/50 rounded-xl p-5 border border-gray-700 hover:shadow-lg transition-all"
                   >
                     <div className="flex gap-4 items-end">
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Followers
                         </label>
                         <input
@@ -1566,12 +1566,12 @@ export default function AdminDashboard() {
                             handleUpdateGoal('twitter', index, 'followers', e.target.value)
                           }
                           placeholder="e.g., 100"
-                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-600 rounded-xl bg-black text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
                         />
                       </div>
 
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Price (€)
                         </label>
                         <input
@@ -1581,13 +1581,13 @@ export default function AdminDashboard() {
                             handleUpdateGoal('twitter', index, 'price', e.target.value)
                           }
                           placeholder="e.g., 2.50"
-                          className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-600 rounded-xl bg-black text-white focus:ring-2 focus:ring-gray-500 focus:border-gray-500 transition-all"
                         />
                       </div>
 
                       <button
                         onClick={() => handleRemoveGoal('twitter', index)}
-                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        className="p-3 text-red-400 hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
                         title="Delete this pricing option"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -1598,10 +1598,10 @@ export default function AdminDashboard() {
 
                 {pricing.twitter.length === 0 && (
                   <div className="text-center py-12 px-4 bg-gray-50 dark:bg-gray-700/30 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600">
-                    <svg viewBox="0 0 24 24" className="w-12 h-12 text-gray-400 dark:text-gray-500 mx-auto mb-3" fill="currentColor">
+                    <svg viewBox="0 0 24 24" className="w-12 h-12 text-gray-500 mx-auto mb-3" fill="currentColor">
                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                     </svg>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                    <p className="text-gray-400 font-medium">
                       No pricing goals yet. Click &quot;Add Goal&quot; to create one.
                     </p>
                   </div>
@@ -1612,7 +1612,7 @@ export default function AdminDashboard() {
               {pricing.twitter.length > 0 && (
                 <div className="mt-6 p-4 bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-900/20 dark:to-gray-800/20 rounded-xl border border-gray-200 dark:border-gray-700/50">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
                       &quot;Most Popular&quot; badge on:
                     </span>
                     <select
@@ -1632,7 +1632,7 @@ export default function AdminDashboard() {
               )}
             </div>
 
-            <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700/30">
+            <div className="mb-8 bg-black rounded-2xl shadow-xl p-8 border border-gray-800">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-br from-red-500 to-pink-600 rounded-xl shadow-lg">
@@ -1641,10 +1641,10 @@ export default function AdminDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-white">
                       Instagram Likes Pricing
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-sm text-gray-400 mt-0.5">
                       {pricing.instagram_likes.length} option{pricing.instagram_likes.length !== 1 ? 's' : ''} available
                     </p>
                   </div>
@@ -1662,11 +1662,11 @@ export default function AdminDashboard() {
                 {pricing.instagram_likes.map((goal, index) => (
                   <div
                     key={index}
-                    className="group relative bg-gradient-to-br from-red-50 to-pink-50/30 dark:from-red-900/20 dark:to-pink-900/10 rounded-xl p-5 border border-red-200 dark:border-red-800/30 hover:shadow-lg transition-all"
+                    className="group relative bg-gray-900/50 rounded-xl p-5 border border-gray-700 hover:shadow-lg transition-all"
                   >
                     <div className="flex gap-4 items-end">
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Likes
                         </label>
                         <input
@@ -1681,7 +1681,7 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Price (€)
                         </label>
                         <input
@@ -1697,7 +1697,7 @@ export default function AdminDashboard() {
 
                       <button
                         onClick={() => handleRemoveGoal('instagram_likes', index)}
-                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        className="p-3 text-red-400 hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
                         title="Delete this pricing option"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -1711,7 +1711,7 @@ export default function AdminDashboard() {
                     <svg className="w-12 h-12 text-red-400 dark:text-red-500 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                    <p className="text-gray-400 font-medium">
                       No pricing goals yet. Click &quot;Add Goal&quot; to create one.
                     </p>
                   </div>
@@ -1722,7 +1722,7 @@ export default function AdminDashboard() {
               {pricing.instagram_likes.length > 0 && (
                 <div className="mt-6 p-4 bg-gradient-to-r from-red-50 to-pink-50 dark:from-red-900/10 dark:to-pink-900/10 rounded-xl border border-red-200 dark:border-red-800/30">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
                       &quot;Most Popular&quot; badge on:
                     </span>
                     <select
@@ -1742,7 +1742,7 @@ export default function AdminDashboard() {
               )}
             </div>
 
-            <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-100 dark:border-gray-700/30">
+            <div className="mb-8 bg-black rounded-2xl shadow-xl p-8 border border-gray-800">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-br from-cyan-500 to-teal-600 rounded-xl shadow-lg">
@@ -1752,10 +1752,10 @@ export default function AdminDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-white">
                       TikTok Views Pricing
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-sm text-gray-400 mt-0.5">
                       {pricing.tiktok_views.length} option{pricing.tiktok_views.length !== 1 ? 's' : ''} available
                     </p>
                   </div>
@@ -1773,11 +1773,11 @@ export default function AdminDashboard() {
                 {pricing.tiktok_views.map((goal, index) => (
                   <div
                     key={index}
-                    className="group relative bg-gradient-to-br from-cyan-50 to-teal-50/30 dark:from-cyan-900/20 dark:to-teal-900/10 rounded-xl p-5 border border-cyan-200 dark:border-cyan-800/30 hover:shadow-lg transition-all"
+                    className="group relative bg-gray-900/50 rounded-xl p-5 border border-gray-700 hover:shadow-lg transition-all"
                   >
                     <div className="flex gap-4 items-end">
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Views
                         </label>
                         <input
@@ -1792,7 +1792,7 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Price (€)
                         </label>
                         <input
@@ -1808,7 +1808,7 @@ export default function AdminDashboard() {
 
                       <button
                         onClick={() => handleRemoveGoal('tiktok_views', index)}
-                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        className="p-3 text-red-400 hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
                         title="Delete this pricing option"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -1823,7 +1823,7 @@ export default function AdminDashboard() {
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                    <p className="text-gray-400 font-medium">
                       No pricing goals yet. Click &quot;Add Goal&quot; to create one.
                     </p>
                   </div>
@@ -1834,7 +1834,7 @@ export default function AdminDashboard() {
               {pricing.tiktok_views.length > 0 && (
                 <div className="mt-6 p-4 bg-gradient-to-r from-cyan-50 to-teal-50 dark:from-cyan-900/10 dark:to-teal-900/10 rounded-xl border border-cyan-200 dark:border-cyan-800/30">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
                       &quot;Most Popular&quot; badge on:
                     </span>
                     <select
@@ -1864,10 +1864,10 @@ export default function AdminDashboard() {
                     </svg>
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-white">
                       TikTok Likes Pricing
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-sm text-gray-400 mt-0.5">
                       {pricing.tiktok_likes.length} option{pricing.tiktok_likes.length !== 1 ? 's' : ''} available
                     </p>
                   </div>
@@ -1885,11 +1885,11 @@ export default function AdminDashboard() {
                 {pricing.tiktok_likes.map((goal, index) => (
                   <div
                     key={index}
-                    className="group relative bg-gradient-to-br from-rose-50 to-pink-50/30 dark:from-rose-900/20 dark:to-pink-900/10 rounded-xl p-5 border border-rose-200 dark:border-rose-800/30 hover:shadow-lg transition-all"
+                    className="group relative bg-gray-900/50 rounded-xl p-5 border border-gray-700 hover:shadow-lg transition-all"
                   >
                     <div className="flex gap-4 items-end">
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Likes
                         </label>
                         <input
@@ -1904,7 +1904,7 @@ export default function AdminDashboard() {
                       </div>
 
                       <div className="flex-1">
-                        <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                        <label className="block text-sm font-semibold text-gray-300 mb-2">
                           Price (€)
                         </label>
                         <input
@@ -1920,7 +1920,7 @@ export default function AdminDashboard() {
 
                       <button
                         onClick={() => handleRemoveGoal('tiktok_likes', index)}
-                        className="p-3 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
+                        className="p-3 text-red-400 hover:bg-red-900/30 rounded-xl transition-all hover:scale-110 group-hover:shadow-md"
                         title="Delete this pricing option"
                       >
                         <Trash2 className="w-5 h-5" />
@@ -1934,7 +1934,7 @@ export default function AdminDashboard() {
                     <svg className="w-12 h-12 text-rose-400 dark:text-rose-500 mx-auto mb-3" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                     </svg>
-                    <p className="text-gray-500 dark:text-gray-400 font-medium">
+                    <p className="text-gray-400 font-medium">
                       No pricing goals yet. Click &quot;Add Goal&quot; to create one.
                     </p>
                   </div>
@@ -1945,7 +1945,7 @@ export default function AdminDashboard() {
               {pricing.tiktok_likes.length > 0 && (
                 <div className="mt-6 p-4 bg-gradient-to-r from-rose-50 to-pink-50 dark:from-rose-900/10 dark:to-pink-900/10 rounded-xl border border-rose-200 dark:border-rose-800/30">
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
                       &quot;Most Popular&quot; badge on:
                     </span>
                     <select
@@ -1973,10 +1973,10 @@ export default function AdminDashboard() {
                     <Eye className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-white">
                       YouTube Views
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-sm text-gray-400 mt-0.5">
                       Configure YouTube views pricing
                     </p>
                   </div>
@@ -2039,7 +2039,7 @@ export default function AdminDashboard() {
                   ))}
 
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
                       &quot;Most Popular&quot; badge on:
                     </span>
                     <select
@@ -2067,10 +2067,10 @@ export default function AdminDashboard() {
                     <BarChart3 className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-white">
                       LinkedIn Followers
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-sm text-gray-400 mt-0.5">
                       Configure LinkedIn followers pricing
                     </p>
                   </div>
@@ -2133,7 +2133,7 @@ export default function AdminDashboard() {
                   ))}
 
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-gray-700 dark:text-gray-300 whitespace-nowrap">
+                    <span className="text-sm font-semibold text-gray-300 whitespace-nowrap">
                       &quot;Most Popular&quot; badge on:
                     </span>
                     <select
@@ -2175,10 +2175,10 @@ export default function AdminDashboard() {
                   <Settings className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h2 className="text-2xl font-bold text-white">
                     Admin Password
                   </h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                  <p className="text-sm text-gray-400 mt-0.5">
                     Change your admin password
                   </p>
                 </div>
@@ -2289,10 +2289,10 @@ export default function AdminDashboard() {
                 </svg>
               </div>
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-2xl font-bold text-white">
                   Stripe API Keys
                 </h2>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                <p className="text-sm text-gray-400 mt-0.5">
                   Configure your Stripe payment gateway
                 </p>
               </div>
@@ -2375,10 +2375,10 @@ export default function AdminDashboard() {
                   <ShoppingCart className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h2 className="text-2xl font-bold text-white">
                     Orders
                   </h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                  <p className="text-sm text-gray-400 mt-0.5">
                     {filteredOrders.length} of {orders.length} order{orders.length !== 1 ? 's' : ''}
                   </p>
                 </div>
@@ -2684,7 +2684,7 @@ export default function AdminDashboard() {
             <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-purple-100 dark:border-purple-900/30">
               <div className="flex items-center justify-between gap-4 mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Google Ads Expenses</h2>
+                  <h2 className="text-2xl font-bold text-white">Google Ads Expenses</h2>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Add your monthly Google Ads spend (YYYY-MM)</p>
                 </div>
               </div>
@@ -2759,10 +2759,10 @@ export default function AdminDashboard() {
                   <Tag className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h2 className="text-2xl font-bold text-white">
                     Promo Codes
                   </h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                  <p className="text-sm text-gray-400 mt-0.5">
                     {promoCodes.length} code{promoCodes.length !== 1 ? 's' : ''} total
                   </p>
                 </div>
@@ -3333,8 +3333,8 @@ export default function AdminDashboard() {
                   <Zap className="w-6 h-6 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Funnel Pricing</h2>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">Configure pricing tiers for the upsell tunnel</p>
+                  <h2 className="text-2xl font-bold text-white">Funnel Pricing</h2>
+                  <p className="text-sm text-gray-400 mt-0.5">Configure pricing tiers for the upsell tunnel</p>
                 </div>
               </div>
               <button
