@@ -173,6 +173,31 @@ export function trackInsta2FunnelPurchase(orderData: {
   });
 }
 
+// Compte 6: TikTok-2 funnel (White Hat page)
+/**
+ * Track a Google Ads Purchase conversion event for the TikTok-2 funnel (/tiktok-2).
+ * Uses same conversion ID as Instagram-2: AW-17964092485/Hk6VCO74u4UcEMWY-fVC
+ */
+export function trackTiktok2FunnelPurchase(orderData: {
+  value: number;
+  currency: string;
+  transactionId: string;
+}) {
+  if (typeof window === 'undefined' || !window.gtag) {
+    console.warn('[gtag] gtag not loaded — skipping TikTok-2 funnel conversion tracking.');
+    return;
+  }
+
+  const sendTo = 'AW-17964092485/Hk6VCO74u4UcEMWY-fVC';
+
+  window.gtag('event', 'conversion', {
+    send_to: sendTo,
+    value: orderData.value,
+    currency: orderData.currency.toUpperCase(),
+    transaction_id: orderData.transactionId,
+  });
+}
+
 // Legacy function - kept for backward compatibility, will be removed after migration
 export function trackFunnelPurchase(orderData: {
   value: number;
