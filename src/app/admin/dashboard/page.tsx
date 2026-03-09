@@ -2496,7 +2496,7 @@ export default function AdminDashboard() {
                   </thead>
                   <tbody>
                     {filteredOrders.map((order) => {
-                      const isFunnel = order.order_source === 'APP_FUNNEL' && order.funnel_data;
+                      const isFunnel = (order.order_source === 'APP_FUNNEL' || order.order_source === 'APP_FUNNEL_TIKTOK') && order.funnel_data;
                       const isExpanded = expandedOrderId === order.id;
                       return (
                       <React.Fragment key={order.id}>

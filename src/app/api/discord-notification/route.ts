@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     const { orderSource } = body;
 
     // Funnel order notification
-    if (orderSource === 'APP_FUNNEL') {
+    if (orderSource === 'APP_FUNNEL' || orderSource === 'APP_FUNNEL_TIKTOK') {
       const { orderId, email, username, totalPrice, services, isNewCustomer, customerOrderNumber } = body;
 
       if (!orderId || !username || !totalPrice || !services) {
