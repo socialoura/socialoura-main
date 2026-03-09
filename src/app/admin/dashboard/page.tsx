@@ -1204,18 +1204,18 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900/20 dark:to-pink-900/20 py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-900 dark:bg-black py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               Admin Dashboard
             </h1>
-            <p className="text-gray-600 dark:text-gray-400 mt-2">Manage your settings and orders</p>
+            <p className="text-gray-400 dark:text-gray-500 mt-2">Manage your settings and orders</p>
           </div>
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-all shadow-sm hover:shadow-md"
+            className="flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-gray-300 dark:text-gray-400 bg-gray-800 dark:bg-black border border-gray-700 dark:border-gray-800 rounded-xl hover:bg-gray-700 dark:hover:bg-gray-800 transition-all shadow-sm hover:shadow-md"
           >
             <LogOut className="w-4 h-4" />
             Logout
@@ -1237,14 +1237,14 @@ export default function AdminDashboard() {
           </div>
         )}
 
-        <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-purple-100 dark:border-purple-900/30">
-          <div className="flex flex-col sm:flex-row border-b border-gray-200 dark:border-gray-700">
+        <div className="mb-8 bg-gray-800 dark:bg-black rounded-2xl shadow-xl border border-gray-700 dark:border-gray-800">
+          <div className="flex flex-col sm:flex-row border-b border-gray-700 dark:border-gray-800">
             <button
               onClick={() => setActiveTab('pricing')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'pricing'
-                  ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
               }`}
             >
               <Instagram className="w-5 h-5" />
@@ -1254,8 +1254,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('settings')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'settings'
-                  ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
               }`}
             >
               <Settings className="w-5 h-5" />
@@ -1265,8 +1265,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('orders')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'orders'
-                  ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
               }`}
             >
               <ShoppingCart className="w-5 h-5" />
@@ -1276,8 +1276,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('analytics')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'analytics'
-                  ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
               }`}
             >
               <BarChart3 className="w-5 h-5" />
@@ -1287,8 +1287,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('promo')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'promo'
-                  ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
               }`}
             >
               <Tag className="w-5 h-5" />
@@ -1298,8 +1298,8 @@ export default function AdminDashboard() {
               onClick={() => setActiveTab('funnel')}
               className={`flex-1 flex items-center justify-center gap-2 px-6 py-4 text-sm font-medium transition-all ${
                 activeTab === 'funnel'
-                  ? 'text-purple-600 dark:text-purple-400 border-b-2 border-purple-600 dark:border-purple-400 bg-purple-50 dark:bg-purple-900/20'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-700/50'
+                  ? 'text-purple-400 dark:text-purple-300 border-b-2 border-purple-400 dark:border-purple-300 bg-purple-900/30 dark:bg-purple-800/20'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-200 dark:hover:text-gray-300 hover:bg-gray-700 dark:hover:bg-gray-800/50'
               }`}
             >
               <Zap className="w-5 h-5" />
@@ -1310,17 +1310,17 @@ export default function AdminDashboard() {
 
         {activeTab === 'pricing' && (
           <>
-            <div className="mb-8 bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-purple-100 dark:border-purple-900/30">
+            <div className="mb-8 bg-gray-800 dark:bg-black rounded-2xl shadow-xl p-8 border border-gray-700 dark:border-gray-800">
               <div className="flex justify-between items-center mb-8">
                 <div className="flex items-center gap-3">
                   <div className="p-3 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl shadow-lg">
                     <Instagram className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 className="text-2xl font-bold text-gray-100 dark:text-white">
                       Instagram Pricing
                     </h2>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                    <p className="text-sm text-gray-400 dark:text-gray-500 mt-0.5">
                       {pricing.instagram.length} option{pricing.instagram.length !== 1 ? 's' : ''} available
                     </p>
                   </div>
