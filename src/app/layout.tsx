@@ -62,6 +62,7 @@ export default function RootLayout({
               ${GA_INSTA_FUNNEL_ID ? `gtag('config', '${GA_INSTA_FUNNEL_ID}');` : ''}
               gtag('config', 'AW-17979730701');
               gtag('config', 'AW-17964092485');
+              gtag('config', 'AW-18009151319');
             `,
           }}
         />

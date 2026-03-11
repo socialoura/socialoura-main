@@ -119,12 +119,9 @@ export function trackInstaFunnelPurchase(orderData: {
 }
 
 // Compte 3: Page de vente classique TikTok (/t)
-const GA_TIKTOK_CLASSIC_ID = process.env.NEXT_PUBLIC_GA_TIKTOK_CLASSIC_ID || '';
-const GA_TIKTOK_CLASSIC_LABEL = process.env.NEXT_PUBLIC_GA_TIKTOK_CLASSIC_CONVERSION_LABEL || '';
-
 /**
  * Track a Google Ads Purchase conversion event for the classic TikTok sales page (/t).
- * Uses dedicated Google Ads account for classic TikTok page conversions.
+ * Uses hardcoded conversion ID: AW-18009151319/2UyzCP6074YcENeut4tD
  */
 export function trackTiktokClassicPurchase(orderData: {
   value: number;
@@ -135,13 +132,11 @@ export function trackTiktokClassicPurchase(orderData: {
     console.warn('[gtag] gtag not loaded — skipping TikTok classic conversion tracking.');
     return;
   }
-  if (!GA_TIKTOK_CLASSIC_ID || !GA_TIKTOK_CLASSIC_LABEL) {
-    console.warn('[gtag] Missing NEXT_PUBLIC_GA_TIKTOK_CLASSIC_ID or NEXT_PUBLIC_GA_TIKTOK_CLASSIC_CONVERSION_LABEL — skipping TikTok classic conversion.');
-    return;
-  }
+
+  const sendTo = 'AW-18009151319/2UyzCP6074YcENeut4tD';
 
   window.gtag('event', 'conversion', {
-    send_to: `${GA_TIKTOK_CLASSIC_ID}/${GA_TIKTOK_CLASSIC_LABEL}`,
+    send_to: sendTo,
     value: orderData.value,
     currency: orderData.currency.toUpperCase(),
     transaction_id: orderData.transactionId,
