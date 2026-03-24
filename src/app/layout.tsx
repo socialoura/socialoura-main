@@ -7,9 +7,6 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import PostHogProvider from "@/components/PostHogProvider";
 import "./globals.css";
 
-const GA_AW_ID = process.env.NEXT_PUBLIC_GA_AW_ID || '';
-const GA_INSTA_FUNNEL_ID = process.env.NEXT_PUBLIC_GA_INSTA_FUNNEL_ID || '';
-
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-space-grotesk",
@@ -47,7 +44,7 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="https://api.stripe.com" />
         {/* Google Ads Global Site Tag */}
         <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${GA_AW_ID || 'AW-17979730701'}`}
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18039153001"
           strategy="afterInteractive"
         />
         <Script
@@ -58,11 +55,7 @@ export default function RootLayout({
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
-              ${GA_AW_ID ? `gtag('config', '${GA_AW_ID}');` : ''}
-              ${GA_INSTA_FUNNEL_ID ? `gtag('config', '${GA_INSTA_FUNNEL_ID}');` : ''}
-              gtag('config', 'AW-17979730701');
-              gtag('config', 'AW-17964092485');
-              gtag('config', 'AW-18009151319');
+              gtag('config', 'AW-18039153001');
             `,
           }}
         />
